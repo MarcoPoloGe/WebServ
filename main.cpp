@@ -34,6 +34,17 @@ std::string ft_read_file(std::string file_name)
 	return (content);
 }
 
+int custom_msg(std::string request_string, int client_socket)
+{
+	if (request_string.find("marco") != std::string::npos)
+	{
+		std::string rep = "POLO !!!!!!!!!!\n";
+		send(client_socket, rep.c_str(), rep.length(), 0);
+		return (1);
+	}
+	return (0);
+}
+
 void handle_request(int client_socket) {
 
 {
@@ -49,6 +60,16 @@ void handle_request(int client_socket) {
 		std::string request_string(buffer, bytes_read);
 		std::cout << "Received request:\n" << request_string << std::endl;
 
+		///////////////////////////////////////////////////
+		//////////////////TELLNET//////////////////////////
+		///////////////////////////////////////////////////
+		if (custom_msg(request_string, client_socket) == 1)
+			return ;
+		//pour tester ca, installe telnet avec brew
+		//depuis le terminal: `telnet localhost 443`
+		//si tu dis le mot magique tu auras une surprise
+		///////////////////////////////////////////////////
+
 		// Send a response
 		// Set the HTTP response headers
 		response << "HTTP/1.1 200 OK\r\n";
@@ -57,14 +78,13 @@ void handle_request(int client_socket) {
 		response << "Content-Length: " << html_content.length() << "\r\n";
 		response << "\r\n";
 
-	// Send the response headers and body
+		// Send the response headers and body
 
-	std::string temp;
-	temp = response.str();
+		std::string temp;
+		temp = response.str();
 
-	send(client_socket, temp.c_str(), temp.length(), 0);
-	send(client_socket, html_content.c_str(), html_content.length(), 0);
-
+		send(client_socket, temp.c_str(), temp.length(), 0);
+		send(client_socket, html_content.c_str(), html_content.length(), 0);
 	}
 }
 
@@ -91,14 +111,13 @@ void handle_request(int client_socket) {
 		response << "Content-Length: " << html_content.length() << "\r\n";
 		response << "\r\n";
 
-	// Send the response headers and body
+		// Send the response headers and body
 
-	std::string temp;
-	temp = response.str();
+		std::string temp;
+		temp = response.str();
 
-	send(client_socket, temp.c_str(), temp.length(), 0);
-	send(client_socket, html_content.c_str(), html_content.length(), 0);
-
+		send(client_socket, temp.c_str(), temp.length(), 0);
+		send(client_socket, html_content.c_str(), html_content.length(), 0);
 	}
 }*/
 
