@@ -54,9 +54,7 @@ void handle_request(int client_socket) {
 		// Set the HTTP response headers
 		response << "HTTP/1.1 200 OK\r\n";
 		response << "Content-Type: text/html\r\n";
-	//	response << "Content-Type: image/jpeg\r\n";				// test with image
 		html_content = ft_read_file("./website/index.html");
-	//	html_content = ft_read_file("./website/jesus.jpeg");	//test with image
 		response << "Content-Length: " << html_content.length() << "\r\n";
 		response << "\r\n";
 
@@ -71,7 +69,7 @@ void handle_request(int client_socket) {
 	}
 }
 
-{	
+/*{	
 	//// TEST WITH IMAGE ////
 		
 	std::stringstream response;
@@ -89,10 +87,8 @@ void handle_request(int client_socket) {
 		// Send a response
 		// Set the HTTP response headers
 		response << "HTTP/1.1 200 OK\r\n";
-	//	response << "Content-Type: text/html\r\n";
-		response << "Content-Type: image/jpeg\r\n";				// test with image
-	//	html_content = ft_read_file("./website/index.html");
-		html_content = ft_read_file("./website/jesus.jpeg");	//test with image
+		response << "Content-Type: image/jpeg\r\n";
+		html_content = ft_read_file("./website/jesus.jpeg");
 		response << "Content-Length: " << html_content.length() << "\r\n";
 		response << "\r\n";
 
@@ -105,7 +101,7 @@ void handle_request(int client_socket) {
 	send(client_socket, html_content.c_str(), html_content.length(), 0);
 
 	}
-}
+}*/
 
 }
 
