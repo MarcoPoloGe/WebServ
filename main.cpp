@@ -10,7 +10,6 @@
 //#include <stdlib.h>
 
 
-using namespace std;
 
 const int MAX_CLIENTS = 5;
 const int BUFFER_SIZE = 10024;
@@ -47,8 +46,8 @@ void handle_request(int client_socket) {
 
 	if (bytes_read > 0) {
 		// Extract the request headers and body
-		string request_string(buffer, bytes_read);
-		cout << "Received request:\n" << request_string << endl;
+		std::string request_string(buffer, bytes_read);
+		std::cout << "Received request:\n" << request_string << std::endl;
 
 		// Send a response
 		// Set the HTTP response headers
@@ -60,7 +59,7 @@ void handle_request(int client_socket) {
 
 	// Send the response headers and body
 
-	string temp;
+	std::string temp;
 	temp = response.str();
 
 	send(client_socket, temp.c_str(), temp.length(), 0);
@@ -81,8 +80,8 @@ void handle_request(int client_socket) {
 
 	if (bytes_read > 0) {
 		// Extract the request headers and body
-		string request_string(buffer, bytes_read);
-		cout << "Received request:\n" << request_string << endl;
+		std::string request_string(buffer, bytes_read);
+		std::cout << "Received request:\n" << request_string << std::endl;
 
 		// Send a response
 		// Set the HTTP response headers
@@ -94,7 +93,7 @@ void handle_request(int client_socket) {
 
 	// Send the response headers and body
 
-	string temp;
+	std::string temp;
 	temp = response.str();
 
 	send(client_socket, temp.c_str(), temp.length(), 0);
@@ -118,7 +117,7 @@ int main() {
 
 	// Listen for incoming connections
 	listen(server_socket, MAX_CLIENTS);
-	cout << "Server listening on port 443..." << endl;
+	std::cout << "Server listening on port 443..." << std::endl;
 
 	// Accept incoming connections and handle requests
 	while (true) {
@@ -126,7 +125,7 @@ int main() {
 		sockaddr_in client_address;
 		socklen_t client_address_size = sizeof(client_address);
 		int client_socket = accept(server_socket, (struct sockaddr*) &client_address, &client_address_size);
-		cout << "Accepted connection from " << inet_ntoa(client_address.sin_addr) << ":" << ntohs(client_address.sin_port) << endl;
+		std::cout << "Accepted connection from " << inet_ntoa(client_address.sin_addr) << ":" << ntohs(client_address.sin_port) << std::endl;
 
 		// Handle the request
 		handle_request(client_socket);
