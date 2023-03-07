@@ -37,6 +37,7 @@ std::string ft_read_file(std::string file_name)
 
 void handle_request(int client_socket) {
 
+{
 	std::stringstream response;
 	std::string html_content;
 
@@ -53,18 +54,59 @@ void handle_request(int client_socket) {
 		// Set the HTTP response headers
 		response << "HTTP/1.1 200 OK\r\n";
 		response << "Content-Type: text/html\r\n";
+	//	response << "Content-Type: image/jpeg\r\n";				// test with image
 		html_content = ft_read_file("./website/index.html");
+	//	html_content = ft_read_file("./website/jesus.jpeg");	//test with image
 		response << "Content-Length: " << html_content.length() << "\r\n";
 		response << "\r\n";
 
-// Send the response headers and body
+	// Send the response headers and body
 
-string temp;
-temp = response.str();
-		send(client_socket, temp.c_str(), temp.length(), 0);
-		send(client_socket, html_content.c_str(), html_content.length(), 0);
+	string temp;
+	temp = response.str();
+
+	send(client_socket, temp.c_str(), temp.length(), 0);
+	send(client_socket, html_content.c_str(), html_content.length(), 0);
 
 	}
+}
+
+{	
+	//// TEST WITH IMAGE ////
+		
+	std::stringstream response;
+	std::string html_content;
+
+	// Read the incoming request
+	char buffer[BUFFER_SIZE];
+	int bytes_read = recv(client_socket, buffer, BUFFER_SIZE, 0);
+
+	if (bytes_read > 0) {
+		// Extract the request headers and body
+		string request_string(buffer, bytes_read);
+		cout << "Received request:\n" << request_string << endl;
+
+		// Send a response
+		// Set the HTTP response headers
+		response << "HTTP/1.1 200 OK\r\n";
+	//	response << "Content-Type: text/html\r\n";
+		response << "Content-Type: image/jpeg\r\n";				// test with image
+	//	html_content = ft_read_file("./website/index.html");
+		html_content = ft_read_file("./website/jesus.jpeg");	//test with image
+		response << "Content-Length: " << html_content.length() << "\r\n";
+		response << "\r\n";
+
+	// Send the response headers and body
+
+	string temp;
+	temp = response.str();
+
+	send(client_socket, temp.c_str(), temp.length(), 0);
+	send(client_socket, html_content.c_str(), html_content.length(), 0);
+
+	}
+}
+
 }
 
 int main() {
@@ -97,3 +139,4 @@ int main() {
 		close(client_socket);
 	}
 }
+
