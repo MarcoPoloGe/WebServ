@@ -1,4 +1,5 @@
-SRCS		= main.cpp
+SRCS		= main.cpp\
+			  srcs/utils/Ft_error.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 
@@ -26,4 +27,6 @@ fclean:		clean
 
 re:			fclean all
 
-.PHONY:		all clean fclean re
+good:		${NAME} clean
+
+.PHONY:		all clean fclean re good

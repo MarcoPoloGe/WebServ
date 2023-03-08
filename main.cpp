@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 #include <fstream>
 #include <sstream>
+
+#include "includes/Ft_error.hpp"
 //#include <stdlib.h>
 
 
@@ -123,9 +125,17 @@ void handle_request(int client_socket) {
 
 }
 
-int main() {
+int main(int ac, char **av) {
+
+	if (ac != 2)
+		Ft_error err("Bad arguments");
+
+	(void)av;
+
 	// Create a socket for incoming connections
 	int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (server_socket < 0)
+		Ft_error	err(NULL);
 
 	// Bind the socket to a port and address
 	sockaddr_in server_address = {0,0,0,{0},{0}}; //on doit intialiser a zero du au faite que c'est une struct C.
