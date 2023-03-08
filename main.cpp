@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <fstream>
 #include <sstream>
+#include <fcntl.h>
 
 #include "includes/Ft_error.hpp"
 //#include <stdlib.h>
@@ -36,15 +37,66 @@ std::string ft_read_file(std::string file_name)
 	return (content);
 }
 
+void custom_request(int client_socket);
+
 int custom_msg(std::string request_string, int client_socket)
 {
 	if (request_string.find("marco") != std::string::npos)
 	{
+		custom_request(client_socket); //test
+		return (1);
+
 		std::string rep = "POLO !!!!!!!!!!\n";
 		send(client_socket, rep.c_str(), rep.length(), 0);
 		return (1);
 	}
 	return (0);
+}
+
+void custom_request(int client_socket) {
+	std::stringstream response;
+	std::string html_content;
+
+	std::cout << "We had a custom request\n";
+	
+//	send(client_socket, "AHAHAH", 4, 0);//test cpt
+//	return ;
+
+	// Read the incoming request
+	char buffer2[BUFFER_SIZE];
+	int bytes_read = recv(client_socket, buffer2, BUFFER_SIZE, 0);
+	if (bytes_read < 1)
+	{
+		std::cout << "Error on recv\n";
+		std::exit(1);
+	}
+
+	std::cout << "we recieved " << bytes_read << " bytes to read\n";
+	if (bytes_read > 0) {
+		std::cout << "reading startd\n";
+
+		// Extract the request headers and body
+		std::string request_string(buffer2, bytes_read);
+		std::cout << "Received request:\n" << request_string << std::endl;
+
+		// Send a response
+		// Set the HTTP response headers
+		response << "HTTP/1.1 200 OK\r\n";
+		response << "Content-Type: text/html\r\n";
+		
+		html_content = ft_read_file("./website/test1.html");
+		response << "Content-Length: " << html_content.length() << "\r\n";
+		response << "\r\n";
+
+		// Send the response headers and body
+
+		std::string temp;
+		temp = response.str();
+
+		send(client_socket, temp.c_str(), temp.length(), 0);
+		send(client_socket, html_content.c_str(), html_content.length(), 0);
+	}
+	std::cout << "The custom request ended\n";
 }
 
 void handle_request(int client_socket) {
@@ -140,13 +192,13 @@ int main(int ac, char **av) {
 	// Bind the socket to a port and address
 	sockaddr_in server_address = {0,0,0,{0},{0}}; //on doit intialiser a zero du au faite que c'est une struct C.
 	server_address.sin_family = AF_INET;
-	server_address.sin_addr.s_addr = htonl(INADDR_ANY); // INADDR_ANY permet de bind à toutes les adresses qui s'adresse a au port 443.
-	server_address.sin_port = htons(443);
+	server_address.sin_addr.s_addr = htonl(INADDR_ANY); // INADDR_ANY permet de bind à toutes les adresses qui s'adresse a au port 8080.
+	server_address.sin_port = htons(8080);
 	bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address));
 
 	// Listen for incoming connections
 	listen(server_socket, MAX_CLIENTS);
-	std::cout << "Server listening on port 443..." << std::endl;
+	std::cout << "Server listening on port 8080..." << std::endl;
 
 	// Accept incoming connections and handle requests
 	while (true) {
