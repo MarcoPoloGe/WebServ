@@ -1,5 +1,6 @@
 SRCS		= main.cpp\
 			  srcs/utils/Ft_error.cpp\
+			  srcs/ClassRequest.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 

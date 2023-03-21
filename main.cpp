@@ -9,6 +9,7 @@
 #include <sstream>
 #include <fcntl.h>
 
+#include "srcs/ClassRequest.hpp"
 #include "includes/Ft_error.hpp"
 //#include <stdlib.h>
 
@@ -39,12 +40,12 @@ std::string ft_read_file(std::string file_name)
 
 void custom_request(int client_socket);
 
-int custom_msg(std::string request_string, int client_socket)
+int custom_msg(Request request, int client_socket)
 {
-	if (request_string.find("marco") != std::string::npos)
+	if (request.get_URI() == "/marco")
 	{
-		custom_request(client_socket); //test
-		return (1);
+	//	custom_request(client_socket); //test
+	//	return (1);
 
 		std::string rep = "POLO !!!!!!!!!!\n";
 		send(client_socket, rep.c_str(), rep.length(), 0);
@@ -102,6 +103,7 @@ void custom_request(int client_socket) {
 void handle_request(int client_socket) {
 
 {
+	Request request;
 	std::stringstream response;
 	std::string html_content;
 
@@ -112,12 +114,12 @@ void handle_request(int client_socket) {
 	if (bytes_read > 0) {
 		// Extract the request headers and body
 		std::string request_string(buffer, bytes_read);
-		std::cout << "Received request:\n" << request_string << std::endl;
-
+		request.fill(request_string);
+		std::cout << "Received request:\n" << request << std::endl;
 		///////////////////////////////////////////////////
 		//////////////////TELLNET//////////////////////////
 		///////////////////////////////////////////////////
-		if (custom_msg(request_string, client_socket) == 1)
+		if (custom_msg(request, client_socket) == 1)
 			return ;
 		//pour tester ca, installe telnet avec brew
 		//depuis le terminal: `telnet localhost 443`
