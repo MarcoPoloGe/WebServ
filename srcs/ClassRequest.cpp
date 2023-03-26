@@ -1,5 +1,5 @@
 
-#include "ClassRequest.hpp"
+#include "../includes/ClassRequest.hpp"
 
 Request::Request()
 {
@@ -12,42 +12,53 @@ Request::Request(std::string request)
 
 void Request::fill(std::string request)
 {
-	size_t next;
-	std::string types[3] = {"GET ","PUT ","DELETE "};
-
-	for (int i = 0; i < 3; ++i)
-	{
-		if(request.compare(0,3,types[i]))
-		{
-			this->type = types[i];
-			request.erase(0,types->length());
-			break;
-		}
-	}
-	if(this->type.empty())
-	{
-		//todo error request cannot be handled;
-	}
-	next = request.find(' ');
-	URI = request.substr(0, next);
-	request.erase(0, next);
-
-	next = request.find('\n');
-	HTTP_version = request.substr(0, next);
-	request.erase(0, next);
-
 	std::istringstream file(request);
 	std::string line;
-	while (std::getline(file, line))
-	{
-		std::istringstream sline(line);
-		std::string first;
-		std::string second;
-		if(std::getline(sline, first, ':'))
+	std::string first;
+	std::string second;
+
+	try {
+
+		if(std::getline(file, first, ' '))
 		{
-			std::getline(sline, second);
-			this->headers_map.insert(std::make_pair(first, second));
+			if(!first.empty() && (first == "GET" || first == "PUT" || first == "DELETE"))
+				type = first;
+			else
+				throw std::invalid_argument("Invalid HTTP request type");
 		}
+		if(std::getline(file, first, ' '))
+		{
+			if(!first.empty())
+				URI = first;
+			else
+				throw std::invalid_argument("Invalid HTTP request URI");
+		}
+		if(std::getline(file, first))
+		{
+			if(!first.empty())
+				HTTP_version = first;
+			else
+				throw std::invalid_argument("Invalid HTTP request HTTP version");
+		}
+		while (std::getline(file, line))
+		{
+			if (line.empty())
+				break;
+			std::istringstream sline(line);
+			if(std::getline(sline, first, ':'))
+			{
+				if(std::getline(sline >> std::ws, second)) // >> std:ws skips white spaces before reading. It is used so that the string 'second' doesn't store the space right after the :
+				{
+					if(first.empty() || second.empty())
+						throw std::invalid_argument("Invalid HTTP request header");
+					headers_map.insert(std::make_pair(first, second));
+				}
+			}
+		}
+	}
+	catch(std::invalid_argument &e)
+	{
+		std::cout << e.what() << std::endl;
 	}
 }
 

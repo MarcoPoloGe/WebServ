@@ -9,7 +9,7 @@
 #include <sstream>
 #include <fcntl.h>
 
-#include "srcs/ClassRequest.hpp"
+#include "includes/ClassRequest.hpp"
 #include "includes/Ft_error.hpp"
 //#include <stdlib.h>
 
@@ -115,7 +115,7 @@ void handle_request(int client_socket) {
 		// Extract the request headers and body
 		std::string request_string(buffer, bytes_read);
 		request.fill(request_string);
-		std::cout << "Received request:\n" << request << std::endl;
+		std::cout << "Parsed request:\n" << request << std::endl;
 		///////////////////////////////////////////////////
 		//////////////////TELLNET//////////////////////////
 		///////////////////////////////////////////////////
