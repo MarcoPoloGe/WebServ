@@ -44,6 +44,11 @@ void Request::fill(std::string request)
 		{
 			if (line.empty())
 				break;
+
+			line.erase(std::remove(line.begin(), line.end(), '\r'), line.end()); //
+			// je (reno) t'ai rajoute cette ligne pour virer les \r en fin de ligne
+			// qui me cassaient les c*uilles, bisous 
+
 			std::istringstream sline(line);
 			if(std::getline(sline, first, ':'))
 			{

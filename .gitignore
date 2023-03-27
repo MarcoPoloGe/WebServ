@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
-webserv
+./webserv
 
 #.DS_Store
 .DS_Store

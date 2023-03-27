@@ -116,21 +116,83 @@ void handle_request(int client_socket) {
 		std::string request_string(buffer, bytes_read);
 		request.fill(request_string);
 		std::cout << "Parsed request:\n" << request << std::endl;
-		///////////////////////////////////////////////////
-		//////////////////TELLNET//////////////////////////
-		///////////////////////////////////////////////////
+		//TELLNET//
 		if (custom_msg(request, client_socket) == 1)
 			return ;
 		//pour tester ca, installe telnet avec brew
 		//depuis le terminal: `telnet localhost 443`
 		//si tu dis le mot magique tu auras une surprise
-		///////////////////////////////////////////////////
 
 		// Send a response
 		// Set the HTTP response headers
 		response << "HTTP/1.1 200 OK\r\n";
 		response << "Content-Type: text/html\r\n";
-		html_content = ft_read_file("./website/index.html");
+
+		/////////////////////AJOUT RENO 28.02.23//////////////////////
+		//////////////////////////////////////////////////////////////
+
+		std::string	root = "./website";  //a get dans le vrai config file
+		std::string	host;
+		std::string	referer;
+		std::string	uri;
+		std::string	path;
+		std::map<std::string, std::string> mapa = request.get_headers_map();
+		std::map<std::string, std::string>::iterator it = mapa.begin();
+		
+		uri = request.get_URI();
+
+		while (it != mapa.end() )
+		{
+			/*std::cout << "in headers_map[" << it->first << "], there is : ["
+				<< it->second << "]";*/		//DEBUG
+
+			if (it->first == "Host")
+				host = it->second;
+			if (it->first == "Referer")
+				referer = it->second;
+			it++;
+			std::cout << std::endl;
+		}
+		/*std::cout << "HOST = " << host << std::endl;
+		std::cout << "REFERER = " << referer << std::endl;
+		std::cout << "URI = " << uri << std::endl;*/	//DEBUG
+
+		if ( !referer.empty() )
+		{
+			size_t index = referer.find(host);
+			/*if (index == std::string::npos)
+				std::cout << "APA TROUVE :(((\n";*/		//DEBUG
+			path = root + referer.substr( (index + host.size()) );
+
+			/*std::cout << "jai coupe a l'index = " << index + host.size() << "\n";
+			std::cout << "car index = " << index 
+				<< " et host.size = " << host.size() << "\n";*/		//DEBUG
+		}
+		else
+			path = root + uri;
+		
+		/*std::cout << "***Dans le meilleur des mondes je dois chercher : {"
+			<< path << "}***\n";*/		//DEBUG
+
+		if (path == root + "/")
+			html_content = ft_read_file(root + "/index.html"); //index aussi a chercher dans config
+		else
+		{
+			std::ifstream	infile;
+	
+			infile.open(path.c_str(), std::ios::in);
+			if (infile.is_open())
+			{
+				infile.close();
+				html_content = ft_read_file(path);
+			}
+			else
+				html_content = ft_read_file("./website/error-404.html");
+		}
+
+		/////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////
+		
 		response << "Content-Length: " << html_content.length() << "\r\n";
 		response << "\r\n";
 
@@ -212,6 +274,7 @@ int main(int ac, char **av) {
 
 		// Handle the request
 		handle_request(client_socket);
+
 
 		// Close the connection
 		close(client_socket);
