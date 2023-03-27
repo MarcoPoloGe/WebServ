@@ -1,10 +1,20 @@
 
-#include "Parser.hpp"
 #include "Server.hpp"
-#include <iostream>
-#include <fstream>
-#include <string>
 
+void Read_and_Stock_FileName(const std::string& fileName, std::vector<std::string> &stock) {
+	std::string line;
+	std::ifstream file;
+
+	// Try open file
+	file.open(fileName.c_str());
+	if (!file.is_open() || file.bad())
+		throw std::bad_exception();
+
+	// Read line by line
+	while (std::getline(file, line))
+		stock.push_back(line);
+	file.close();
+}
 
 void printVector(
 		std::vector<std::string> &x) {
@@ -82,7 +92,7 @@ Server &setUpServer(
 }
 
 
-void serverConfig(std::vector<std::string> &stock,
+std::vector<Server> serverConfig(std::vector<std::string> &stock,
 						std::vector<std::string>::iterator it)
 {
 	std::vector<std::string>::iterator 					first_bracket;
@@ -125,9 +135,23 @@ int main(int ac, char **av) {
 		return (1);
 
 	std::string fileName = av[1];
-	Parser parse(fileName);
+	std::vector<std::string> rawfile;
 
-	serverConfig(parse.getStock(), parse.getStock().begin());
+	std::string line;
+	std::ifstream file;
+
+	// Try open file
+	file.open(fileName.c_str());
+	if (!file.is_open() || file.bad())
+		throw std::bad_exception();
+
+	// Read line by line
+	while (std::getline(file, line))
+		rawfile.push_back(line);
+	file.close();
+
+	// Set up Servers
+	serverConfig(rawfile, rawfile.begin());
 
 	return 0;
 }
