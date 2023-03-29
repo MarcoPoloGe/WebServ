@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include <cstring>
 #include <string>
 #include <unistd.h>
@@ -11,8 +11,9 @@
 
 #include "includes/ClassRequest.hpp"
 #include "includes/Ft_error.hpp"
-//#include <stdlib.h>
+//#include <stdlib.h>*/
 
+#include "includes/Webserv_Includes.hpp"
 
 
 const int MAX_CLIENTS = 5;
@@ -102,7 +103,6 @@ void custom_request(int client_socket) {
 
 void handle_request(int client_socket) {
 
-{
 	Request request;
 	std::stringstream response;
 	std::string html_content;
@@ -110,6 +110,12 @@ void handle_request(int client_socket) {
 	// Read the incoming request
 	char buffer[BUFFER_SIZE];
 	int bytes_read = recv(client_socket, buffer, BUFFER_SIZE, 0);
+
+	if (bytes_read < 0)
+	{
+		std::cout << "Problem with recv :( \n";
+		return ;
+	}
 
 	if (bytes_read > 0) {
 		// Extract the request headers and body
@@ -123,11 +129,6 @@ void handle_request(int client_socket) {
 		//depuis le terminal: `telnet localhost 443`
 		//si tu dis le mot magique tu auras une surprise
 
-		// Send a response
-		// Set the HTTP response headers
-		response << "HTTP/1.1 200 OK\r\n";
-		response << "Content-Type: text/html\r\n";
-
 		/////////////////////AJOUT RENO 28.02.23//////////////////////
 		//////////////////////////////////////////////////////////////
 
@@ -138,6 +139,8 @@ void handle_request(int client_socket) {
 		std::string	path;
 		std::map<std::string, std::string> mapa = request.get_headers_map();
 		std::map<std::string, std::string>::iterator it = mapa.begin();
+		int	rep_code = 0;
+		std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
 		
 		uri = request.get_URI();
 
@@ -171,11 +174,14 @@ void handle_request(int client_socket) {
 		else
 			path = root + uri;
 		
-		/*std::cout << "***Dans le meilleur des mondes je dois chercher : {"
-			<< path << "}***\n";*/		//DEBUG
+		std::cout << "***Try to access : {" << path << "}***\n";		//DEBUG
 
 		if (path == root + "/")
+		{
 			html_content = ft_read_file(root + "/index.html"); //index aussi a chercher dans config
+			file_type.first = "html"; file_type.second = "html";
+			rep_code = 200;
+		}
 		else
 		{
 			std::ifstream	infile;
@@ -184,72 +190,79 @@ void handle_request(int client_socket) {
 			if (infile.is_open())
 			{
 				infile.close();
+				rep_code = 200;
 				html_content = ft_read_file(path);
 			}
 			else
+			{
+				rep_code = 404;
 				html_content = ft_read_file("./website/error-404.html");
+				file_type.first = "html"; file_type.second = "html";
+				goto fill_rep;
+			}
+			std::size_t last_point = path.rfind(".");
+			if (last_point != std::string::npos)
+			{
+				file_type.second = path.substr(last_point + 1);
+				if (file_type.second == "html")
+					file_type.first = "html";
+				else
+					file_type.first = "image";	//pr l'instant on a que img et html donc a voir
+			}
+			else
+			{
+				file_type.first = "html"; file_type.second = "html";
+			}
 		}
+fill_rep:
+		std::cout << "@@@@file type@@@@\n" 
+			<< "file type first = " << file_type.first << "\n"
+			<< "file type second = "  << file_type.second << "\n"
+			<< "@@@@@@@@@@@@@@@@@\n";
 
 		/////////////////////////////////////////////////////////////
 		/////////////////////////////////////////////////////////////
 		
-		response << "Content-Length: " << html_content.length() << "\r\n";
-		response << "\r\n";
-
-		// Send the response headers and body
-
-		std::string temp;
-		temp = response.str();
-
-		send(client_socket, temp.c_str(), temp.length(), 0);
-		send(client_socket, html_content.c_str(), html_content.length(), 0);
-	}
-}
-
-/*{	
-	//// TEST WITH IMAGE ////
-		
-	std::stringstream response;
-	std::string html_content;
-
-	// Read the incoming request
-	char buffer[BUFFER_SIZE];
-	int bytes_read = recv(client_socket, buffer, BUFFER_SIZE, 0);
-
-	if (bytes_read > 0) {
-		// Extract the request headers and body
-		std::string request_string(buffer, bytes_read);
-		std::cout << "Received request:\n" << request_string << std::endl;
-
 		// Send a response
 		// Set the HTTP response headers
-		response << "HTTP/1.1 200 OK\r\n";
-		response << "Content-Type: image/jpeg\r\n";
-		html_content = ft_read_file("./website/jesus.jpeg");
-		response << "Content-Length: " << html_content.length() << "\r\n";
-		response << "\r\n";
+		if (rep_code == 200)
+			response << "HTTP/1.1 200 OK\n";
+		else
+			response << "HTTP/1.1 404 Not Found\n";
+
+		if (file_type.first == "html")
+			response << "Content-Type: text/html\n";
+		else if (file_type.first == "image")
+		{
+			response << "Content-Type: image/";
+			response << file_type.second << "\n";
+		}
+
+		response << "Content-Length: " << html_content.length() << "\n";
+		response << "\n";
 
 		// Send the response headers and body
 
 		std::string temp;
 		temp = response.str();
 
+		std::cout << "###### RESPONSE ######\n" << response.str() << std::endl;
+		std::cout << "######################\n";
+
 		send(client_socket, temp.c_str(), temp.length(), 0);
 		send(client_socket, html_content.c_str(), html_content.length(), 0);
-	}
-}*/
 
+	}
 }
 
 int main(int ac, char **av) {
-
 	if (ac != 2)
 		Ft_error err("Bad arguments");
 
 	(void)av;
 
 	// Create a socket for incoming connections
-	int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+	int	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
 		Ft_error	err(NULL);
 
