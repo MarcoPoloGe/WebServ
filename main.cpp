@@ -258,8 +258,10 @@ fill_rep:
 int main(int ac, char **av) {
 	if (ac != 2)
 		Ft_error err("Bad arguments");
-
 	(void)av;
+
+
+    Response r1.
 
 	// Create a socket for incoming connections
 	int	server_socket = socket(AF_INET, SOCK_STREAM, 0);

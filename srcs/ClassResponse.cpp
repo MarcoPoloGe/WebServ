@@ -2,7 +2,7 @@
 
 Response::Response()
 {
-	this->error_code = 200;
+    set_error_code(200);
 }
 
 Response::Response(Response &rhs)
@@ -14,14 +14,13 @@ Response::Response(Response &rhs)
 
 Response::Response(int error_code)
 {
-	this->error_code = error_code;
+    set_error_code(error_code);
 }
 
 Response::Response(std::string content, std::string content_type)
 {
-	this->error_code = 200;
-	this->content = content;
-	this->content_type = content_type;
+    set_error_code(200);
+    set_content(content, content_type);
 }
 
 int Response::get_error_code() const
@@ -41,20 +40,20 @@ std::string Response::get_content_type() const
 
 void Response::set_error_code(int error_code)
 {
-	//todo check if code is good;
+    //todo check if error_code is valid when config file is working
 	this->error_code = error_code;
 }
 
 void Response::set_content(std::string content, std::string content_type)
 {
 	this->content = content;
-	//todo check if content_extention is good;
+	//todo check if content_extention is good when config file is working;
 	this->content_type = content_type;
 }
 
 std::string Response::ft_error_def(int error_code)
 {
-	//todo
+	//todo when config file is working.
 	(void) error_code;
 	return ("OK");
 }
@@ -69,22 +68,17 @@ std::string Response::send() const
 
 	if(error_code != 200)
 	{
-		this->content =	ft_error_body(this->error_code);
-		this->content_type = "text/html";
+        set_content(ft_error_body(this->error_code), "text/html");
 	}
 	else if(this->content.empty() || this->content_type.empty())
 	{
 		//todo error response is empty;
 	}
-
 	message << "Content-Length:" << this->content.length() << std::endl;
 	message << "Content-Type:" << this->content_type << std::endl;
 	//todo maybe add more headers like date ect.
-
 	message << std::endl;
-
 	message << this->content;
-
 	return (message);
 }
 
