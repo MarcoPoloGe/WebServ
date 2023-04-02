@@ -260,8 +260,13 @@ int main(int ac, char **av) {
 		Ft_error err("Bad arguments");
 	(void)av;
 
+	// start test
+    Response r1;
 
-    Response r1.
+	r1.set_content("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>404</title></head><body><h2>Error 404: not found</h2></body></html>", "text/html");
+
+	std::cout << r1.send(0) << std::endl << r1 << std::endl;
+	//end test
 
 	// Create a socket for incoming connections
 	int	server_socket = socket(AF_INET, SOCK_STREAM, 0);

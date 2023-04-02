@@ -23,7 +23,7 @@ public:
 	void set_error_code(int error_code);
 	void set_content(std::string content, std::string content_type);
 
-	std::string send() const;
+	std::string send(int client_socket);
 
 private:
 	int error_code;
@@ -31,10 +31,10 @@ private:
 	std::string content;  //what will be put in the body of the response
 	Response operator=(Response&);
 
-	//these are helper functions for send();
+	//these are helper functions;
 		//returns the name of the error_code ex: 200 -> OK
 		static std::string ft_error_def(int error_code);
-        //returns the string to be displayed in corespondance to the error code.
+        //returns the content of the file to be displayed in correspondence to the error.
         static std::string ft_error_file(int error_code);
 };
 
