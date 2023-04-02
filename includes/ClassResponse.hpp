@@ -33,7 +33,9 @@ private:
 
 	//these are helper functions for send();
 		//returns the name of the error_code ex: 200 -> OK
-		std::string ft_error_def(int error_code);
+		static std::string ft_error_def(int error_code);
+        //returns the string to be displayed in corespondance to the error code.
+        static std::string ft_error_file(int error_code);
 };
 
 std::ostream& operator<<(std::ostream& out, const Response& rhs);

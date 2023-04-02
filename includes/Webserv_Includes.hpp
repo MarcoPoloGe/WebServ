@@ -22,7 +22,7 @@
 #include "ClassRequest.hpp"
 #include "Ft_error.hpp"
 
-#define HTTP_VERSION = "HTTP/1.1"
+#define HTTP_VERSION "HTTP/1.1"
 
 void	setnonblocking(int sock);
 void	handle_request(int client_socket);

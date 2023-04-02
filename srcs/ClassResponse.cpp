@@ -1,8 +1,8 @@
 #include "../includes/Webserv_Includes.hpp"
 
-Response::Response()
+Response::Response() : error_code(200)
 {
-    set_error_code(200);
+
 }
 
 Response::Response(Response &rhs)
@@ -58,6 +58,13 @@ std::string Response::ft_error_def(int error_code)
 	return ("OK");
 }
 
+std::string Response::ft_error_file(int error_code)
+{
+    //todo when config file is working.
+    (void) error_code;
+    return ("<h1>ERROR 404 file not found</h1>");
+}
+
 std::string Response::send() const
 {
 	std::stringstream message;
@@ -68,7 +75,7 @@ std::string Response::send() const
 
 	if(error_code != 200)
 	{
-        set_content(ft_error_body(this->error_code), "text/html");
+        set_content(ft_error_file(this->error_code), "text/html");
 	}
 	else if(this->content.empty() || this->content_type.empty())
 	{
@@ -79,9 +86,15 @@ std::string Response::send() const
 	//todo maybe add more headers like date ect.
 	message << std::endl;
 	message << this->content;
-	return (message);
+	return (message.str());
 }
 
+Response Response::operator=(Response &rhs)
+        {
+    this->error_code = rhs.error_code;
+    this->content_type = rhs.content_type;
+    this->content = rhs.content;
+}
 
 std::ostream& operator<<(std::ostream& out, Response const& rhs)
 {
