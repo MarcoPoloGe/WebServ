@@ -21,7 +21,7 @@
 #include "ClassRequest.hpp"
 #include "Ft_error.hpp"
 
-void	setnonblocking(int sock);
-void	handle_request(int client_socket);
+#define MAX_CIENT 5
+#define BUFFER_SIZE 10024
 
 #endif

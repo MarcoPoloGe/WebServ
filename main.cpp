@@ -247,6 +247,7 @@ fill_rep:
 		temp = response.str();
 
 		std::cout << "###### RESPONSE ######\n" << response.str() << std::endl;
+		std::cout << "#########HTML#########\n" << html_content.c_str() << std::endl;
 		std::cout << "######################\n";
 
 		send(client_socket, temp.c_str(), temp.length(), 0);
@@ -279,11 +280,14 @@ int main(int ac, char **av) {
 
 	// Accept incoming connections and handle requests
 	while (true) {
+
 		// Wait for a client to connect
 		sockaddr_in client_address;
 		socklen_t client_address_size = sizeof(client_address);
-		int client_socket = accept(server_socket, (struct sockaddr*) &client_address, &client_address_size);
-		std::cout << "Accepted connection from " << inet_ntoa(client_address.sin_addr) << ":" << ntohs(client_address.sin_port) << std::endl;
+		int client_socket = accept(server_socket, (struct sockaddr*) &client_address,
+				&client_address_size);
+		std::cout << "Accepted connection from " << inet_ntoa(client_address.sin_addr)
+			<< ":" << ntohs(client_address.sin_port) << std::endl;
 
 		// Handle the request
 		handle_request(client_socket);
