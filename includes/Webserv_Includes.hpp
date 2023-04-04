@@ -20,8 +20,12 @@
 
 #include "ClassRequest.hpp"
 #include "Ft_error.hpp"
+#include "Network.hpp"
 
-#define MAX_CIENT 5
+#define MAX_CLIENTS 5
 #define BUFFER_SIZE 10024
+
+//NoClass Functions prototypes//
+std::string	ft_read_file(std::string file_name);
 
 #endif

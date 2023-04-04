@@ -1,105 +1,4 @@
-/*#include <iostream>
-#include <cstring>
-#include <string>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <fstream>
-#include <sstream>
-#include <fcntl.h>
-
-#include "includes/ClassRequest.hpp"
-#include "includes/Ft_error.hpp"
-//#include <stdlib.h>*/
-
 #include "includes/Webserv_Includes.hpp"
-
-
-const int MAX_CLIENTS = 5;
-const int BUFFER_SIZE = 10024;
-
-std::string ft_read_file(std::string file_name)
-{
-	std::ifstream html_file(file_name.c_str());
-	std::string content;
-	std::string line;
-
-	if(html_file.is_open())
-	{
-		std::cout << "yes \n\n\n";
-	} else
-	{
-		std::cout << "fuck\n\n\n";
-	}
-	while (std::getline(html_file, line))
-	{
-		content += line + '\n';
-	}
-	return (content);
-}
-
-void custom_request(int client_socket);
-
-int custom_msg(Request request, int client_socket)
-{
-	if (request.get_URI() == "/marco")
-	{
-	//	custom_request(client_socket); //test
-	//	return (1);
-
-		std::string rep = "POLO !!!!!!!!!!\n";
-		send(client_socket, rep.c_str(), rep.length(), 0);
-		return (1);
-	}
-	return (0);
-}
-
-void custom_request(int client_socket) {
-	std::stringstream response;
-	std::string html_content;
-
-	std::cout << "We had a custom request\n";
-	
-//	send(client_socket, "AHAHAH", 4, 0);//test cpt
-//	return ;
-
-	// Read the incoming request
-	char buffer2[BUFFER_SIZE];
-	int bytes_read = recv(client_socket, buffer2, BUFFER_SIZE, 0);
-	if (bytes_read < 1)
-	{
-		std::cout << "Error on recv\n";
-		std::exit(1);
-	}
-
-	std::cout << "we recieved " << bytes_read << " bytes to read\n";
-	if (bytes_read > 0) {
-		std::cout << "reading startd\n";
-
-		// Extract the request headers and body
-		std::string request_string(buffer2, bytes_read);
-		std::cout << "Received request:\n" << request_string << std::endl;
-
-		// Send a response
-		// Set the HTTP response headers
-		response << "HTTP/1.1 200 OK\r\n";
-		response << "Content-Type: text/html\r\n";
-		
-		html_content = ft_read_file("./website/test1.html");
-		response << "Content-Length: " << html_content.length() << "\r\n";
-		response << "\r\n";
-
-		// Send the response headers and body
-
-		std::string temp;
-		temp = response.str();
-
-		send(client_socket, temp.c_str(), temp.length(), 0);
-		send(client_socket, html_content.c_str(), html_content.length(), 0);
-	}
-	std::cout << "The custom request ended\n";
-}
 
 void handle_request(int client_socket) {
 
@@ -122,12 +21,6 @@ void handle_request(int client_socket) {
 		std::string request_string(buffer, bytes_read);
 		request.fill(request_string);
 		std::cout << "Parsed request:\n" << request << std::endl;
-		//TELLNET//
-		if (custom_msg(request, client_socket) == 1)
-			return ;
-		//pour tester ca, installe telnet avec brew
-		//depuis le terminal: `telnet localhost 443`
-		//si tu dis le mot magique tu auras une surprise
 
 		/////////////////////AJOUT RENO 28.02.23//////////////////////
 		//////////////////////////////////////////////////////////////
@@ -255,6 +148,17 @@ fill_rep:
 
 	}
 }
+/*
+int	main(int ac, char **av)
+{
+	(void)av;
+	if (ac != 2)
+		Ft_error err("Bad arguments");
+	Network	serv(8080);
+	serv.run();
+	return (0);
+}*/
+
 
 int main(int ac, char **av) {
 	if (ac != 2)
@@ -297,4 +201,3 @@ int main(int ac, char **av) {
 		close(client_socket);
 	}
 }
-

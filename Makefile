@@ -1,6 +1,8 @@
 SRCS		= main.cpp\
 			  srcs/utils/Ft_error.cpp\
+			  srcs/utils/Utils.cpp\
 			  srcs/ClassRequest.cpp\
+			  srcs/Network.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 
