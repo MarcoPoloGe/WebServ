@@ -17,6 +17,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
 
 // Containers
 #include <vector>
@@ -40,24 +41,32 @@ public:
 /***************************                       Setters	            		               ************************/
 /**********************************************************************************************************************/
 
-	void setNameServer(std::string								name);
-	void setIpServer(std::string								ip);
-	void setPortServer(std::string								port);
-	void setServerConfig(std::vector<std::string> 				config);
-	void setAllLocation(std::vector<std::vector<std::string> > 	locs);
-	void setLocation(std::string			  					loc);
-	void setRawfile(std::vector<std::string> 					rawfile);
+	void setNameServer(std::string											name);
+	void setIpServer(std::string											ip);
+	void setPortServer(std::string											port);
+	void setServerConfig(std::vector<std::string> 							config);
+	void setAllLocation(std::vector<std::map<std::string, std::string> > 	locs);
+	void setLocation(std::string			  								loc);
+
+/* weirdo setters */
+	void setRawfile(std::vector<std::string>::iterator first_bracket, std::vector<std::string>::iterator last_bracket);
 
 
 /**********************************************************************************************************************/
 /***************************                       Getters	            		               ************************/
 /**********************************************************************************************************************/
 
-	std::string 									&getNameServer(void);
-	std::string 									&getIpServer(void);
-	std::string 									&getPortServer(void);
-	std::vector<std::string> 						&getAllServerConfig (void);
-	std::vector<std::vector<std::string> > 			&getAllLocations(void);
+	std::string 												&getNameServer(void);
+	std::string 												&getIpServer(void);
+	std::string 												&getPortServer(void);
+	std::vector<std::string> 									&getAllServerConfig (void);
+	std::vector<std::map<std::string, std::string> >			&getAllLocations(void);
+
+	int	getLocationPath(
+			std::string locationPath, std::vector<std::map<std::string,
+			std::string> >::iterator itv);
+
+	std::vector<std::map<std::string, std::string> >::iterator  getLocationMap(std::map<std::string, std::string>::iterator itmap);
 
 	/*     getStuff("/", "root" ) = ./www/    */
 
@@ -68,12 +77,17 @@ public:
 /**********************************************************************************************************************/
 
 private:
-	std::string								_name;
-	std::string								_ip;
-	std::string								_port;
-	std::vector<std::string> 				_serverconfig;
-	std::vector<std::string> 				_rawfile;
-	std::vector<std::vector<std::string> > 	_locs;
+	std::string														_name;
+	std::string														_ip;
+	std::string														_port;
+	std::vector<std::string> 										_serverconfig;
+	std::vector<std::string> 										_rawfile;
+	std::vector<std::map<std::string, std::string> > 				_locs;
+
+public:
+	std::map<std::string, std::string>::iterator					ItMap_temp;
+	std::map<std::string, std::string>								Map_empty;
+	std::vector<std::map<std::string, std::string> >::iterator		Vec_Map_temp;
 
 
 /**********************************************************************************************************************/
@@ -84,6 +98,10 @@ public:
 	std::string								searchValue(std::string key, std::vector<std::string> vect_source);
 	std::string 							returnAfterEqual(std::string key, std::string source);
 	std::vector<std::string>  				&getSpecificLoc(std::string way, Server s)	;
+
+	void printMap(std::string s);
+	void printAllMap();
+
 
 };
 

@@ -2,7 +2,7 @@
 #include "Server.hpp"
 
 void Read_and_Stock_FileName(
-		const std::string& fileName, std::vector<std::string> &stock)
+		const std::string& fileName, std::vector<std::string> &stock )
 {
 	std::string line;
 	std::ifstream file;
@@ -19,10 +19,35 @@ void Read_and_Stock_FileName(
 }
 
 void printVector(
-		std::vector<std::string> &x)
+		std::vector<std::string> &x )
 {
 	for (std::vector<std::string>::iterator it = x.begin(); it != x.end(); it++)
 		std::cout << *it << std::endl;
+}
+
+
+void getOnlyChar(std::string &s)
+{
+	s.erase(std::remove(s.begin(), s.end(), '\t'), s.end());
+	s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
+	s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
+}
+
+void insertMap_split_by_Delimiter(
+		std::map<std::string,
+		std::string> &map, std::string input, std::string delimiter)
+{
+	unsigned long pos;
+	if((pos = input.find(delimiter)) != std::string::npos)
+	{
+		std::string key = input.substr(0, pos);
+		getOnlyChar(key);
+		std::string value = input.substr(pos + 1, input.length());
+		getOnlyChar(value);
+		map.insert(std::pair<std::string, std::string>(key, value));
+	}
+	else
+		std::cerr<< "Delimiter '" << delimiter << "' not found in " << input << std::endl;
 }
 
 // Vector of a location
@@ -32,10 +57,11 @@ std::vector<std::string>::iterator grabLocation(
 		Server &s)
 {
 	std::vector<std::string>::iterator 	first_bracket;
-	std::vector<std::string> loc_config;
+	std::map<std::string, std::string> loc_config;
 
 	//Stock "location=(...) in a vector"
-	loc_config.push_back(*it);
+	if ((*it).find("location") != std::string::npos)
+		insertMap_split_by_Delimiter(loc_config, *it, "=");
 
 	while(it != last_bracket)
 	{
@@ -44,16 +70,17 @@ std::vector<std::string>::iterator grabLocation(
 			it++;
 			while (!(((*it).find("}")) != std::string::npos))
 			{
-				loc_config.push_back(*it);
+				insertMap_split_by_Delimiter(loc_config, *it, "=");
 				it++;
 			}
+//			printMap(loc_config);
 			s.getAllLocations().push_back(loc_config);
 			return (it);
 		}
 		it++;
 	}
 	if (it == last_bracket) {
-		std::cerr<<R<< "Location Bracket not found in config file" << std::endl;
+		std::cerr<<R<< "Last '}' in location not found in config file" << std::endl;
 	}
 	return(it);
 }
@@ -76,6 +103,7 @@ Server &setUpServer(
 		if (((*first_bracket).find("location"))!= std::string::npos)
 		{
 			first_bracket = grabLocation(first_bracket, last_bracket, s);
+//			printMap(s.getAllLocations());
 			if(((*first_bracket).find("}"))!= std::string::npos)
 				first_bracket++;
 			continue;
@@ -84,9 +112,9 @@ Server &setUpServer(
 		first_bracket++;
 	}
 	/*print*/
-	for (unsigned int i = 0; i < s.getAllLocations().size(); i++)
-		printVector(s.getAllLocations().at(i));
-	printVector(in);
+//	for (unsigned int i = 0; i < s.getAllLocations().size(); i++)
+//		printVector(s.getAllLocations().at(i));
+//	printVector(in);
 
 	return(s);
 }
@@ -123,8 +151,14 @@ void serverConfig(std::vector<std::string> &stock,
 		if (get_in == 1 && count == 0)
 		{
 			Server s;
+			s.setRawfile(first_bracket, last_bracket);
 			setUpServer(first_bracket, last_bracket, s);
+
+			/*print*/
 			all_server.push_back(s);
+
+			s.printMap("/");
+//			s.printAllMap();
 			get_in = 0;
 		}
 	}
@@ -136,7 +170,7 @@ int main(int ac, char **av) {
 
 	std::string fileName = av[1];
 	std::vector<std::string> rawfile;
-//	setRawfile();
+	std::cout << "WESH" << std::endl;
 
 	std::string line;
 	std::ifstream file;
@@ -153,6 +187,7 @@ int main(int ac, char **av) {
 
 	// Set up Servers from config.conf file
 	serverConfig(rawfile, rawfile.begin());
+
 
 	return 0;
 }
