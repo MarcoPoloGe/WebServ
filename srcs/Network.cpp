@@ -122,10 +122,14 @@ void	Network::handle_new_connection(void)
 
 void	Network::deal_with_data(int listnum)
 {
-	char	buffer[BUFFER_SIZE];
-	char*	cur_char;
+	char				buffer[BUFFER_SIZE];
+	Request 			request;
+	std::stringstream	response;
+	std::string			html_content;
+	int					bytes_read;
 
-	if (recv(_connectlist[listnum], buffer, BUFFER_SIZE, 0) < 0)
+	bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE, 0);
+	if (bytes_read < 0)
 	{
 		std::cout << "\nConnection lost with FD = " << _connectlist[listnum]
 			<< " & Slot = " << listnum << std::endl;
@@ -134,20 +138,142 @@ void	Network::deal_with_data(int listnum)
 	}
 	else
 	{
-		std::cout << "\n#####We recieved : #####\n" << buffer
-			<< std::endl << "########################\n";
+		std::string	root = "./website";  //a get dans le vrai config file
+		std::string	host;
+		std::string	referer;
+		std::string	uri;
+		std::string	path;
+		std::map<std::string, std::string> mapa = request.get_headers_map();
+		std::map<std::string, std::string>::iterator it = mapa.begin();
+		int	rep_code = 0;
+		std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
 
-		cur_char = buffer;
-		while (cur_char[0] != 0)
+		// Extract the request headers and body
+		std::string request_string(buffer, bytes_read);
+		if (request.fill(request_string) == false)
 		{
-			cur_char[0] = toupper(cur_char[0]);
-			cur_char++;
+			std::cout << "Wrong HTTP REQUEST\n";
+			rep_code = 404;
+			html_content = ft_read_file("./website/error-404.html");
+			file_type.first = "html"; file_type.second = "html";
+			goto fill_rep;
 		}
-		send(_connectlist[listnum],buffer, strlen(buffer), 0);
-		send(_connectlist[listnum],"\n", 1, 0);
+		std::cout << "Parsed request:\n" << request << std::endl;
 
-		std::cout << "\n#####We responded : #####\n" << buffer
-			<< std::endl << "#########################\n";
+		/////////////////////AJOUT RENO 28.02.23//////////////////////
+		//////////////////////////////////////////////////////////////
+
+		uri = request.get_URI();
+
+		while (it != mapa.end() )
+		{
+			/*std::cout << "in headers_map[" << it->first << "], there is : ["
+				<< it->second << "]";*/		//DEBUG
+
+			if (it->first == "Host")
+				host = it->second;
+			if (it->first == "Referer")
+				referer = it->second;
+			it++;
+			std::cout << std::endl;
+		}
+		/*std::cout << "HOST = " << host << std::endl;
+		std::cout << "REFERER = " << referer << std::endl;
+		std::cout << "URI = " << uri << std::endl;*/	//DEBUG
+
+		if ( !referer.empty() )
+		{
+			size_t index = referer.find(host);
+			/*if (index == std::string::npos)
+				std::cout << "APA TROUVE :(((\n";*/		//DEBUG
+			path = root + referer.substr( (index + host.size()) );
+
+			/*std::cout << "jai coupe a l'index = " << index + host.size() << "\n";
+			std::cout << "car index = " << index
+				<< " et host.size = " << host.size() << "\n";*/		//DEBUG
+		}
+		else
+			path = root + uri;
+
+		std::cout << "***Try to access : {" << path << "}***\n";		//DEBUG
+
+		if (path == root + "/")
+		{
+			html_content = ft_read_file(root + "/index.html"); //index aussi a chercher dans config
+			file_type.first = "html"; file_type.second = "html";
+			rep_code = 200;
+		}
+		else
+		{
+			std::ifstream	infile;
+
+			infile.open(path.c_str(), std::ios::in);
+			if (infile.is_open())
+			{
+				infile.close();
+				rep_code = 200;
+				html_content = ft_read_file(path);
+			}
+			else
+			{
+				rep_code = 404;
+				html_content = ft_read_file("./website/error-404.html");
+				file_type.first = "html"; file_type.second = "html";
+				goto fill_rep;
+			}
+			std::size_t last_point = path.rfind(".");
+			if (last_point != std::string::npos)
+			{
+				file_type.second = path.substr(last_point + 1);
+				if (file_type.second == "html")
+					file_type.first = "html";
+				else
+					file_type.first = "image";	//pr l'instant on a que img et html donc a voir
+			}
+			else
+			{
+				file_type.first = "html"; file_type.second = "html";
+			}
+		}
+fill_rep:
+		std::cout << "@@@@file type@@@@\n"
+			<< "file type first = " << file_type.first << "\n"
+			<< "file type second = "  << file_type.second << "\n"
+			<< "@@@@@@@@@@@@@@@@@\n";
+
+		/////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////
+
+		// Send a response
+		// Set the HTTP response headers
+		if (rep_code == 200)
+			response << "HTTP/1.1 200 OK\n";
+		else
+			response << "HTTP/1.1 404 Not Found\n";
+
+		if (file_type.first == "html")
+			response << "Content-Type: text/html\n";
+		else if (file_type.first == "image")
+		{
+			response << "Content-Type: image/";
+			response << file_type.second << "\n";
+		}
+
+		response << "Content-Length: " << html_content.length() << "\n";
+		response << "\n";
+
+		// Send the response headers and body
+
+		std::string temp;
+		temp = response.str();
+
+		std::cout << "###### RESPONSE ######\n" << response.str() << std::endl;
+		std::cout << "#########HTML#########\n" << html_content.c_str() << std::endl;
+		std::cout << "######################\n";
+
+		send(_connectlist[listnum], temp.c_str(), temp.length(), 0);
+		send(_connectlist[listnum], html_content.c_str(), html_content.length(), 0);
+
 		close(_connectlist[listnum]);
 		_connectlist[listnum] = 0;
 	}
