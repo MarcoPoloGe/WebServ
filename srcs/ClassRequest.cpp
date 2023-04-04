@@ -9,7 +9,7 @@ Request::Request(std::string request)
 	this->fill(request);
 }
 
-void Request::fill(std::string request)
+bool Request::fill(std::string request)
 {
 	std::istringstream file(request);
 	std::string line;
@@ -63,7 +63,9 @@ void Request::fill(std::string request)
 	catch(std::invalid_argument &e)
 	{
 		std::cout << e.what() << std::endl;
+		return (false);
 	}
+	return (true);
 }
 
 std::string Request::get_type() const

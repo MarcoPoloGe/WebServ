@@ -13,7 +13,7 @@ class Request {
 public:
 	Request();
 	Request(std::string request);
-	void fill(std::string request);
+	bool fill(std::string request);  //modifie val de retour de void a bool (reno 04.04.23)
 
 	std::string get_type() const;
 	std::string get_URI() const;
