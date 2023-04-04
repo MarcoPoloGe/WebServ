@@ -59,6 +59,8 @@ public:
 	std::vector<std::string> 						&getAllServerConfig (void);
 	std::vector<std::vector<std::string> > 			&getAllLocations(void);
 
+	/*     getStuff("/", "root" ) = ./www/    */
+
 
 
 /**********************************************************************************************************************/

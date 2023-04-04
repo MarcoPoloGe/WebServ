@@ -1,7 +1,9 @@
 
 #include "Server.hpp"
 
-void Read_and_Stock_FileName(const std::string& fileName, std::vector<std::string> &stock) {
+void Read_and_Stock_FileName(
+		const std::string& fileName, std::vector<std::string> &stock)
+{
 	std::string line;
 	std::ifstream file;
 
@@ -17,27 +19,26 @@ void Read_and_Stock_FileName(const std::string& fileName, std::vector<std::strin
 }
 
 void printVector(
-		std::vector<std::string> &x) {
-
+		std::vector<std::string> &x)
+{
 	for (std::vector<std::string>::iterator it = x.begin(); it != x.end(); it++)
-	{
 		std::cout << *it << std::endl;
-	}
 }
 
+// Vector of a location
 std::vector<std::string>::iterator grabLocation(
 		std::vector<std::string>::iterator 	it,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s) {
-
+		Server &s)
+{
 	std::vector<std::string>::iterator 	first_bracket;
 	std::vector<std::string> loc_config;
 
+	//Stock "location=(...) in a vector"
 	loc_config.push_back(*it);
 
 	while(it != last_bracket)
 	{
-
 		if (((*it).find("{"))!= std::string::npos)
 		{
 			it++;
@@ -64,7 +65,6 @@ Server &setUpServer(
 		std::vector<std::string>::iterator 	last_bracket,
 		Server &s)
 {
-
 	std::vector<std::string> 				in;
 	std::vector<std::string> 				server_config;
 	std::vector<std::vector<std::string> > 	locations;
@@ -84,7 +84,7 @@ Server &setUpServer(
 		first_bracket++;
 	}
 	/*print*/
-	for (int i = 0; i < s.getAllLocations().size(); i++)
+	for (unsigned int i = 0; i < s.getAllLocations().size(); i++)
 		printVector(s.getAllLocations().at(i));
 	printVector(in);
 
@@ -92,7 +92,7 @@ Server &setUpServer(
 }
 
 
-std::vector<Server> serverConfig(std::vector<std::string> &stock,
+void serverConfig(std::vector<std::string> &stock,
 						std::vector<std::string>::iterator it)
 {
 	std::vector<std::string>::iterator 					first_bracket;
@@ -136,6 +136,7 @@ int main(int ac, char **av) {
 
 	std::string fileName = av[1];
 	std::vector<std::string> rawfile;
+//	setRawfile();
 
 	std::string line;
 	std::ifstream file;
@@ -150,7 +151,7 @@ int main(int ac, char **av) {
 		rawfile.push_back(line);
 	file.close();
 
-	// Set up Servers
+	// Set up Servers from config.conf file
 	serverConfig(rawfile, rawfile.begin());
 
 	return 0;
