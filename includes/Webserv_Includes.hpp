@@ -18,12 +18,15 @@
 #include <sstream>
 #include <cstdio>
 
+#include "ClassResponse.hpp"
 #include "ClassRequest.hpp"
 #include "Ft_error.hpp"
 #include "Network.hpp"
 
+
 #define MAX_CLIENTS 5
 #define BUFFER_SIZE 10024
+#define HTTP_VERSION "HTTP/1.1"
 
 //NoClass Functions prototypes//
 std::string	ft_read_file(std::string file_name);

@@ -3,6 +3,7 @@ SRCS		= main.cpp\
 			  srcs/utils/Utils.cpp\
 			  srcs/ClassRequest.cpp\
 			  srcs/Network.cpp\
+			  srcs/ClassResponse.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 
