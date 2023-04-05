@@ -28,6 +28,14 @@
 #define BUFFER_SIZE 10024
 #define HTTP_VERSION "HTTP/1.1"
 
+//COLOR OUTPUT//
+#define	B		"\033[1m\033[30m" 		// Bold Black
+#define R		"\033[1m\033[31m"		// Bold Red
+#define G		"\033[1m\033[32m"		// Bold Green
+#define Y		"\033[1m\033[33m"		// Bold Yellow
+#define W		"\033[1m\033[37m"		// Bold White
+#define	RE   	"\033[0m"				// Reset
+
 //NoClass Functions prototypes//
 std::string	ft_read_file(std::string file_name);
 

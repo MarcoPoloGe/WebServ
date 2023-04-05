@@ -48,6 +48,8 @@ private:
 	struct timeval		_timeout;
 	int					_readsocks;
 
+	int					_req_handled;	//DEBUG
+
 };
 
 #endif

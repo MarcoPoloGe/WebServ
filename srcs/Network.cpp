@@ -10,7 +10,9 @@ Network::Network(void)
 Network::Network(int const port): _port(port)
 {
 	//std::cout << "Parametric constructor called\n";
-	
+
+	_req_handled = 0; // DEBUG
+
 	_reuse_addr = 1;
 
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -128,6 +130,9 @@ void	Network::deal_with_data(int listnum)
 	std::string			html_content;
 	int					bytes_read;
 
+	_req_handled++;
+	std::cout << Y << "vvv CECI EST LA " << _req_handled << "eme REQUEST HANDLED vvv\n" << RE;
+
 	bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE, 0);
 	if (bytes_read < 0)
 	{
@@ -138,18 +143,19 @@ void	Network::deal_with_data(int listnum)
 	}
 	else
 	{
+		//TEST POST//
+		std::cout << R << "@@@@@@RAW REQUEST IS :@@@@@@\n" << buffer << std::endl
+			<< "@@@@@@@@@@@@@@@@\n" << RE;
+		//TEST POST//
+
 		std::string	root = "./website";  //a get dans le vrai config file
-		std::string	host;
-		std::string	referer;
 		std::string	uri;
 		std::string	path;
-		std::map<std::string, std::string> mapa = request.get_headers_map();
-		std::map<std::string, std::string>::iterator it = mapa.begin();
 		int	rep_code = 0;
 		std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
 
 		// Extract the request headers and body
-		std::string request_string(buffer, bytes_read);
+		std::string request_string(buffer/*, bytes_read*/);
 		if (request.fill(request_string) == false)
 		{
 			std::cout << "Wrong HTTP REQUEST\n";
@@ -164,42 +170,13 @@ void	Network::deal_with_data(int listnum)
 		//////////////////////////////////////////////////////////////
 
 		uri = request.get_URI();
-
-		while (it != mapa.end() )
-		{
-			/*std::cout << "in headers_map[" << it->first << "], there is : ["
-				<< it->second << "]";*/		//DEBUG
-
-			if (it->first == "Host")
-				host = it->second;
-			if (it->first == "Referer")
-				referer = it->second;
-			it++;
-			std::cout << std::endl;
-		}
-		/*std::cout << "HOST = " << host << std::endl;
-		std::cout << "REFERER = " << referer << std::endl;
-		std::cout << "URI = " << uri << std::endl;*/	//DEBUG
-
-		if ( !referer.empty() )
-		{
-			size_t index = referer.find(host);
-			/*if (index == std::string::npos)
-				std::cout << "APA TROUVE :(((\n";*/		//DEBUG
-			path = root + referer.substr( (index + host.size()) );
-
-			/*std::cout << "jai coupe a l'index = " << index + host.size() << "\n";
-			std::cout << "car index = " << index
-				<< " et host.size = " << host.size() << "\n";*/		//DEBUG
-		}
-		else
-			path = root + uri;
+		path = root + uri;
 
 		std::cout << "***Try to access : {" << path << "}***\n";		//DEBUG
 
-		if (path == root + "/")
+		if (uri == "/")
 		{
-			html_content = ft_read_file(root + "/index.html"); //index aussi a chercher dans config
+			html_content = ft_read_file(root + "/index.html"); //default dans config
 			file_type.first = "html"; file_type.second = "html";
 			rep_code = 200;
 		}
@@ -221,6 +198,7 @@ void	Network::deal_with_data(int listnum)
 				file_type.first = "html"; file_type.second = "html";
 				goto fill_rep;
 			}
+
 			std::size_t last_point = path.rfind(".");
 			if (last_point != std::string::npos)
 			{
@@ -231,15 +209,13 @@ void	Network::deal_with_data(int listnum)
 					file_type.first = "image";	//pr l'instant on a que img et html donc a voir
 			}
 			else
-			{
 				file_type.first = "html"; file_type.second = "html";
-			}
 		}
 fill_rep:
-		std::cout << "@@@@file type@@@@\n"
+		/*std::cout << "@@@@file type@@@@\n"
 			<< "file type first = " << file_type.first << "\n"
 			<< "file type second = "  << file_type.second << "\n"
-			<< "@@@@@@@@@@@@@@@@@\n";
+			<< "@@@@@@@@@@@@@@@@@\n";*/
 
 		/////////////////////////////////////////////////////////////
 		/////////////////////////////////////////////////////////////
@@ -267,15 +243,17 @@ fill_rep:
 		std::string temp;
 		temp = response.str();
 
-		std::cout << "###### RESPONSE ######\n" << response.str() << std::endl;
+		/*std::cout << "###### RESPONSE ######\n" << response.str() << std::endl;
 		std::cout << "#########HTML#########\n" << html_content.c_str() << std::endl;
-		std::cout << "######################\n";
+		std::cout << "######################\n";*/
 
 		send(_connectlist[listnum], temp.c_str(), temp.length(), 0);
 		send(_connectlist[listnum], html_content.c_str(), html_content.length(), 0);
 
 		close(_connectlist[listnum]);
 		_connectlist[listnum] = 0;
+
+		std::cout << Y << "^^^ FIN DE LA " << _req_handled << "eme REQUEST ^^^\n" << RE;
 	}
 }
 
