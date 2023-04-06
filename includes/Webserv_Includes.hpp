@@ -25,11 +25,11 @@
 
 
 #define MAX_CLIENTS 5
-#define BUFFER_SIZE 10024
+#define BUFFER_SIZE 1000024
 #define HTTP_VERSION "HTTP/1.1"
 
 //COLOR OUTPUT//
-#define	B		"\033[1m\033[30m" 		// Bold Black
+#define	B		"\033[1m\033[34m" 		// Bold Blue
 #define R		"\033[1m\033[31m"		// Bold Red
 #define G		"\033[1m\033[32m"		// Bold Green
 #define Y		"\033[1m\033[33m"		// Bold Yellow
