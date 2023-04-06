@@ -129,11 +129,25 @@ void	Network::deal_with_data(int listnum)
 	std::stringstream	response;
 	std::string			html_content;
 	int					bytes_read;
+	std::string 		request_string;
+	int					recv_it = 0;
+	//	need to boucler les recv pr si buffer size trop petit//
 
+	_total_bytes_read = 0;
 	_req_handled++;
-	std::cout << Y << "vvv CECI EST LA " << _req_handled << "eme REQUEST HANDLED vvv\n" << RE;
+	std::cout << Y << "\nvvv CECI EST LA " << _req_handled << "eme REQUEST HANDLED vvv\n" << RE;
 
-	bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE, 0);
+//recv:
+	for (int i = 0; i < BUFFER_SIZE; i++)
+		buffer[i] = 0;
+
+	bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE - 1, 0);
+
+	_total_bytes_read += bytes_read;
+	recv_it++;
+
+	//std::cout << G << "It's the " << recv_it << "eme try of recv\n" << RE;
+
 	if (bytes_read < 0)
 	{
 		std::cout << "\nConnection lost with FD = " << _connectlist[listnum]
@@ -143,10 +157,13 @@ void	Network::deal_with_data(int listnum)
 	}
 	else
 	{
-		//TEST POST//
-		std::cout << R << "@@@@@@RAW REQUEST IS :@@@@@@\n" << buffer << std::endl
-			<< "@@@@@@@@@@@@@@@@\n" << RE;
-		//TEST POST//
+		request_string += buffer;
+
+		if (buffer[bytes_read - 1] == '\0')
+			std::cout << B << "YA EOF A buffer[bytes_read] !!!\n" << RE;
+
+	//	if (request_string.find("\r\n\r\n") == std::string::npos)
+	//		goto recv;
 
 		std::string	root = "./website";  //a get dans le vrai config file
 		std::string	uri;
@@ -154,8 +171,11 @@ void	Network::deal_with_data(int listnum)
 		int	rep_code = 0;
 		std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
 
+		std::cout << R << "@@@RAW REQUEST IS :@@@\n" << RE << request_string << std::endl
+			<< R << "@@@@@ =" << _total_bytes_read << " bytes read and "
+			<< recv_it << " recv @@@@@\n" << RE;
+
 		// Extract the request headers and body
-		std::string request_string(buffer/*, bytes_read*/);
 		if (request.fill(request_string) == false)
 		{
 			std::cout << "Wrong HTTP REQUEST\n";
@@ -164,7 +184,7 @@ void	Network::deal_with_data(int listnum)
 			file_type.first = "html"; file_type.second = "html";
 			goto fill_rep;
 		}
-		std::cout << "Parsed request:\n" << request << std::endl;
+//		std::cout << "Parsed request:\n" << request << std::endl;
 
 		/////////////////////AJOUT RENO 28.02.23//////////////////////
 		//////////////////////////////////////////////////////////////
@@ -200,22 +220,31 @@ void	Network::deal_with_data(int listnum)
 			}
 
 			std::size_t last_point = path.rfind(".");
+			if (last_point == 0)
+			{
+				std::cout << G << "YA QUUN POINT AU DEBUT\n" << RE;
+				file_type.first = "html"; file_type.second = "html";
+				goto fill_rep;
+			}
 			if (last_point != std::string::npos)
 			{
 				file_type.second = path.substr(last_point + 1);
 				if (file_type.second == "html")
 					file_type.first = "html";
 				else
-					file_type.first = "image";	//pr l'instant on a que img et html donc a voir
+					file_type.first = "image";
 			}
 			else
-				file_type.first = "html"; file_type.second = "html";
+			{
+				file_type.first = "html";
+				file_type.second = "html";
+			}
 		}
 fill_rep:
-		/*std::cout << "@@@@file type@@@@\n"
+		/*std::cout << G << "@@@@file type@@@@\n"
 			<< "file type first = " << file_type.first << "\n"
 			<< "file type second = "  << file_type.second << "\n"
-			<< "@@@@@@@@@@@@@@@@@\n";*/
+			<< "@@@@@@@@@@@@@@@@@\n" << RE;*/
 
 		/////////////////////////////////////////////////////////////
 		/////////////////////////////////////////////////////////////
@@ -243,9 +272,9 @@ fill_rep:
 		std::string temp;
 		temp = response.str();
 
-		/*std::cout << "###### RESPONSE ######\n" << response.str() << std::endl;
+		std::cout << W << "###### RESPONSE ######\n" << response.str() << std::endl;
 		std::cout << "#########HTML#########\n" << html_content.c_str() << std::endl;
-		std::cout << "######################\n";*/
+		std::cout << "######################\n" << RE;
 
 		send(_connectlist[listnum], temp.c_str(), temp.length(), 0);
 		send(_connectlist[listnum], html_content.c_str(), html_content.length(), 0);
