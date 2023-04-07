@@ -4,6 +4,8 @@ SRCS		= main.cpp\
 			  srcs/ClassRequest.cpp\
 			  srcs/Network.cpp\
 			  srcs/ClassResponse.cpp\
+			  srcs/parse_config_file/main_parsing.cpp\
+              srcs/parse_config_file/Server.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 
@@ -20,6 +22,20 @@ CC			= g++
 
 ${NAME}:	${OBJS}
 			${CC} ${FLAGS} -o ${NAME} ${OBJS}
+			@printf "\n✅ Compiled\n";
+			@printf "\n"
+			@printf "\n💽 Executable name: ";
+			@printf "./"${NAME}
+			@printf "\n"
+			@printf "\n"
+			@printf "🧀 Usage: select a configuration file in config folder."
+			@printf "\n"
+			@printf "\n"
+			@printf "ex: ./"
+			@printf ${NAME}
+			@printf " config/config.conf"
+			@printf "\n"
+			@printf "\n"
 
 all:		${NAME}
 
@@ -37,8 +53,8 @@ good:		${NAME} clean
 
 NAME_P		= parsing_webserv
 
-SRCS_P		= srcs/parse_config_file/main.cpp\
-			  srcs/parse_config_file/Server.cpp\
+SRCS_P		= srcs/parse_config_file/main_parsing.cpp\
+              srcs/parse_config_file/Server.cpp\
 
 OBJS_P		= ${SRCS_P:.cpp=.o}
 

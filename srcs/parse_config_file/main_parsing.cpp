@@ -88,7 +88,9 @@ std::vector<std::string>::iterator grabLocation (
 	}
 	return(it);
 }
-
+std::string AfterEqual (std::string input) {
+	return (input.substr((input.find("="))+1, input.length()));
+}
 Server &setUpServer(
 		std::vector<std::string>::iterator 	first_bracket,
 		std::vector<std::string>::iterator 	last_bracket,
@@ -109,6 +111,14 @@ Server &setUpServer(
 				first_bracket++;
 			continue;
 		}
+		if (((*first_bracket).find("name="))!= std::string::npos)
+			s.setNameServer(AfterEqual(*first_bracket));
+		if (((*first_bracket).find("ip="))!= std::string::npos)
+			s.setIpServer(AfterEqual(*first_bracket));
+		if (((*first_bracket).find("port="))!= std::string::npos)
+			s.setPortServer(AfterEqual(*first_bracket));
+
+
 		in.push_back(*first_bracket);
 		first_bracket++;
 	}
@@ -116,13 +126,13 @@ Server &setUpServer(
 }
 
 
-void serverConfig(std::vector<std::string> &stock,
-						std::vector<std::string>::iterator it)
+bool serverConfig(std::vector<std::string> &stock,
+						std::vector<std::string>::iterator it,
+						std::vector<Server> &all_server)
 {
 	std::vector<std::string>::iterator 					first_bracket;
 	std::vector<std::string>::iterator 					last_bracket;
 
-	std::vector<Server> 								all_server;
 	std::vector<Server>::iterator 						vit;
 
 	int get_in = 0;
@@ -149,21 +159,14 @@ void serverConfig(std::vector<std::string> &stock,
 			Server s;
 			s.setRawfile(first_bracket, last_bracket);
 			setUpServer(first_bracket, last_bracket, s);
-
 			all_server.push_back(s);
-
-			/*print*/
-//			s.printMap("/methods");
-			s.getInLocationValue("/methods", "root");
-
 			get_in = 0;
 		}
 	}
+	return (true);
 }
 
-int main(int ac, char **av) {
-	if (ac != 2)
-		return (1);
+void main_parsing(char **av, std::vector<Server> &all_server) {
 
 	std::string fileName = av[1];
 	std::vector<std::string> rawfile;
@@ -183,8 +186,5 @@ int main(int ac, char **av) {
 	file.close();
 
 	// Set up Servers from config.conf file
-	std::vector<Server> all_server;
-	serverConfig(rawfile, rawfile.begin());
-
-	return 0;
+	serverConfig(rawfile, rawfile.begin(), all_server);
 }

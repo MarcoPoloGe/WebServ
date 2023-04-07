@@ -3,7 +3,7 @@
 //
 
 #include "Server.hpp"
-#include <vector>
+
 
 /**********************************************************************************************************************/
 /***************************                       Con/Destructors	           		           ************************/
@@ -23,7 +23,8 @@ void Server::setIpServer		(std::string ip)				 						{ this->_ip = ip; }
 void Server::setPortServer		(std::string port)										{ this->_port = port; }
 void Server::setServerConfig	(std::vector<std::string> config)						{ this->_serverconfig = config; }
 void Server::setAllLocation		(std::vector<std::map<std::string, std::string> > locs)	{ this->_locs = locs; }
-
+void Server::setKeyTemp			(std::string key_temp) 									{ this->_key_temp = key_temp; }
+void Server::setValueTemp		(std::string value_temp) 								{ this->_value_temp = value_temp; }
 /* weirdo setters */
 void Server::setRawfile	(
 		std::vector<std::string>::iterator first_bracket,
@@ -56,6 +57,8 @@ std::string 										&Server::getPortServer(void) 			{ return(_port); }
 std::vector<std::string> 							&Server::getAllServerConfig (void)		{ return (_serverconfig); }
 std::vector<std::map<std::string, std::string> > 	&Server::getAllLocations(void)			{ return (_locs); }
 
+std::string &Server::getKeyTemp(void) {return (_key_temp); }
+std::string &Server::getValueTemp(void) {return (_value_temp); }
 
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/
@@ -120,9 +123,11 @@ bool Server::getInLocationValue(std::string LocationPath, std::string key)
 				if (itm != (*itv).end()) {
 					std::cout <<C<< \
 						">> Get \n" <<RE<<G<<
-						"Key: \t'" << itm->first <<RE<< "' | stored in key_temp: " <<&key_temp << Y << \
+						"Key: \t'" << itm->first <<RE<< "' | stored in _key_temp: " <<&_key_temp << Y << \
 						"\n"
-						"Value: \t'" << itm->second <<RE<< " | store in value_temp: " << &value_temp << std::endl;
+						"Value: \t'" << itm->second <<RE<< " | store in _value_temp: " << &_value_temp << std::endl;
+					setKeyTemp(itm->first);
+					setValueTemp(itm->second);
 				}
 			}
 		}
@@ -133,3 +138,4 @@ bool Server::getInLocationValue(std::string LocationPath, std::string key)
 	}
 	return(true);
 }
+

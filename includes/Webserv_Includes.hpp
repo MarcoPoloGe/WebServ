@@ -34,7 +34,10 @@
 #define G		"\033[1m\033[32m"		// Bold Green
 #define Y		"\033[1m\033[33m"		// Bold Yellow
 #define W		"\033[1m\033[37m"		// Bold White
+#define C		"\033[1m\033[36m"		// Bold Cyan
+
 #define	RE   	"\033[0m"				// Reset
+
 
 //NoClass Functions prototypes//
 std::string	ft_read_file(std::string file_name);
