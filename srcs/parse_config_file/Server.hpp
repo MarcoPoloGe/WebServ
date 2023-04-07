@@ -11,6 +11,7 @@
 #define G		"\033[1m\033[32m"		// Bold Green
 #define Y		"\033[1m\033[33m"		// Bold Yellow
 #define W		"\033[1m\033[37m"		// Bold White
+#define C		"\033[36m"
 #define	RE   	"\033[0m"
 
 //STD
@@ -62,14 +63,8 @@ public:
 	std::vector<std::string> 									&getAllServerConfig (void);
 	std::vector<std::map<std::string, std::string> >			&getAllLocations(void);
 
-	int	getLocationPath(
-			std::string locationPath, std::vector<std::map<std::string,
-			std::string> >::iterator itv);
-
-	std::vector<std::map<std::string, std::string> >::iterator  getLocationMap(std::map<std::string, std::string>::iterator itmap);
-
-	/*     getStuff("/", "root" ) = ./www/    */
-
+	// getInLocationValue("/", "root" ) = ./www/
+	bool getInLocationValue(std::string key, std::string LocationpPath);
 
 
 /**********************************************************************************************************************/
@@ -85,9 +80,13 @@ private:
 	std::vector<std::map<std::string, std::string> > 				_locs;
 
 public:
-	std::map<std::string, std::string>::iterator					ItMap_temp;
-	std::map<std::string, std::string>								Map_empty;
-	std::vector<std::map<std::string, std::string> >::iterator		Vec_Map_temp;
+	std::string														key_temp;
+	std::string														value_temp;
+
+//	std::map<std::string, std::string>::iterator					ItMap_temp;
+//	std::map<std::string, std::string>								temp_map;
+
+//	std::vector<std::map<std::string, std::string> >::iterator		Vec_Map_temp;
 
 
 /**********************************************************************************************************************/
@@ -99,7 +98,7 @@ public:
 	std::string 							returnAfterEqual(std::string key, std::string source);
 	std::vector<std::string>  				&getSpecificLoc(std::string way, Server s)	;
 
-	void printMap(std::string s);
+	bool printMap(std::string s);
 	void printAllMap();
 
 
