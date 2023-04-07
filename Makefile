@@ -49,7 +49,18 @@ re:			fclean all
 
 good:		${NAME} clean
 
-# PARSE_CONFIG MAKEFILE COMMAND
+doc:
+			@printf "\n"
+			@printf "if you need to get a Value in a location of a s1 (or server[0]): \nFor example: \n"
+			@printf "location=/methods\n"
+			@printf "{\n"
+			@printf "\troot=./www/\n"
+			@printf "}\n"
+			@printf "→ s1->getInLocationValue('"'/methods'"', '"'root'"') = './www/'"
+			@printf "\n"
+
+
+# PARSE_CONFIG MAKEFILE COMMAND: Compile only parse config file's for test
 
 NAME_P		= parsing_webserv
 
@@ -76,7 +87,6 @@ ${NAME_P}:	${OBJS_P}
 			@printf "\n"
 
 parse:		${NAME_P}
-
 
 cp:
 			${RM} ${OBJS_P}

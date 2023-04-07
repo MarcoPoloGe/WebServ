@@ -9,14 +9,12 @@
 /***************************                       Con/Destructors	           		           ************************/
 /**********************************************************************************************************************/
 
-
-Server::Server() 	{ std::cout <<W<< "++server" <<RE<< std::endl; }
+Server::Server() { std::cout <<W<< "++server" <<RE<< std::endl; }
 Server::~Server() 	{ std::cout <<W<< "--server" <<RE<< std::endl; }
 
 /**********************************************************************************************************************/
 /***************************                       Setters	            		               ************************/
 /**********************************************************************************************************************/
-
 
 void Server::setNameServer		(std::string name) 										{ this->_name = name; }
 void Server::setIpServer		(std::string ip)				 						{ this->_ip = ip; }
@@ -25,6 +23,7 @@ void Server::setServerConfig	(std::vector<std::string> config)						{ this->_ser
 void Server::setAllLocation		(std::vector<std::map<std::string, std::string> > locs)	{ this->_locs = locs; }
 void Server::setKeyTemp			(std::string key_temp) 									{ this->_key_temp = key_temp; }
 void Server::setValueTemp		(std::string value_temp) 								{ this->_value_temp = value_temp; }
+
 /* weirdo setters */
 void Server::setRawfile	(
 		std::vector<std::string>::iterator first_bracket,
@@ -36,16 +35,6 @@ void Server::setRawfile	(
 		first_bracket++;
 	}
 }
-
-
-//todo
-//std::vector<std::string>::iterator meth = getLocation("/methods");
-
-//void Server::setLocPath(std::vector<std::string>::iterator			loc)				{
-//	std::vector<std::vector<std::string> >::iterator	it_locs = getAllLocation().begin();
-//	while(this->)
-//}
-
 
 /**********************************************************************************************************************/
 /***************************                       Getters	            		               ************************/
@@ -60,24 +49,29 @@ std::vector<std::map<std::string, std::string> > 	&Server::getAllLocations(void)
 std::string &Server::getKeyTemp(void) {return (_key_temp); }
 std::string &Server::getValueTemp(void) {return (_value_temp); }
 
+
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/
 /**********************************************************************************************************************/
 
-
-void Server::printAllMap()
+// Print all content of a location | ex: s0->printAllLocation();;
+void
+Server::printAllLocation()
 {
 	std::vector<std::map<std::string, std::string> >::iterator itv;
 	std::map<std::string, std::string>::iterator itm;
+
+	std::cout << "***********************************************************************************" << std::endl;
 	for (itv = _locs.begin(); itv != _locs.end(); itv++)
 	{
 		for (itm = (*itv).begin(); itm != (*itv).end(); itm++)
-			std::cout <<G<< itm->first << " | "<< itm->second << RE <<  std::endl;
-		std::cout << "----------------------------------" << std::endl;
+			std::cout <<G<< itm->first << " | "<<RE<<Y<< itm->second <<RE<<  std::endl;
+		std::cout << "***********************************************************************************" << std::endl;
 	}
 }
-
-bool Server::printMap(std::string s) {
+// Print all content of a location | ex: s0->printAllContentsLocation("/methods");
+bool
+Server::printAllContentsLocation(std::string pathLocation) {
 
 	std::vector<std::map<std::string, std::string> >::iterator itv;
 	std::map<std::string, std::string>::iterator itm;
@@ -86,23 +80,39 @@ bool Server::printMap(std::string s) {
 
 		itm = (*itv).find("location");
 		if (itm != (*itv).end()) {
-			if (itm->second == s) {
-				std::cout << G << "Location path: '" << RE << Y << s << RE << G << "' found" << std::endl;
-				std::cout << G << "Location Key: '" << itm->first << RE << Y << "' \t | Value: '" << itm->second <<RE<< std::endl;
-				std::cout << G << "Content Location '" <<RE << std::endl;
-				for (itm = (*itv).begin(); itm != (*itv).end(); itm++)
-					std::cout << itm->first << RE << Y << "' \t | Value: '" << itm->second <<RE<< std::endl;
+			if (itm->second == pathLocation) {
+
+				std::cout << G << \
+				"Location path: '" <<RE<<Y<< pathLocation <<RE<<G<< "' found" \
+				<<RE<< std::endl;
+
+				std::cout << G << \
+				"Location Key: '" << itm->first <<RE<<Y<< "' \t | Value: '" << itm->second \
+				<<RE<< std::endl;
+
+				std::cout << G << \
+				"Content Location '" \
+				<<RE<< std::endl;
+
+				for (itm = (*itv).begin(); itm != (*itv).end(); itm++) {
+					std::cout << \
+                    "Key : '" << itm->first <<RE<<Y<< "' \t | " \
+                    "Value: '" << itm->second << "'" <<RE<< std::endl;
+				}
 			}
 		}
 		else {
-			std::cerr << R << "Location path: '" << RE << Y << s << RE << R << "' not found" << std::endl;
+			std::cerr <<R<< "Location path: '" <<RE<<Y<< pathLocation <<RE<<R<< "' not found" << std::endl;
 			return (false);
 		}
 	}
 	return(true);
 }
 
-bool Server::getInLocationValue(std::string LocationPath, std::string key)
+// In a specific location, search for a key and if found, set key_temp and value_temp to corresponding variables
+// ex: s0->getInLocationValue("/methods", "root");
+bool
+Server::getInLocationValue(std::string PathLocation, std::string key)
 {
 	std::vector<std::map<std::string, std::string> >::iterator itv;
 	std::map<std::string, std::string>::iterator itm;
@@ -112,30 +122,31 @@ bool Server::getInLocationValue(std::string LocationPath, std::string key)
 		itm = (*itv).find("location");
 		if (itm != (*itv).end())
 		{
-			if (itm->second == LocationPath)
+			if (itm->second == PathLocation)
 			{
-				std::cout <<C<< \
-					">> Location \n" <<RE<<G<<
-					"Key: \t'" << itm->first << RE << Y << \
-					"' \n"
-					"Value: \t'" << itm->second <<RE<< std::endl;
+/*print*/
+//				std::cout <<C<< \
+//					">> Location \n" <<RE<<G<<
+//					"Key: \t'" << itm->first << RE << Y << \
+//					"' \n"
+//					"Value: \t'" << itm->second <<RE<< std::endl;
 				itm = (*itv).find(key);
 				if (itm != (*itv).end()) {
-					std::cout <<C<< \
-						">> Get \n" <<RE<<G<<
-						"Key: \t'" << itm->first <<RE<< "' | stored in _key_temp: " <<&_key_temp << Y << \
-						"\n"
-						"Value: \t'" << itm->second <<RE<< " | store in _value_temp: " << &_value_temp << std::endl;
+/*print*/
+//					std::cout <<C<< \
+//						">> Get \n" <<RE<<G<<
+//						"Key: \t'" << itm->first <<RE<< "' | stored in _key_temp: " <<&_key_temp << Y << \
+//						"\n"
+//						"Value: \t'" << itm->second <<RE<< " | store in _value_temp: " << &_value_temp << std::endl;
 					setKeyTemp(itm->first);
 					setValueTemp(itm->second);
 				}
 			}
 		}
 		else {
-			std::cerr << R << "Location path: '" << RE << Y << LocationPath << RE << R << "' not found" << std::endl;
+			std::cerr << R << "Location path: '" << RE << Y << PathLocation << RE << R << "' not found" << std::endl;
 			return (false);
 		}
 	}
 	return(true);
 }
-

@@ -3,15 +3,15 @@
 
 int	main(int ac, char **av)
 {
-
+	t_main main;
 	if (ac != 2)
 		Ft_error err("Bad arguments");
 
+	/* Start Parsing deracineur de bitume */
 	std::cout << "🧚‍ Main_parsing launch" << std::endl;
-	//Parsing deracineur de bitume
 	std::vector<Server> all_server;
 	try {
-		main_parsing(av, all_server);
+		main_parsing(av, all_server, main);
 	}
 	catch (...) {
 		std::cerr << "Error: main_parsing" << std::endl;
@@ -19,19 +19,26 @@ int	main(int ac, char **av)
 	// -> all_server full parsing config
 
 	// How to use :
-	Server *s1;
-	s1 = &all_server[0];
-	std::cout <<Y<<  "s1->getNameServer() = '" << s1->getNameServer()<<"'" <<RE<<std::endl;
-	std::cout <<Y<<  "s1->getIpServer(); = '" << s1->getIpServer()<<"'" <<RE<<std::endl;
-	std::cout <<Y<<  "s1->getPortServer(); = '" << s1->getPortServer()<<"'" <<RE<<std::endl;
+//	Server *s0;
+//	s0 = &all_server[0];
+//	std::cout <<Y<<  "s0->getNameServer() = '" << s0->getNameServer()<<"'" <<RE<<std::endl;
+//	std::cout <<Y<<  "s0->getIpServer(); = '" << s0->getIpServer()<<"'" <<RE<<std::endl;
+//	std::cout <<Y<<  "s0->getPortServer(); = '" << s0->getPortServer()<<"'" <<RE<<std::endl;
+//
+//	s0->getInLocationValue("/methods", "root");
+//	std::cout <<Y<<  "s0->getKeyTemp((); = '" << s0->getKeyTemp()<<"'" <<RE<<std::endl;
+//	std::cout <<Y<<  "s0->getValueTemp((); = '" << s0->getValueTemp()<<"'" <<RE<<std::endl;
+//
+//	s0->printAllContentsLocation("/methods");
+//
+//	s0->printAllLocation();
 
-	s1->getInLocationValue("/methods", "root");
-	std::cout <<Y<<  "s1->getKeyTemp((); = '" << s1->getKeyTemp()<<"'" <<RE<<std::endl;
-	std::cout <<Y<<  "s1->getValueTemp((); = '" << s1->getValueTemp()<<"'" <<RE<<std::endl;
+//	std::cout << getPathFormat("css", main) << std::endl;
 
-	s1->getAllLocations();
-	s1->getAllServerConfig();
+//	s1->getAllLocations();
+//	s1->getAllServerConfig();
 
+	/* End Parsing deracineur de bitume */
 
 
 	Network	serv(8080);

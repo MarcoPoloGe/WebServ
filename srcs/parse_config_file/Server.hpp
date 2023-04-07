@@ -28,7 +28,10 @@
 #include <vector>
 #include <map>
 
-
+typedef struct  s_main
+{
+	std::map<std::string, std::string> mime_types;
+}		t_main;
 
 
 // Single Server config
@@ -53,7 +56,6 @@ public:
 	void setAllLocation(std::vector<std::map<std::string, std::string> > 	locs);
 	void setKeyTemp(std::string 											key_temp);
 	void setValueTemp(std::string 											value_temp);
-//	void setLocation(std::string			  								loc);
 
 /* weirdo setters */
 	void setRawfile(std::vector<std::string>::iterator first_bracket, std::vector<std::string>::iterator last_bracket);
@@ -63,22 +65,22 @@ public:
 /***************************                       Getters	            		               ************************/
 /**********************************************************************************************************************/
 
-	std::string 												&getNameServer(void);
-	std::string 												&getIpServer(void);
-	std::string 												&getPortServer(void);
-	std::vector<std::string> 									&getAllServerConfig (void);
-	std::vector<std::map<std::string, std::string> >			&getAllLocations(void);
+	std::string 												&getNameServer();
+	std::string 												&getIpServer();
+	std::string 												&getPortServer();
+	std::vector<std::string> 									&getAllServerConfig ();
+	std::vector<std::map<std::string, std::string> >			&getAllLocations();
 
+	std::string 												&getKeyTemp();
+	std::string 												&getValueTemp();
+
+/* weirdo getters */
 	// getInLocationValue("/", "root" ) = ./www/
-	bool getInLocationValue(std::string key, std::string LocationpPath);
-	std::string &getKeyTemp(void);
-	std::string &getValueTemp(void);
-
-
+	bool getInLocationValue(std::string key, std::string LocationPath);
 
 
 /**********************************************************************************************************************/
-/***************************                       Vars		            		               ************************/
+/***************************                       Private Vars		                           ************************/
 /**********************************************************************************************************************/
 
 private:
@@ -89,14 +91,16 @@ private:
 	std::vector<std::string> 										_rawfile;
 	std::vector<std::map<std::string, std::string> > 				_locs;
 
-public:
 	std::string														_key_temp;
 	std::string														_value_temp;
 
-//	std::map<std::string, std::string>::iterator					ItMap_temp;
-//	std::map<std::string, std::string>								temp_map;
 
-//	std::vector<std::map<std::string, std::string> >::iterator		Vec_Map_temp;
+/**********************************************************************************************************************/
+/***************************                       Public Vars		            	           ************************/
+/**********************************************************************************************************************/
+
+public:
+	std::map<std::string, std::string>					mime_types;
 
 
 /**********************************************************************************************************************/
@@ -105,13 +109,11 @@ public:
 
 public:
 
-	bool printMap(std::string s);
-	void printAllMap();
+	bool printAllContentsLocation(std::string pathLocation);
+	void printAllLocation();
 
 };
-
-void main_parsing(char **av, std::vector<Server> &all_server);
-
-
+std::string getPathFormat(std::string format, t_main m);
+void main_parsing(char **av, std::vector<Server> &all_server, t_main main);
 
 #endif //CONFIG_PARSER_PARSER_HPP
