@@ -1,8 +1,10 @@
 
 #include "Server.hpp"
 
+//
 void Read_and_Stock_FileName(
-		const std::string& fileName, std::vector<std::string> &stock )
+		const std::string& fileName,
+		std::vector<std::string> &stock )
 {
 	std::string line;
 	std::ifstream file;
@@ -18,14 +20,14 @@ void Read_and_Stock_FileName(
 	file.close();
 }
 
-void printVector(
-		std::vector<std::string> &x )
+//
+void printVector(std::vector<std::string> &x )
 {
 	for (std::vector<std::string>::iterator it = x.begin(); it != x.end(); it++)
 		std::cout << *it << std::endl;
 }
 
-
+//
 void getOnlyChar(std::string &s)
 {
 	s.erase(std::remove(s.begin(), s.end(), '\t'), s.end());
@@ -33,9 +35,12 @@ void getOnlyChar(std::string &s)
 	s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
 }
 
+// Insert in a map, an input with "=" as delimiter. ex: key= "location" | value="\methods"
 void insertMap_split_by_Delimiter(
 		std::map<std::string,
-		std::string> &map, std::string input, std::string delimiter)
+		std::string> &map,
+		std::string input,
+		std::string delimiter)
 {
 	unsigned long pos;
 	if((pos = input.find(delimiter)) != std::string::npos)
@@ -50,8 +55,8 @@ void insertMap_split_by_Delimiter(
 		std::cerr<< "Delimiter '" << delimiter << "' not found in " << input << std::endl;
 }
 
-// Vector of a location
-std::vector<std::string>::iterator grabLocation(
+// Set _locs :  a location
+std::vector<std::string>::iterator grabLocation (
 		std::vector<std::string>::iterator 	it,
 		std::vector<std::string>::iterator 	last_bracket,
 		Server &s)
@@ -73,7 +78,6 @@ std::vector<std::string>::iterator grabLocation(
 				insertMap_split_by_Delimiter(loc_config, *it, "=");
 				it++;
 			}
-//			printMap(loc_config);
 			s.getAllLocations().push_back(loc_config);
 			return (it);
 		}
@@ -84,8 +88,6 @@ std::vector<std::string>::iterator grabLocation(
 	}
 	return(it);
 }
-
-
 
 Server &setUpServer(
 		std::vector<std::string>::iterator 	first_bracket,
@@ -103,7 +105,6 @@ Server &setUpServer(
 		if (((*first_bracket).find("location"))!= std::string::npos)
 		{
 			first_bracket = grabLocation(first_bracket, last_bracket, s);
-//			printMap(s.getAllLocations());
 			if(((*first_bracket).find("}"))!= std::string::npos)
 				first_bracket++;
 			continue;
@@ -111,11 +112,6 @@ Server &setUpServer(
 		in.push_back(*first_bracket);
 		first_bracket++;
 	}
-	/*print*/
-//	for (unsigned int i = 0; i < s.getAllLocations().size(); i++)
-//		printVector(s.getAllLocations().at(i));
-//	printVector(in);
-
 	return(s);
 }
 
@@ -154,11 +150,12 @@ void serverConfig(std::vector<std::string> &stock,
 			s.setRawfile(first_bracket, last_bracket);
 			setUpServer(first_bracket, last_bracket, s);
 
-			/*print*/
 			all_server.push_back(s);
 
-			s.printMap("/");
-//			s.printAllMap();
+			/*print*/
+//			s.printMap("/methods");
+			s.getInLocationValue("/methods", "root");
+
 			get_in = 0;
 		}
 	}
@@ -170,7 +167,7 @@ int main(int ac, char **av) {
 
 	std::string fileName = av[1];
 	std::vector<std::string> rawfile;
-	std::cout << "WESH" << std::endl;
+	std::cout <<W<< "Parsing config file" <<RE<< std::endl;
 
 	std::string line;
 	std::ifstream file;
@@ -186,8 +183,8 @@ int main(int ac, char **av) {
 	file.close();
 
 	// Set up Servers from config.conf file
+	std::vector<Server> all_server;
 	serverConfig(rawfile, rawfile.begin());
-
 
 	return 0;
 }
