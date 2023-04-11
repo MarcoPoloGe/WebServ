@@ -6,6 +6,7 @@ SRCS		= main.cpp\
 			  srcs/ClassResponse.cpp\
 			  srcs/parse_config_file/main_parsing.cpp\
               srcs/parse_config_file/Server.cpp\
+              srcs/parse_config_file/Types.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 

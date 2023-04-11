@@ -1,5 +1,6 @@
 
 #include "Server.hpp"
+#include "Types.hpp"
 
 
 /**********************************************************************************************************************/
@@ -25,21 +26,6 @@ getOnlyChar(std::string &s) {
 	s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
 }
 
-std::string getPathFormat(std::string format, t_main m) {
-
-	std::map<std::string, std::string>::iterator itm;
-	itm = m.mime_types.begin();
-	std::cout <<"key"<< itm->first <<"v " << itm->second << std::endl;
-	itm = m.mime_types.find(format);
-
-	if (itm != m.mime_types.end()){
-		std::cout <<"key"<< itm->first <<"v " << itm->second << std::endl;
-		return (itm->second);
-	}
-	else
-		std::cerr<<R<< "Error: getPathFormat: "<< format << " not found." <<RE<< std::endl;
-	return (format);
-}
 /**********************************************************************************************************************/
 /***************************                  Read and Stock from *.conf file          	       ************************/
 /**********************************************************************************************************************/
@@ -166,74 +152,6 @@ setUpServer(
 
 
 /**********************************************************************************************************************/
-/***************************                  Set Up mime_type vars		      		           ************************/
-/**********************************************************************************************************************/
-
-void
-insert_mime_type(
-		std::map<std::string, std::string> mime_types,
-		std::string input)
-{
-	std::string tmp_keys;
-	std::string key;
-	std::string value;
-
-	unsigned long pos;
-	unsigned long start;
-	unsigned long end;
-
-	if((pos = input.find("=")) != std::string::npos)
-	{
-		// Get value | ex: text/html
-		value = input.substr(0, pos);
-		getOnlyChar(value);
-		input.erase(0, pos + 1);
-		// Get key | ex: .css
-		while ((start = input.find(".")) != std::string::npos)
-		{
-			// erase .
-			input.erase(start, 1);
-			// ex: .html.htm.shtml -> insert html=text/html | htm=text/html | shtml=text/html
-			if ((end = input.find(".")) != std::string::npos){
-				key = input.substr(start, end - start );
-				getOnlyChar(key);
-				/*print*/
-				std::cout <<G<< "mime_type->key = " << key << " | value = " << value <<RE<< std::endl;
-				mime_types.insert(std::pair<std::string, std::string>(key, value));
-				input.erase(start, end);
-			}
-			// ex: .css -> insert css=text/css
-			else
-			{
-				key = input;
-				getOnlyChar(key);
-				std::cout <<G<< "mime_type->key = " << key << " | value = " << value <<RE<< std::endl;
-				mime_types.insert(std::pair<std::string, std::string>(key, value));
-			}
-		}
-	}
-	else {
-		std::cerr<<R<< "Error: @fn insert_mime_type \nDelimiter '" << "=" << "' not found in " << input <<RE<< std::endl;
-	}
-}
-
-bool
-save_mime_type(
-		std::vector<std::string>::iterator 	first_bracket,
-		std::vector<std::string>::iterator 	last_bracket,
-		t_main main)
-{
-	while (first_bracket != last_bracket)
-	{
-		if (((*first_bracket).find("="))!= std::string::npos)
-			insert_mime_type(main.mime_types, *first_bracket);
-		first_bracket++;
-	}
-	std::cout <<G<< "mime_types sucessfully saved " <<RE<< std::endl;
-	return (true);
-}
-
-/**********************************************************************************************************************/
 /***************************            Server Config: parsing all config file          	   ************************/
 /**********************************************************************************************************************/
 
@@ -243,7 +161,7 @@ serverConfig(
 		std::vector<std::string> &stock,
 		std::vector<std::string>::iterator it,
 		std::vector<Server> &all_server,
-		t_main main)
+		Types &t)
 {
 	std::vector<std::string>::iterator 					first_bracket;
 	std::vector<std::string>::iterator 					last_bracket;
@@ -288,7 +206,7 @@ serverConfig(
 		}
 		if (get_in && count == 0 && mime_type)
 		{
-			save_mime_type(first_bracket, last_bracket, main);
+			t.save_mime_type(first_bracket, last_bracket);
 			get_in = false;
 			mime_type = false;
 		}
@@ -304,7 +222,7 @@ void
 main_parsing(
 		char **av,
 		std::vector<Server> &all_server,
-		t_main main)
+		Types &t)
 		{
 
 	std::string fileName = av[1];
@@ -324,6 +242,6 @@ main_parsing(
 		rawfile.push_back(line);
 	file.close();
 	// Set up Servers from config.conf file
-	serverConfig(rawfile, rawfile.begin(), all_server, main);
+	serverConfig(rawfile, rawfile.begin(), all_server, t);
 
 }

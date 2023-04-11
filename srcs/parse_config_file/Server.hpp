@@ -17,6 +17,9 @@
 
 //HOMEMADE
 #include "../../includes/Webserv_Includes.hpp"
+#include "Types.hpp"
+
+class Types;
 
 //STD
 #include <iostream>
@@ -27,11 +30,6 @@
 // Containers
 #include <vector>
 #include <map>
-
-typedef struct  s_main
-{
-	std::map<std::string, std::string> mime_types;
-}		t_main;
 
 
 // Single Server config
@@ -95,12 +93,13 @@ private:
 	std::string														_value_temp;
 
 
+
 /**********************************************************************************************************************/
 /***************************                       Public Vars		            	           ************************/
 /**********************************************************************************************************************/
 
 public:
-	std::map<std::string, std::string>					mime_types;
+	std::map<std::string, std::string>								mime_types;
 
 
 /**********************************************************************************************************************/
@@ -109,11 +108,22 @@ public:
 
 public:
 
-	bool printAllContentsLocation(std::string pathLocation);
-	void printAllLocation();
+	bool
+	printAllContentsLocation(std::string pathLocation);
+	void
+	printAllLocation();
 
 };
-std::string getPathFormat(std::string format, t_main m);
-void main_parsing(char **av, std::vector<Server> &all_server, t_main main);
+void
+main_parsing(char **av, std::vector<Server> &all_server, Types &t);
+
+void
+getOnlyChar(std::string &s);
+
+void
+printVector(std::vector<std::string> &x );
+
+std::string
+AfterEqual (std::string &input);
 
 #endif //CONFIG_PARSER_PARSER_HPP

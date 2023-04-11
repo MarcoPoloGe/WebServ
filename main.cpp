@@ -1,17 +1,19 @@
 #include "includes/Webserv_Includes.hpp"
 #include "srcs/parse_config_file/Server.hpp"
+#include "srcs/parse_config_file/Types.hpp"
 
 int	main(int ac, char **av)
 {
-	t_main main;
+
 	if (ac != 2)
 		Ft_error err("Bad arguments");
 
 	/* Start Parsing deracineur de bitume */
 	std::cout << "🧚‍ Main_parsing launch" << std::endl;
 	std::vector<Server> all_server;
+	Types t;
 	try {
-		main_parsing(av, all_server, main);
+		main_parsing(av, all_server, t);
 	}
 	catch (...) {
 		std::cerr << "Error: main_parsing" << std::endl;
@@ -32,8 +34,7 @@ int	main(int ac, char **av)
 //	s0->printAllContentsLocation("/methods");
 //
 //	s0->printAllLocation();
-
-//	std::cout << getPathFormat("css", main) << std::endl;
+	std::cout << t.getPathFormat("css") << std::endl;
 
 //	s1->getAllLocations();
 //	s1->getAllServerConfig();
