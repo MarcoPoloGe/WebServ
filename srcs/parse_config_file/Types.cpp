@@ -4,6 +4,11 @@
 
 #include "Types.hpp"
 
+
+/**********************************************************************************************************************/
+/***************************                       Con/Destructors	           		           ************************/
+/**********************************************************************************************************************/
+
 Types::Types() {
 	std::cout << "++Types" << std::endl;
 }
@@ -12,7 +17,12 @@ Types::~Types() {
 	std::cout << "--Types" << std::endl;
 }
 
-std::string Types::getPathFormat(std::string format) {
+
+/**********************************************************************************************************************/
+/***************************                       Getters	            		               ************************/
+/**********************************************************************************************************************/
+
+std::string Types::getPathFormat(const std::string& format) {
 	std::map<std::string, std::string>::iterator itm;
 	itm = mime_types.find(format);
 	if (itm != mime_types.end()){
@@ -40,19 +50,19 @@ Types::insert_mime_type(
 	unsigned long start;
 	unsigned long end;
 
-	if((pos = input.find("=")) != std::string::npos)
+	if((pos = input.find('=')) != std::string::npos)
 	{
 		// Get value | ex: text/html
 		value = input.substr(0, pos);
 		getOnlyChar(value);
 		input.erase(0, pos + 1);
 		// Get key | ex: .css
-		while ((start = input.find(".")) != std::string::npos)
+		while ((start = input.find('.')) != std::string::npos)
 		{
 			// erase .
 			input.erase(start, 1);
 			// ex: .html.htm.shtml -> insert html=text/html | htm=text/html | shtml=text/html
-			if ((end = input.find(".")) != std::string::npos){
+			if ((end = input.find('.')) != std::string::npos){
 				key = input.substr(start, end - start );
 				getOnlyChar(key);
 				/*print*/

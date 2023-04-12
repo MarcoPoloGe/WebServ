@@ -47,16 +47,24 @@ public:
 /***************************                       Setters	            		               ************************/
 /**********************************************************************************************************************/
 
-	void setNameServer(std::string											name);
-	void setIpServer(std::string											ip);
-	void setPortServer(std::string											port);
-	void setServerConfig(std::vector<std::string> 							config);
-	void setAllLocation(std::vector<std::map<std::string, std::string> > 	locs);
-	void setKeyTemp(std::string 											key_temp);
-	void setValueTemp(std::string 											value_temp);
+	void
+	setNameServer(std::string											name);
+	void
+	setIpServer(std::string												ip);
+	void
+	setPortServer(std::string											port);
+	void
+	setServerConfig(std::vector<std::string> 							config);
+	void
+	setAllLocation(std::vector<std::map<std::string, std::string> > 	locs);
+	void
+	setKeyTemp(std::string 												key_temp);
+	void
+	setValueTemp(std::string 											value_temp);
 
 /* weirdo setters */
-	void setRawfile(std::vector<std::string>::iterator first_bracket, std::vector<std::string>::iterator last_bracket);
+	void
+	setRawfile(std::vector<std::string>::iterator first_bracket, std::vector<std::string>::iterator last_bracket);
 
 
 /**********************************************************************************************************************/
@@ -73,8 +81,10 @@ public:
 	std::string 												&getValueTemp();
 
 /* weirdo getters */
-	// getInLocationValue("/", "root" ) = ./www/
-	bool getInLocationValue(std::string key, std::string LocationPath);
+
+//	s0->getInLocationValue("/methods", "root");
+	bool
+	getInLocationValue(std::string key, std::string LocationPath);
 
 
 /**********************************************************************************************************************/
@@ -93,37 +103,81 @@ private:
 	std::string														_value_temp;
 
 
-
-/**********************************************************************************************************************/
-/***************************                       Public Vars		            	           ************************/
-/**********************************************************************************************************************/
-
-public:
-	std::map<std::string, std::string>								mime_types;
-
-
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/
 /**********************************************************************************************************************/
 
 public:
-
+//	s0->printAllContentsLocation("/methods");
 	bool
 	printAllContentsLocation(std::string pathLocation);
+
+//	s0->printAllLocation();
 	void
 	printAllLocation();
 
 };
+
+/*↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
+/***************************                       main_parsing.cpp fn	    		           ************************/
+/**********************************************************************************************************************/
+
 void
 main_parsing(char **av, std::vector<Server> &all_server, Types &t);
 
+
+/**********************************************************************************************************************/
+/***************************            Server Config: parsing all config file          	   ************************/
+/**********************************************************************************************************************/
+
+bool
+serverConfig(
+		std::vector<std::string> &stock,
+		std::vector<std::string>::iterator it,
+		std::vector<Server> &all_server,
+		Types &t);
+
+
+/**********************************************************************************************************************/
+/***************************                  Set Up one Server config	      		           ************************/
+/**********************************************************************************************************************/
+
+Server &
+setUpServer(
+		std::vector<std::string>::iterator 	first_bracket,
+		std::vector<std::string>::iterator 	last_bracket,
+		Server &s);
+
+
+/**********************************************************************************************************************/
+/***************************                   Get infos from one location {}     	           ************************/
+/**********************************************************************************************************************/
+
 void
-getOnlyChar(std::string &s);
+insertMap_split_by_Delimiter(
+		std::map<std::string,
+				std::string> &map,
+		const std::string& input,
+		const std::string& delimiter);
+
+std::vector<std::string>::iterator
+grabLocation (
+		std::vector<std::string>::iterator 	it,
+		std::vector<std::string>::iterator 	last_bracket,
+		Server &s);
+
+
+/**********************************************************************************************************************/
+/***************************                       main_parsing.cpp Utils		               ************************/
+/**********************************************************************************************************************/
+
+std::string
+AfterEqual (std::string &input);
 
 void
 printVector(std::vector<std::string> &x );
 
-std::string
-AfterEqual (std::string &input);
+void
+getOnlyChar(std::string &s);
 
 #endif //CONFIG_PARSER_PARSER_HPP

@@ -21,23 +21,32 @@ int	main(int ac, char **av)
 	// -> all_server full parsing config
 
 	// How to use :
-//	Server *s0;
-//	s0 = &all_server[0];
+	Server *s0;
+	s0 = &all_server[0];
 //	std::cout <<Y<<  "s0->getNameServer() = '" << s0->getNameServer()<<"'" <<RE<<std::endl;
-//	std::cout <<Y<<  "s0->getIpServer(); = '" << s0->getIpServer()<<"'" <<RE<<std::endl;
-//	std::cout <<Y<<  "s0->getPortServer(); = '" << s0->getPortServer()<<"'" <<RE<<std::endl;
-//
+////	std::cout <<Y<<  "s0->getIpServer(); = '" << s0->getIpServer()<<"'" <<RE<<std::endl;
+////	std::cout <<Y<<  "s0->getPortServer(); = '" << s0->getPortServer()<<"'" <<RE<<std::endl;
+////
 //	s0->getInLocationValue("/methods", "root");
+//	s0->getInLocationValue("/", "method");
+//	std::cout <<Y<<  "s0->getKeyTemp((); = '" << s0->getKeyTemp()<<"'" <<RE<<std::endl;
+//	std::cout <<Y<<  "s0->getValueTemp((); = '" << s0->getValueTemp()<<"'" <<RE<<std::endl;
+////
+////	s0->printAllContentsLocation("/methods");
+////
+////	s0->printAllLocation();
+//	std::cout << t.getPathFormat("css") << std::endl;
+//	std::cout << s0->getInLocationValue("/", "method") << std::endl;
 //	std::cout <<Y<<  "s0->getKeyTemp((); = '" << s0->getKeyTemp()<<"'" <<RE<<std::endl;
 //	std::cout <<Y<<  "s0->getValueTemp((); = '" << s0->getValueTemp()<<"'" <<RE<<std::endl;
 //
-//	s0->printAllContentsLocation("/methods");
+//	std::cout << s0->getInLocationValue("/", "root") << std::endl;
+//	std::cout <<Y<<  "s0->getKeyTemp((); = '" << s0->getKeyTemp()<<"'" <<RE<<std::endl;
+//	std::cout <<Y<<  "s0->getValueTemp((); = '" << s0->getValueTemp()<<"'" <<RE<<std::endl;
 //
-//	s0->printAllLocation();
-	std::cout << t.getPathFormat("csds") << std::endl;
+	s0->getAllLocations();
 
-//	s1->getAllLocations();
-//	s1->getAllServerConfig();
+	s0->getAllServerConfig();
 
 	/* End Parsing deracineur de bitume */
 
