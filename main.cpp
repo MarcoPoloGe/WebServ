@@ -34,7 +34,7 @@ int	main(int ac, char **av)
 //	s0->printAllContentsLocation("/methods");
 //
 //	s0->printAllLocation();
-	std::cout << t.getPathFormat("css") << std::endl;
+	std::cout << t.getPathFormat("csds") << std::endl;
 
 //	s1->getAllLocations();
 //	s1->getAllServerConfig();
