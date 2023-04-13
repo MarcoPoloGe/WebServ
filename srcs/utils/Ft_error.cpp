@@ -10,11 +10,13 @@ Ft_error::Ft_error(void)
 Ft_error::Ft_error(std::string str)
 {
 	//std::cout << "Parametric constructor called\n";
+	std::cout << R;
 	std::cout << "Error: ";
 	if (str.empty())
 		std::cout << "fatal\n";
 	else
 		std::cout << str << std::endl;
+	std::cout << RE;
 	std::exit(1);
 	return ;
 }

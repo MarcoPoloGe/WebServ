@@ -10,8 +10,8 @@ int	main(int ac, char **av)
 
 	/* Start Parsing deracineur de bitume */
 	std::cout << "🧚‍ Main_parsing launch" << std::endl;
-	std::vector<Server> all_server;
-	Types t;
+	std::vector<Server>	all_server;
+	Types 				t;
 	try {
 		main_parsing(av, all_server, t);
 	}
@@ -21,7 +21,7 @@ int	main(int ac, char **av)
 	// -> all_server full parsing config
 
 	// How to use :
-	Server *s0;
+	Server	*s0;
 	s0 = &all_server[0];
 //	std::cout <<Y<<  "s0->getNameServer() = '" << s0->getNameServer()<<"'" <<RE<<std::endl;
 ////	std::cout <<Y<<  "s0->getIpServer(); = '" << s0->getIpServer()<<"'" <<RE<<std::endl;
@@ -52,7 +52,21 @@ int	main(int ac, char **av)
 
 
 	Network	serv(8080);
-	serv.run();
+	Network	serv2(8081);
+	std::string	dot[12] = {"🕛","🕐","🕑","🕒","🕓","🕔","🕕","🕖","🕗","🕘","🕙","🕚"};
+	int n = 0;
+	int ret;
+loop:
+	ret = 0;
+	while (ret == 0)		//NEED to deporter tous les run() dans la meme boucle >> a propriser
+	{
+		std::cout << "\rWaiting on a connection " << dot[n++] << std::flush;
+		if (n == 12)
+			n = 0;
+		ret = serv.run();
+		ret = serv2.run();
+	}
+	goto loop;
 
 	// start test // marco t bô <3
     Response r1;

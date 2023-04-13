@@ -10,6 +10,7 @@ Network::Network(void)
 Network::Network(int const port): _port(port)
 {
 	//std::cout << "Parametric constructor called\n";
+	//std::cout << B << "AF_INET is equal to [" << AF_INET << "]\n" << RE; //to check macros
 
 	_req_handled = 0; // DEBUG
 
@@ -27,6 +28,7 @@ Network::Network(int const port): _port(port)
 	memset((char *) &_server_address, 0, sizeof(_server_address));
 	_server_address.sin_family = AF_INET;
 	_server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+//	_server_address.sin_addr.s_addr = inet_addr("127.0.0.5");
 	_server_address.sin_port = htons(_port);
 
 	if (bind(_sock, (struct sockaddr *) &_server_address, sizeof(_server_address)) < 0 )
@@ -34,6 +36,16 @@ Network::Network(int const port): _port(port)
 		close(_sock);
 		Ft_error	err("bind");
 	}
+
+	/*struct sockaddr_in remoteaddr;
+	remoteaddr.sin_family = AF_INET;
+	remoteaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	remoteaddr.sin_port = htons(8081);
+	int ret = connect(_sock, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr));
+	if (ret < 0)
+	{
+		std::cout << R << "Remoteaddr cannot connect to sock\n" << RE;
+	}*/
 
 	listen(_sock, MAX_CLIENTS);
 	
@@ -299,29 +311,33 @@ void	Network::read_socks(void)
 	}
 }
 
-void	Network::run(void)
+int	Network::run(void)
 {
-	std::string	dot[3] = {".  ", ".. ", "..."};
-	int			n = 0;
+//	std::string	dot[12] = {"🕛","🕐","🕑","🕒","🕓","🕔","🕕","🕖","🕗","🕘","🕙","🕚"};
+//	int			n = 0;
 
-	while (true)
-	{
+//	while (true)
+//	{
 		build_select_list();
-		_timeout.tv_sec = 1;
-		_timeout.tv_usec = 0;
+		_timeout.tv_sec = 0;
+		_timeout.tv_usec = 500000;
 
 		_readsocks = select(_highsock + 1, &_socks, (fd_set *)0, (fd_set *)0, &_timeout);
 		if (_readsocks < 0)
 			Ft_error	Err("select");
 		if (_readsocks == 0)
 		{
-			std::cout << "\rWaiting on a connection" << dot[n++] << std::flush;
-			if (n == 3)
-				n = 0;
+//			std::cout << "\rWaiting on a connection " << dot[n++] << std::flush;
+//			if (n == 12)
+//				n = 0;
+			return (0);
 		}
 		else
+		{
 			read_socks();
-	}
+			return (1);
+		}
+//	}
 }
 
 Network	&Network::operator=(Network const &rhs)
