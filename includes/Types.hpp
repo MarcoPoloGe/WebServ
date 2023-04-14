@@ -8,9 +8,8 @@
 # include <map>
 # include <iostream>
 # include <vector>
-# include "Server.hpp"
-//# include "../../includes/Webserv_Includes.hpp"
-
+# include "Config.hpp"
+# include "Types.hpp"
 
 class Types {
 public:

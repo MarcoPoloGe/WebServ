@@ -1,7 +1,4 @@
-
-#include "Server.hpp"
-#include "Types.hpp"
-
+#include "../includes/Webserv_Includes.hpp"
 
 /**********************************************************************************************************************/
 /***************************                       Main		            		           ************************/
@@ -10,7 +7,7 @@
 void
 main_parsing(
 		char **av,
-		std::vector<Server> &all_server,
+		std::vector<Config> &all_config,
 		Types &t)
 {
 
@@ -31,8 +28,8 @@ main_parsing(
 		rawfile.push_back(line);
 	file.close();
 
-	// Set up Servers from config.conf file in all_server
-	serverConfig(rawfile, rawfile.begin(), all_server, t);
+	// Set up Servers from config.conf file in all_Config
+	serverConfig(rawfile, rawfile.begin(), all_config, t);
 
 }
 
@@ -46,13 +43,13 @@ bool
 serverConfig(
 		std::vector<std::string> &stock,
 		std::vector<std::string>::iterator it,
-		std::vector<Server> &all_server,
+		std::vector<Config> &all_config,
 		Types &t)
 {
 	std::vector<std::string>::iterator 					first_bracket;
 	std::vector<std::string>::iterator 					last_bracket;
 
-	std::vector<Server>::iterator 						vit;
+	std::vector<Config>::iterator 						vit;
 
 	bool get_in = false;
 	bool server = false;
@@ -83,10 +80,10 @@ serverConfig(
 		}
 		if (get_in && count == 0 && server)
 		{
-			Server s;
+			Config s;
 			s.setRawfile(first_bracket, last_bracket);
 			setUpServer(first_bracket, last_bracket, s);
-			all_server.push_back(s);
+			all_config.push_back(s);
 			get_in = false;
 			server = false;
 		}
@@ -106,11 +103,11 @@ serverConfig(
 /**********************************************************************************************************************/
 
 // CQFD
-Server &
+Config &
 setUpServer(
 		std::vector<std::string>::iterator 	first_bracket,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s)
+		Config &s)
 {
 	std::vector<std::string> 				in;
 	std::vector<std::string> 				server_config;
@@ -171,7 +168,7 @@ std::vector<std::string>::iterator
 grabLocation (
 		std::vector<std::string>::iterator 	it,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s)
+		Config &s)
 {
 	std::vector<std::string>::iterator 	first_bracket;
 	std::map<std::string, std::string> loc_config;

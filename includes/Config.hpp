@@ -16,8 +16,6 @@
 
 
 //HOMEMADE
-#include "../../includes/Webserv_Includes.hpp"
-#include "Types.hpp"
 
 class Types;
 
@@ -33,14 +31,14 @@ class Types;
 
 
 // Single Server config
-class Server {
+class Config {
 public:
 /**********************************************************************************************************************/
 /***************************                       Con/Destructors	           		           ************************/
 /**********************************************************************************************************************/
 
-	Server();
-	~Server();
+	Config();
+	~Config();
 
 
 /**********************************************************************************************************************/
@@ -123,7 +121,7 @@ public:
 /**********************************************************************************************************************/
 
 void
-main_parsing(char **av, std::vector<Server> &all_server, Types &t);
+main_parsing(char **av, std::vector<Config> &all_config, Types &t);
 
 
 /**********************************************************************************************************************/
@@ -134,7 +132,7 @@ bool
 serverConfig(
 		std::vector<std::string> &stock,
 		std::vector<std::string>::iterator it,
-		std::vector<Server> &all_server,
+		std::vector<Config> &all_config,
 		Types &t);
 
 
@@ -142,11 +140,11 @@ serverConfig(
 /***************************                  Set Up one Server config	      		           ************************/
 /**********************************************************************************************************************/
 
-Server &
+Config &
 setUpServer(
 		std::vector<std::string>::iterator 	first_bracket,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s);
+		Config &s);
 
 
 /**********************************************************************************************************************/
@@ -164,7 +162,7 @@ std::vector<std::string>::iterator
 grabLocation (
 		std::vector<std::string>::iterator 	it,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s);
+		Config &s);
 
 
 /**********************************************************************************************************************/

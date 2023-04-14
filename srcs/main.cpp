@@ -2,7 +2,7 @@
 
 int	main(int ac, char **av)
 {
-	t_main main;
+	Types main;
 	if (ac != 2)
 		Ft_error err("Bad arguments");
 

@@ -1,9 +1,6 @@
 SRCS		= srcs/main.cpp\
 			  srcs/utils/Ft_error.cpp\
 			  srcs/utils/Utils.cpp\
-			  srcs/ClassRequest.cpp\
-			  srcs/Network.cpp\
-			  srcs/ClassResponse.cpp\
               srcs/class/Types.cpp\
 			  srcs/class/ClassRequest.cpp\
 			  srcs/class/Network.cpp\

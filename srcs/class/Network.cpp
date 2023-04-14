@@ -311,13 +311,13 @@ void	Network::read_socks(void)
 	}
 }
 
-int	Network::run(void)
+void	Network::run(void)
 {
-//	std::string	dot[12] = {"🕛","🕐","🕑","🕒","🕓","🕔","🕕","🕖","🕗","🕘","🕙","🕚"};
-//	int			n = 0;
+	std::string	dot[12] = {"🕛","🕐","🕑","🕒","🕓","🕔","🕕","🕖","🕗","🕘","🕙","🕚"};
+	int			n = 0;
 
-//	while (true)
-//	{
+	while (true)
+	{
 		build_select_list();
 		_timeout.tv_sec = 0;
 		_timeout.tv_usec = 500000;
@@ -327,17 +327,13 @@ int	Network::run(void)
 			Ft_error	Err("select");
 		if (_readsocks == 0)
 		{
-//			std::cout << "\rWaiting on a connection " << dot[n++] << std::flush;
-//			if (n == 12)
-//				n = 0;
-			return (0);
+			std::cout << "\rWaiting on a connection " << dot[n++] << std::flush;
+			if (n == 12)
+				n = 0;
 		}
 		else
-		{
 			read_socks();
-			return (1);
-		}
-//	}
+	}
 }
 
 Network	&Network::operator=(Network const &rhs)
