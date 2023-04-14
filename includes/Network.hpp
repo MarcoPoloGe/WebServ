@@ -23,7 +23,7 @@ public:
 	Network	&operator=(Network const &rhs);
 	
 //Public Functions
-	void	run(void);
+	int	run(void);
 
 
 private:
