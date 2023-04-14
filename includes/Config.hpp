@@ -14,10 +14,6 @@
 //#define C		"\033[36m"
 //#define	RE   	"\033[0m"
 
-
-//HOMEMADE
-#include "../../includes/Webserv_Includes.hpp"
-
 //STD
 #include <iostream>
 #include <fstream>
@@ -34,15 +30,15 @@ typedef struct  s_main
 }		t_main;
 
 
-// Single Server config
-class Server {
+// Single Config
+class Config {
 public:
 /**********************************************************************************************************************/
 /***************************                       Con/Destructors	           		           ************************/
 /**********************************************************************************************************************/
 
-	Server();
-	~Server();
+	Config();
+	~Config();
 
 
 /**********************************************************************************************************************/
@@ -114,6 +110,6 @@ public:
 
 };
 std::string getPathFormat(std::string format, t_main m);
-void main_parsing(char **av, std::vector<Server> &all_server, t_main main);
+void main_parsing(char **av, std::vector<Config> &all_config, t_main main);
 
 #endif //CONFIG_PARSER_PARSER_HPP

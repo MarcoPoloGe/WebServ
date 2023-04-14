@@ -21,6 +21,7 @@
 #include "ClassResponse.hpp"
 #include "ClassRequest.hpp"
 #include "Ft_error.hpp"
+#include "Config.hpp"
 #include "Network.hpp"
 
 

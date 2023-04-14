@@ -1,4 +1,3 @@
-//#include "../../includes/Ft_error.hpp"
 #include "../../includes/Webserv_Includes.hpp"
 
 Ft_error::Ft_error(void)

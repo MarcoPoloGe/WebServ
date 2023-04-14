@@ -1,4 +1,4 @@
-#include "../includes/Network.hpp"
+#include "../../includes/Webserv_Includes.hpp"
 
 Network::Network(void)
 {
@@ -7,7 +7,7 @@ Network::Network(void)
 	return ;
 }
 
-Network::Network(int const port): _port(port)
+Network::Network(int const port, Config config): _config(config), _port(port)
 {
 	//std::cout << "Parametric constructor called\n";
 
