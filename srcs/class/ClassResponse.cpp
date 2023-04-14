@@ -51,6 +51,16 @@ void Response::set_content(std::string content, std::string content_ext)
 	this->content_type = content_ext;
 }
 
+void Response::set_content_body(std::string body)
+{
+	this->content = body;
+}
+
+void Response::set_content_type(std::string type)
+{
+	this->content_type = type;
+}
+
 std::string Response::ft_error_def(int error_code)
 {
 	//todo when config file is working.

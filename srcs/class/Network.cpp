@@ -10,6 +10,7 @@ Network::Network(void)
 Network::Network(int const port, Config config): _config(config), _port(port)
 {
 	//std::cout << "Parametric constructor called\n";
+
 	//std::cout << B << "AF_INET is equal to [" << AF_INET << "]\n" << RE; //to check macros
 
 	_req_handled = 0; // DEBUG
@@ -53,7 +54,7 @@ Network::Network(int const port, Config config): _config(config), _port(port)
 	
 	memset((char *) &_connectlist, 0, sizeof(_connectlist));
 
-	std::cout << "Server ready to listen on port [" << _port << "]\n";
+ 	std::cout << "Server ready to listen on port [" << _port << "]\n";
 
 	return ;
 }
@@ -138,18 +139,17 @@ void	Network::deal_with_data(int listnum)
 {
 	char				buffer[BUFFER_SIZE];
 	Request 			request;
-	std::stringstream	response;
-	std::string			html_content;
+	Response			response;
 	int					bytes_read;
 	std::string 		request_string;
-	int					recv_it = 0;
-	//	need to boucler les recv pr si buffer size trop petit//
+	int					recv_it = 0;	// TEST MULTI RECV
+	// need to boucler les recv pr si buffer size trop petit ? //
 
 	_total_bytes_read = 0;
 	_req_handled++;
 	std::cout << Y << "\nvvv CECI EST LA " << _req_handled << "eme REQUEST HANDLED vvv\n" << RE;
 
-//recv:
+//recv:	// TEST MULTI RECV
 	for (int i = 0; i < BUFFER_SIZE; i++)
 		buffer[i] = 0;
 
@@ -158,7 +158,7 @@ void	Network::deal_with_data(int listnum)
 	_total_bytes_read += bytes_read;
 	recv_it++;
 
-	//std::cout << G << "It's the " << recv_it << "eme try of recv\n" << RE;
+	//std::cout << G << "It's the " << recv_it << "eme try of recv\n" << RE; // TEST MULTI RECV
 
 	if (bytes_read < 0)
 	{
@@ -175,7 +175,7 @@ void	Network::deal_with_data(int listnum)
 			std::cout << B << "YA EOF A buffer[bytes_read] !!!\n" << RE;
 
 	//	if (request_string.find("\r\n\r\n") == std::string::npos)
-	//		goto recv;
+	//		goto recv; // TEST MUTLI RECV
 
 		std::string	root = "./website";  //a get dans le vrai config file
 		std::string	uri;
@@ -185,21 +185,18 @@ void	Network::deal_with_data(int listnum)
 
 		std::cout << R << "@@@RAW REQUEST IS :@@@\n" << RE << request_string << std::endl
 			<< R << "@@@@@ =" << _total_bytes_read << " bytes read and "
-			<< recv_it << " recv @@@@@\n" << RE;
+			<< recv_it << " recv @@@@@\n" << RE;								//DEBUG
 
-		// Extract the request headers and body
+
 		if (request.fill(request_string) == false)
 		{
 			std::cout << "Wrong HTTP REQUEST\n";
 			rep_code = 404;
-			html_content = ft_read_file("./website/error-404.html");
 			file_type.first = "html"; file_type.second = "html";
 			goto fill_rep;
 		}
-//		std::cout << "Parsed request:\n" << request << std::endl;
 
-		/////////////////////AJOUT RENO 28.02.23//////////////////////
-		//////////////////////////////////////////////////////////////
+//		std::cout << "Parsed request:\n" << request << std::endl; //DEBUG
 
 		uri = request.get_URI();
 		path = root + uri;
@@ -208,8 +205,8 @@ void	Network::deal_with_data(int listnum)
 
 		if (uri == "/")
 		{
-			html_content = ft_read_file(root + "/index.html"); //default dans config
 			file_type.first = "html"; file_type.second = "html";
+			path += "index.html";
 			rep_code = 200;
 		}
 		else
@@ -221,12 +218,10 @@ void	Network::deal_with_data(int listnum)
 			{
 				infile.close();
 				rep_code = 200;
-				html_content = ft_read_file(path);
 			}
 			else
 			{
 				rep_code = 404;
-				html_content = ft_read_file("./website/error-404.html");
 				file_type.first = "html"; file_type.second = "html";
 				goto fill_rep;
 			}
@@ -234,7 +229,8 @@ void	Network::deal_with_data(int listnum)
 			std::size_t last_point = path.rfind(".");
 			if (last_point == 0)
 			{
-				std::cout << G << "YA QUUN POINT AU DEBUT\n" << RE;
+				std::cout << G << "YA QUUN POINT AU DEBUT\n" << RE;	//DEBUG
+
 				file_type.first = "html"; file_type.second = "html";
 				goto fill_rep;
 			}
@@ -252,49 +248,32 @@ void	Network::deal_with_data(int listnum)
 				file_type.second = "html";
 			}
 		}
+
 fill_rep:
-		/*std::cout << G << "@@@@file type@@@@\n"
-			<< "file type first = " << file_type.first << "\n"
-			<< "file type second = "  << file_type.second << "\n"
-			<< "@@@@@@@@@@@@@@@@@\n" << RE;*/
+		/*std::cout << G << "@@@@file type@@@@\n"					//
+			<< "file type first = " << file_type.first << "\n"		//
+			<< "file type second = "  << file_type.second << "\n"	//
+			<< "@@@@@@@@@@@@@@@@@\n" << RE;*/						// DEBUG
 
-		/////////////////////////////////////////////////////////////
-		/////////////////////////////////////////////////////////////
+		response.set_error_code(rep_code);											//new
 
-		// Send a response
-		// Set the HTTP response headers
-		if (rep_code == 200)
-			response << "HTTP/1.1 200 OK\n";
-		else
-			response << "HTTP/1.1 404 Not Found\n";
 
-		if (file_type.first == "html")
-			response << "Content-Type: text/html\n";
-		else if (file_type.first == "image")
-		{
-			response << "Content-Type: image/";
-			response << file_type.second << "\n";
-		}
+		if (file_type.first == "html")												//a changer
+			response.set_content_type("text/html");									//quand on
+		else if (file_type.first == "image")										//aura les
+			response.set_content_type(file_type.first + "/" + file_type.second);	//mimes_type
 
-		response << "Content-Length: " << html_content.length() << "\n";
-		response << "\n";
+		if (response.get_error_code() == 200)										//
+			response.set_content_body(ft_read_file(path));							//
+		else																		//
+			response.set_content_body(ft_read_file("./website/error-404.html"));	//new
 
-		// Send the response headers and body
-
-		std::string temp;
-		temp = response.str();
-
-		std::cout << W << "###### RESPONSE ######\n" << response.str() << std::endl;
-		std::cout << "#########HTML#########\n" << html_content.c_str() << std::endl;
-		std::cout << "######################\n" << RE;
-
-		send(_connectlist[listnum], temp.c_str(), temp.length(), 0);
-		send(_connectlist[listnum], html_content.c_str(), html_content.length(), 0);
+		response.send(_connectlist[listnum]);										//new
 
 		close(_connectlist[listnum]);
 		_connectlist[listnum] = 0;
 
-		std::cout << Y << "^^^ FIN DE LA " << _req_handled << "eme REQUEST ^^^\n" << RE;
+		std::cout << Y << "^^^ FIN DE LA " << _req_handled << "eme REQUEST ^^^\n" << RE;//DEBUG
 	}
 }
 

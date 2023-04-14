@@ -22,6 +22,8 @@ public:
 
 	void set_error_code(int error_code);
 	void set_content(std::string content, std::string content_type);
+	void set_content_body(std::string body); // ajout de Reno
+	void set_content_type(std::string type); // setters individuels pr body et content-type
 
 	std::string send(int client_socket);
 
