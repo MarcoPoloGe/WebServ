@@ -139,7 +139,7 @@ void	Network::deal_with_data(int listnum)
 {
 	char				buffer[BUFFER_SIZE];
 	Request 			request;
-	Response			response;
+	Response			response(_config);
 	int					bytes_read;
 	std::string 		request_string;
 	int					recv_it = 0;	// TEST MULTI RECV

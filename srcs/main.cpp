@@ -2,7 +2,6 @@
 
 int	main(int ac, char **av)
 {
-	Types main;
 	if (ac != 2)
 		Ft_error err("Bad arguments");
 
@@ -10,7 +9,7 @@ int	main(int ac, char **av)
 	std::cout << "🧚‍ Main_parsing launch" << std::endl;
 	std::vector<Config> all_config;
 	try {
-		main_parsing(av, all_config, main);
+		main_parsing(av, all_config);
 	}
 	catch (...) {
 		std::cerr << "Error: main_parsing" << std::endl;

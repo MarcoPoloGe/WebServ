@@ -59,6 +59,8 @@ public:
 	setKeyTemp(std::string 												key_temp);
 	void
 	setValueTemp(std::string 											value_temp);
+	void
+	setMimeMap(std::map<std::string,std::string>						mime_type);
 
 /* weirdo setters */
 	void
@@ -74,9 +76,13 @@ public:
 	std::string 												&getPortServer();
 	std::vector<std::string> 									&getAllServerConfig ();
 	std::vector<std::map<std::string, std::string> >			&getAllLocations();
+	std::map<std::string,std::string>							&getMimeMap();
 
 	std::string 												&getKeyTemp();
 	std::string 												&getValueTemp();
+
+
+	std::string													getPathFormat(const std::string& format);
 
 /* weirdo getters */
 
@@ -96,10 +102,10 @@ private:
 	std::vector<std::string> 										_serverconfig;
 	std::vector<std::string> 										_rawfile;
 	std::vector<std::map<std::string, std::string> > 				_locs;
+	std::map<std::string, std::string>								_mime_types;
 
 	std::string														_key_temp;
 	std::string														_value_temp;
-
 
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/
@@ -121,7 +127,7 @@ public:
 /**********************************************************************************************************************/
 
 void
-main_parsing(char **av, std::vector<Config> &all_config, Types &t);
+main_parsing(char **av, std::vector<Config> &all_config);
 
 
 /**********************************************************************************************************************/
@@ -132,8 +138,7 @@ bool
 serverConfig(
 		std::vector<std::string> &stock,
 		std::vector<std::string>::iterator it,
-		std::vector<Config> &all_config,
-		Types &t);
+		std::vector<Config> &all_config);
 
 
 /**********************************************************************************************************************/
@@ -177,5 +182,14 @@ printVector(std::vector<std::string> &x );
 
 void
 getOnlyChar(std::string &s);
+
+void
+insert_mime_type(
+		std::string input, std::map<std::string, std::string> &mime_types);
+
+std::map<std::string, std::string>
+save_mime_type(
+		std::vector<std::string>::iterator 	first_bracket,
+		std::vector<std::string>::iterator 	last_bracket);
 
 #endif //CONFIG_PARSER_PARSER_HPP

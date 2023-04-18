@@ -24,6 +24,7 @@ void Config::setServerConfig	(std::vector<std::string> config)						{ this->_ser
 void Config::setAllLocation		(std::vector<std::map<std::string, std::string> > locs)	{ this->_locs = locs; }
 void Config::setKeyTemp			(std::string key_temp) 									{ this->_key_temp = key_temp; }
 void Config::setValueTemp		(std::string value_temp) 								{ this->_value_temp = value_temp; }
+void Config::setMimeMap			(std::map<std::string,std::string> mime_type)			{ this->_mime_types = mime_type; }
 
 /* weirdo setters */
 void Config::setRawfile	(
@@ -46,9 +47,23 @@ std::string 										&Config::getIpServer(void) 				{ return(_ip); }
 std::string 										&Config::getPortServer(void) 			{ return(_port); }
 std::vector<std::string> 							&Config::getAllServerConfig (void)		{ return (_serverconfig); }
 std::vector<std::map<std::string, std::string> > 	&Config::getAllLocations(void)			{ return (_locs); }
+std::map<std::string,std::string>					&Config::getMimeMap(void)				{ return(_mime_types); }
 
 std::string &Config::getKeyTemp(void) {return (_key_temp); }
 std::string &Config::getValueTemp(void) {return (_value_temp); }
+
+std::string Config::getPathFormat(const std::string& format) {
+	std::map<std::string, std::string>::iterator itm;
+	itm = _mime_types.find(format);
+	if (itm != _mime_types.end()){
+		return (itm->second);
+	}
+	else
+	{
+		std::cerr<<R<< "Error: getPathFormat: "<< format << " not found." <<RE<< std::endl;
+		return (std::string());
+	}
+}
 
 
 /**********************************************************************************************************************/
