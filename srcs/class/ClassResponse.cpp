@@ -62,7 +62,7 @@ void Response::set_content_type(std::string type)
 
 void Response::set_content_ext(std::string extension)
 {
-	this->_content_type = this->_config.getPathFormat(extension);
+	this->_content_type = this->_config.getType(extension);
 }
 
 std::string Response::ft_error_def(int error_code)

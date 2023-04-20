@@ -16,7 +16,8 @@ int	main(int ac, char **av)
 	}
 
 	Config config1(all_config[0]);
-
+	std::cout << config1.getErrorPages("404") << std::endl;
+	std::cout << config1.getErrorNames("200") << std::endl;
 	Network	serv(8080, config1);
 	serv.run();
 
