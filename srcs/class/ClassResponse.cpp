@@ -40,14 +40,15 @@ std::string Response::get_content_type() const
 
 void Response::set_error_code(int error_code)
 {
-    //todo check if error_code is valid when config file is working
+	if(this->_config.getErrorNames(error_code).empty())
+		throw std::invalid_argument("error_code does not exist\n");
 	this->_error_code = error_code;
 }
 
 void Response::set_content(std::string content, std::string content_ext)
 {
 	this->set_content_body(content);
-	this->set_content_ext(content_ext);
+	this->set_content_extension(content_ext);
 }
 
 void Response::set_content_body(std::string body)
@@ -60,23 +61,33 @@ void Response::set_content_type(std::string type)
 	this->_content_type = type;
 }
 
-void Response::set_content_ext(std::string extension)
+void Response::set_content_extension(std::string extension)
 {
 	this->_content_type = this->_config.getType(extension);
 }
 
-std::string Response::ft_error_def(int error_code)
+std::string Response::ft_error_name(int error_code)
 {
-	//todo when config file is working.
-	(void) error_code;
-	return ("OK");
+	std::string name;
+
+	name = _config.getErrorNames(error_code);
+	if(name.empty())
+		throw std::invalid_argument("error_name cannot be found\n");
+	return (name);
 }
 
-std::string Response::ft_error_file(int error_code)
+std::string Response::ft_error_page(int error_code)
 {
-    //todo when config file is working.
-    (void) error_code;
-    return ("<h1>ERROR 404 file not found</h1>");
+	std::string page_name;
+
+	page_name = _config.getErrorPages(error_code);
+	if(page_name.empty())
+	{
+		std::stringstream message;
+		message << "error_page cannot be found :" << error_code << " please add it in config file." <<std::endl;
+		throw std::invalid_argument(message.str());
+	}
+	return (page_name);
 }
 
 std::string Response::send(int client_socket)
@@ -86,11 +97,11 @@ std::string Response::send(int client_socket)
 	//building the message to send;
 	message << HTTP_VERSION << " "
 	<< this->get_error_code() << " "
-	<< ft_error_def(this->get_error_code()) << std::endl;
+	<< ft_error_name(this->get_error_code()) << std::endl;
 
 	if(_error_code != 200)
 	{
-        set_content(ft_error_file(this->_error_code), "text/html");
+        set_content(ft_error_page(this->_error_code), "text/html");
 	}
 	else if(get_content().empty() || get_content_type().empty())
 	{
@@ -98,7 +109,6 @@ std::string Response::send(int client_socket)
 	}
 	message << "Content-Length:" << get_content().length() << std::endl;
 	message << "Content-Type:" << get_content_type() << std::endl;
-	//todo maybe add more headers like date ect.
 	message << std::endl;
 	message << get_content();
 
