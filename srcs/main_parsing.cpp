@@ -40,22 +40,23 @@ main_parsing(
 void
 insert_error(
 		std::string input,
-		std::map<std::string, std::string> &error)
+		std::map<int, std::string> &error)
 {
-	std::string tmp_keys;
-	std::string key;
+	std::string tmp_key;
+	int key;
 	std::string value;
 	unsigned long pos;
 
 	if((pos = input.find('=')) != std::string::npos)
 	{
-		key = input.substr(0, pos);
-		getOnlyChar(value);
+		tmp_key = input.substr(0, pos);
+		getOnlyChar(tmp_key);
+		key = std::atoi(tmp_key.c_str());
 		input.erase(0, pos + 1);
 		value = input;
-		getOnlyChar(key);
+		getOnlyChar(value);
 //		std::cout <<G<< "error->key = " << key << " | value = " << value <<RE<< std::endl;
-		error.insert(std::pair<std::string, std::string>(key, value));
+		error.insert(std::pair<int, std::string>(key, value));
 	}
 	else {
 		std::cerr<<R<< "Error: @fn insert_error \nDelimiter '" << "=" << "' not found in " << input <<RE<< std::endl;
@@ -66,7 +67,7 @@ void
 save_error(
 		std::vector<std::string>::iterator 	first_bracket,
 		std::vector<std::string>::iterator 	last_bracket,
-		std::map<std::string, std::string> &error)
+		std::map<int, std::string> &error)
 {
 	std::map<std::string, std::string> mime_types;
 
@@ -92,8 +93,8 @@ serverConfig(
 	std::vector<Config>::iterator 						vit;
 
 	std::map<std::string,std::string> mime_type;
-	std::map<std::string,std::string> error_pages_map;
-	std::map<std::string,std::string> error_names_map;
+	std::map<int,std::string> error_pages_map;
+	std::map<int,std::string> error_names_map;
 
 	bool get_in = false;
 	bool server = false;

@@ -62,9 +62,9 @@ public:
 	void
 	setMimeMap(std::map<std::string,std::string>						mime_type);
 	void
-	setErrorPagesMap(std::map<std::string,std::string>					error_pages);
+	setErrorPagesMap(std::map<int,std::string>							error_pages);
 	void
-	setErrorNamesMap(std::map<std::string,std::string>						error_names);
+	setErrorNamesMap(std::map<int,std::string>							error_names);
 
 /* weirdo setters */
 	void
@@ -81,8 +81,8 @@ public:
 	std::vector<std::string> 									&getAllServerConfig ();
 	std::vector<std::map<std::string, std::string> >			&getAllLocations();
 	std::map<std::string,std::string>							&getMimeMap();
-	std::map<std::string,std::string>							&getErrorPagesMap();
-	std::map<std::string,std::string>							&getErrorNamesMap();
+	std::map<int,std::string>									&getErrorPagesMap();
+	std::map<int,std::string>									&getErrorNamesMap();
 
 
 	std::string 												&getKeyTemp();
@@ -90,8 +90,8 @@ public:
 
 
 	std::string													getType(const std::string& format);
-	std::string													getErrorPages(const std::string& format);
-	std::string													getErrorNames(const std::string& format);
+	std::string													getErrorPages(int error_pages);
+	std::string													getErrorNames(int error_names);
 
 /* weirdo getters */
 
@@ -112,8 +112,8 @@ private:
 	std::vector<std::string> 										_rawfile;
 	std::vector<std::map<std::string, std::string> > 				_locs;
 	std::map<std::string, std::string>								_mime_types;
-	std::map<std::string, std::string>								_error_pages;
-	std::map<std::string, std::string>								_error_names;
+	std::map<int, std::string>										_error_pages;
+	std::map<int, std::string>										_error_names;
 
 	std::string														_key_temp;
 	std::string														_value_temp;
