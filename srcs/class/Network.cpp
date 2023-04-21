@@ -266,7 +266,7 @@ fill_rep:
 		if (response.get_error_code() == 200)										//
 			response.set_content_body(ft_read_file(path));							//
 		else																		//
-			response.set_content_body(ft_read_file("./website/error-404.html"));	//new
+			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
 
 		response.send(_connectlist[listnum]);										//new
 

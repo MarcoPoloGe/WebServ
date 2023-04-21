@@ -20,6 +20,7 @@ bool Request::fill(std::string request)
 
 		if(std::getline(file, first, ' '))
 		{
+			first.erase(std::remove_if(first.begin(), first.end(), ::isspace), first.end());
 			if(!first.empty() && (first == "GET" || first == "PUT" || first == "DELETE"))
 				type = first;
 			else
@@ -27,6 +28,7 @@ bool Request::fill(std::string request)
 		}
 		if(std::getline(file, first, ' '))
 		{
+			first.erase(std::remove_if(first.begin(), first.end(), ::isspace), first.end());
 			if(!first.empty())
 				URI = first;
 			else
@@ -34,20 +36,17 @@ bool Request::fill(std::string request)
 		}
 		if(std::getline(file, first))
 		{
-			if(!first.empty())
+			first.erase(std::remove_if(first.begin(), first.end(), ::isspace), first.end());
+			if(!first.empty() && first == HTTP_VERSION)
 				HTTP_version = first;
 			else
 				throw std::invalid_argument("Invalid HTTP request HTTP version");
 		}
 		while (std::getline(file, line))
 		{
+			line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
 			if (line.empty())
 				break;
-
-			line.erase(std::remove(line.begin(), line.end(), '\r'), line.end()); //
-			// je (reno) t'ai rajoute cette ligne pour virer les \r en fin de ligne
-			// qui me cassaient les c*uilles, bisous 
-
 			std::istringstream sline(line);
 			if(std::getline(sline, first, ':'))
 			{
