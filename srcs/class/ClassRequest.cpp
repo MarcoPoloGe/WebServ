@@ -58,6 +58,14 @@ bool Request::fill(std::string request)
 				}
 			}
 		}
+		if(this->type == "PUT")
+		{
+			file >> std::ws;
+			if(!file.str().empty())
+				this->body = line;
+			else
+				throw std::invalid_argument("Invalid HTTP request body");
+		}
 	}
 	catch(std::invalid_argument &e)
 	{
@@ -85,7 +93,11 @@ std::map<std::string, std::string> Request::get_headers_map() const
 	return (this->headers_map);
 }
 
-//Returns string.empty if it did not find a corresponding header_name
+std::string Request::get_body() const
+{
+	return (this->body);
+}
+
 std::string Request::get_header(std::string header_name) const
 {
 	return (this->headers_map.find(header_name)->second);

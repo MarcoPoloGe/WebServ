@@ -20,12 +20,14 @@ public:
 	std::string get_HTTP_version() const;
 	std::string get_header(std::string header_name) const;
 	std::map<std::string, std::string> get_headers_map() const;
+	std::string get_body() const;
 
 private:
 	std::string type;
 	std::string URI; // le lien donné apres la requete. GET -> /lelien.html <- HTML/1.1
 	std::string HTTP_version;
 	std::map<std::string,std::string> headers_map;
+	std::string body;
 };
 
 std::ostream& operator<<(std::ostream& out, const Request& rhs);
