@@ -134,9 +134,9 @@ std::ostream& operator<<(std::ostream& out, Response const& rhs)
 	out << "error_code : " << rhs.get_error_code() << std::endl;
 	out << "content_type : " << rhs.get_content_type() << std::endl;
 
-	short_content = rhs.get_content().substr(0,30);
+	short_content = rhs.get_content().substr(0,100);
 	out << "content : " << short_content;
-	if(rhs.get_content().length() > 30)
+	if(rhs.get_content().length() > 100)
 		out << "...";
 	out << std::endl;
 

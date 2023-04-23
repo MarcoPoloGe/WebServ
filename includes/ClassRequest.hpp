@@ -22,6 +22,8 @@ public:
 	std::map<std::string, std::string> get_headers_map() const;
 	std::string get_body() const;
 
+	Request &operator=(Request const &rhs);
+
 private:
 	std::string type;
 	std::string URI; // le lien donné apres la requete. GET -> /lelien.html <- HTML/1.1
