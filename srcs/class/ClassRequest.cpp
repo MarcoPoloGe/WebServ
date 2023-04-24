@@ -104,7 +104,12 @@ std::string Request::get_body() const
 
 std::string Request::get_header(std::string header_name) const
 {
-	return (this->headers_map.find(header_name)->second);
+	std::map<std::string,std::string>::const_iterator temp;
+	temp = this->headers_map.find(header_name);
+	if(temp == this->headers_map.end())
+		return(std::string());
+	else
+		return (temp->second);
 }
 
 Request &Request::operator=(Request const &rhs)
