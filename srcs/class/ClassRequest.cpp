@@ -12,51 +12,62 @@ Request::Request(std::string request)
 bool Request::fill(std::string request)
 {
 	std::istringstream file(request);
-	std::string line;
+	std::string temp;
 	std::string first;
 	std::string second;
-
+	
 	try {
 
-		if(std::getline(file, first, ' '))
+		if(std::getline(file, temp, ' '))
 		{
-			if(!first.empty() && (first == "GET" || first == "PUT" || first == "DELETE"))
-				type = first;
+			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+			if(!temp.empty() && (temp == "GET" || temp == "POST" || temp == "DELETE"))
+				type = temp;
 			else
-				throw std::invalid_argument("Invalid HTTP request type");
+				throw std::invalid_argument("Invalid HTTP request type : " + temp);
 		}
-		if(std::getline(file, first, ' '))
+		if(std::getline(file, temp, ' '))
 		{
-			if(!first.empty())
-				URI = first;
+			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+			if(!temp.empty())
+				URI = temp;
 			else
 				throw std::invalid_argument("Invalid HTTP request URI");
 		}
-		if(std::getline(file, first))
+		if(std::getline(file, temp))
 		{
-			if(!first.empty())
-				HTTP_version = first;
+			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+			if(!temp.empty() && temp == HTTP_VERSION)
+				HTTP_version = temp;
 			else
-				throw std::invalid_argument("Invalid HTTP request HTTP version");
+				throw std::invalid_argument("Invalid HTTP request HTTP version : " + temp);
 		}
-		while (std::getline(file, line))
+		while (std::getline(file, temp))
 		{
-			if (line.empty())
+			temp.erase(std::remove(temp.begin(), temp.end(), '\r'), temp.end());
+			temp.erase(std::remove(temp.begin(), temp.end(), '\n'), temp.end());
+			if (temp.empty())
 				break;
-
-			line.erase(std::remove(line.begin(), line.end(), '\r'), line.end()); //
-			// je (reno) t'ai rajoute cette ligne pour virer les \r en fin de ligne
-			// qui me cassaient les c*uilles, bisous 
-
-			std::istringstream sline(line);
-			if(std::getline(sline, first, ':'))
+			std::istringstream stemp(temp);
+			if(std::getline(stemp, first, ':'))
 			{
-				if(std::getline(sline >> std::ws, second)) // >> std:ws skips white spaces before reading. It is used so that the string 'second' doesn't store the space right after the :
+				if(std::getline(stemp >> std::ws, second)) // >> std:ws skips white spaces before reading
 				{
 					if(first.empty() || second.empty())
 						throw std::invalid_argument("Invalid HTTP request header");
 					headers_map.insert(std::make_pair(first, second));
 				}
+			}
+		}
+		if(this->type == "POST")
+		{
+			file >> std::ws;
+			if(getline(file, temp, '\0'))// read everything left in the request;
+			{
+				if(!temp.empty())
+					this->body = temp;
+				else
+					throw std::invalid_argument("Invalid HTTP request body");
 			}
 		}
 	}
@@ -86,15 +97,35 @@ std::map<std::string, std::string> Request::get_headers_map() const
 	return (this->headers_map);
 }
 
-//Returns string.empty if it did not find a corresponding header_name
+std::string Request::get_body() const
+{
+	return (this->body);
+}
+
 std::string Request::get_header(std::string header_name) const
 {
-	return (this->headers_map.find(header_name)->second);
+	std::map<std::string,std::string>::const_iterator temp;
+	temp = this->headers_map.find(header_name);
+	if(temp == this->headers_map.end())
+		return(std::string());
+	else
+		return (temp->second);
+}
+
+Request &Request::operator=(Request const &rhs)
+{
+	this->type = rhs.type;
+	this->URI = rhs.URI;
+	this->HTTP_version = rhs.HTTP_version;
+	this->headers_map = rhs.headers_map;
+	this->body = rhs.body;
+	return (*this);
 }
 
 std::ostream& operator<<(std::ostream& out, Request const& rhs)
 {
 	std::map<std::string,std::string> headers = rhs.get_headers_map();
+	std::string short_body;
 
 	out << "--Request_start--" << std::endl;
 	out << "type : " << rhs.get_type() << std::endl;
@@ -103,8 +134,16 @@ std::ostream& operator<<(std::ostream& out, Request const& rhs)
 
 	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 	{
-		out << it->first << " : " << it->second << std::endl;
+		out << it->first << " : " << it->second <<  std::endl;
 	}
+	out << std::endl;
+
+	short_body = rhs.get_body().substr(0,100);
+	out << short_body;
+	if(rhs.get_body().length() > 100)
+		out << "...";
+	out << std::endl;
+
 	out << "--Request_end--" << std::endl;
 	return (out);
 }

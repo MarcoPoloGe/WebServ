@@ -25,6 +25,8 @@ void Config::setAllLocation		(std::vector<std::map<std::string, std::string> > l
 void Config::setKeyTemp			(std::string key_temp) 									{ this->_key_temp = key_temp; }
 void Config::setValueTemp		(std::string value_temp) 								{ this->_value_temp = value_temp; }
 void Config::setMimeMap			(std::map<std::string,std::string> mime_type)			{ this->_mime_types = mime_type; }
+void Config::setErrorPagesMap	(std::map<int, std::string> error_pages)				{ this->_error_pages = error_pages; }
+void Config::setErrorNamesMap	(std::map<int, std::string> error_names)				{ this->_error_names = error_names; }
 
 /* weirdo setters */
 void Config::setRawfile	(
@@ -48,11 +50,14 @@ std::string 										&Config::getPortServer(void) 			{ return(_port); }
 std::vector<std::string> 							&Config::getAllServerConfig (void)		{ return (_serverconfig); }
 std::vector<std::map<std::string, std::string> > 	&Config::getAllLocations(void)			{ return (_locs); }
 std::map<std::string,std::string>					&Config::getMimeMap(void)				{ return(_mime_types); }
+std::map<int, std::string>							&Config::getErrorPagesMap(void)			{ return(_error_pages); }
+std::map<int, std::string>							&Config::getErrorNamesMap(void)			{ return(_error_names); }
 
-std::string &Config::getKeyTemp(void) {return (_key_temp); }
-std::string &Config::getValueTemp(void) {return (_value_temp); }
+std::string &Config::getKeyTemp(void) 				{return (_key_temp); }
+std::string &Config::getValueTemp(void) 			{return (_value_temp); }
 
-std::string Config::getPathFormat(const std::string& format) {
+std::string
+Config::getType(const std::string& format) {
 	std::map<std::string, std::string>::iterator itm;
 	itm = _mime_types.find(format);
 	if (itm != _mime_types.end()){
@@ -60,11 +65,39 @@ std::string Config::getPathFormat(const std::string& format) {
 	}
 	else
 	{
-		std::cerr<<R<< "Error: getPathFormat: "<< format << " not found." <<RE<< std::endl;
+		std::cerr<<R<< "Error: getType: "<< format << " not found." <<RE<< std::endl;
 		return (std::string());
 	}
 }
 
+std::string
+Config::getErrorPages(int error_pages) {
+	std::map<int, std::string>::iterator itm;
+	itm = _error_pages.find(error_pages);
+	if (itm != _error_pages.end()){
+		return (itm->second);
+	}
+	else
+	{
+		std::cerr << R << "Error: getErrorPages: " << error_pages << " not found." << RE << std::endl;
+		return (std::string());
+	}
+}
+
+
+std::string
+Config::getErrorNames(int error_names) {
+	std::map<int, std::string>::iterator itm;
+	itm = _error_names.find(error_names);
+	if (itm != _error_names.end()){
+		return (itm->second);
+	}
+	else
+	{
+		std::cerr << R << "Error: getErrorNames: " << error_names << " not found." << RE << std::endl;
+		return (std::string());
+	}
+}
 
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/

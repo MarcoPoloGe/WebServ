@@ -16,7 +16,6 @@ int	main(int ac, char **av)
 	}
 
 	Config config1(all_config[0]);
-
 	Network	serv(8080, config1);
 	serv.run();
 
