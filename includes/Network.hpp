@@ -42,8 +42,10 @@ private:
 	int					_connectlist[5];
 	fd_set				_socks;
 	int					_highsock;
+	fd_set				_current_sock;
 
 	Config				_config;
+//	unsigned int		_host;
 	int					_port;
 	struct sockaddr_in	_server_address;
 	int					_reuse_addr;

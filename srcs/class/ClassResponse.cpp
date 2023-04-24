@@ -81,6 +81,12 @@ std::string Response::ft_error_file(int error_code)
 
 std::string Response::send(int client_socket)
 {
+	if ( _content_type.empty() || _content.empty() )
+	{
+//		std::cout << B << "Nothing send : it was empty\n" << RE; // DEBUG
+		return ("");
+	}
+
 	std::stringstream message;
 
 	//building the message to send;

@@ -38,16 +38,6 @@ Network::Network(int const port, Config config): _config(config), _port(port)
 		Ft_error	err("bind");
 	}
 
-	/*struct sockaddr_in remoteaddr;
-	remoteaddr.sin_family = AF_INET;
-	remoteaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	remoteaddr.sin_port = htons(8081);
-	int ret = connect(_sock, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr));
-	if (ret < 0)
-	{
-		std::cout << R << "Remoteaddr cannot connect to sock\n" << RE;
-	}*/
-
 	listen(_sock, MAX_CLIENTS);
 	
 	_highsock = _sock;
@@ -76,13 +66,13 @@ void Network::setnonblocking(int sock)
 {
 	int opts;
 
-	opts = fcntl(sock,F_GETFL);
+	opts = fcntl(sock, F_GETFL);
 	if (opts < 0)
 		Ft_error	err("fcntl");
 
 	opts = (opts | O_NONBLOCK);
 
-	if (fcntl(sock,F_SETFL,opts) < 0)
+	if (fcntl(sock, F_SETFL, opts) < 0)
 		Ft_error	err("fcntl");
 
 	return;
@@ -94,6 +84,13 @@ void	Network::build_select_list(void)
 
 	FD_ZERO(&_socks);
 	FD_SET(_sock, &_socks);
+//	FD_SET(_sock2, &_socks); //multiport
+	
+//	if (_sock > _sock2)		//
+//		_highsock = _sock;	//
+//	else					//
+//		_highsock = _sock2;	// to find le plus grand
+
 	for (listnum = 0; listnum < 5; listnum++)
 	{
 		if (_connectlist[listnum] != 0)
@@ -140,114 +137,111 @@ void	Network::deal_with_data(int listnum)
 	char				buffer[BUFFER_SIZE];
 	Request 			request;
 	Response			response(_config);
-	int					bytes_read;
+	int					bytes_read = 1;
 	std::string 		request_string;
 	int					recv_it = 0;	// TEST MULTI RECV
-	// need to boucler les recv pr si buffer size trop petit ? //
 
 	_total_bytes_read = 0;
 	_req_handled++;
 	std::cout << Y << "\nvvv CECI EST LA " << _req_handled << "eme REQUEST HANDLED vvv\n" << RE;
 
-//recv:	// TEST MULTI RECV
-	for (int i = 0; i < BUFFER_SIZE; i++)
-		buffer[i] = 0;
-
-	bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE - 1, 0);
-
-	_total_bytes_read += bytes_read;
-	recv_it++;
-
-	//std::cout << G << "It's the " << recv_it << "eme try of recv\n" << RE; // TEST MULTI RECV
-
-	if (bytes_read < 0)
+	while (bytes_read > 0)
 	{
-		std::cout << "\nConnection lost with FD = " << _connectlist[listnum]
-			<< " & Slot = " << listnum << std::endl;
-		close(_connectlist[listnum]);
-		_connectlist[listnum] = 0;
+		for (int i = 0; i < BUFFER_SIZE; i++)
+			buffer[i] = 0;
+
+		bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE, 0);
+
+		_total_bytes_read += bytes_read;
+		recv_it++; // TEST MULTI RECV
+	
+//		std::cout << G << "It's the " << recv_it << "eme try of recv\n" << RE; // DEBUG
+	
+		if (bytes_read < 0)
+		{
+			if (FD_ISSET(_connectlist[listnum], &_socks))
+				break ;
+			std::cout << "\nConnection lost with FD = " << _connectlist[listnum]
+				<< " & Slot = " << listnum << std::endl;
+			close(_connectlist[listnum]);
+			_connectlist[listnum] = 0;
+			return ;
+		}
+		request_string += buffer;
+	}
+//	std::cout << Y << "Total bytes read = " << _total_bytes_read << std::endl << RE; //DEBUG
+	
+	std::string	root = "./website";  //a get dans le vrai config file
+	std::string	uri;
+	std::string	path;		
+	int	rep_code = 0;
+	std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
+	
+	std::cout << R << "@@@RAW REQUEST IS :@@@\n" << RE << request_string << std::endl
+			<< R << "@@@@@ =" << _total_bytes_read << " bytes read and "
+			<< recv_it << " recv @@@@@\n" << RE;								//DEBUG
+	
+	
+	if (request.fill(request_string) == false)
+	{
+		std::cout << "Wrong HTTP REQUEST\n";
+		rep_code = 404;
+		file_type.first = "html"; file_type.second = "html";
+		goto fill_rep;
+	}
+
+//	std::cout << "Parsed request:\n" << request << std::endl; //DEBUG
+
+	uri = request.get_URI();
+	path = root + uri;
+
+	std::cout << "***Try to access : {" << path << "}***\n";		//DEBUG
+
+	if (uri == "/")
+	{
+		file_type.first = "html"; file_type.second = "html";
+		path += "index.html";
+		rep_code = 200;
 	}
 	else
 	{
-		request_string += buffer;
+		std::ifstream	infile;
 
-		if (buffer[bytes_read - 1] == '\0')
-			std::cout << B << "YA EOF A buffer[bytes_read] !!!\n" << RE;
-
-	//	if (request_string.find("\r\n\r\n") == std::string::npos)
-	//		goto recv; // TEST MUTLI RECV
-
-		std::string	root = "./website";  //a get dans le vrai config file
-		std::string	uri;
-		std::string	path;
-		int	rep_code = 0;
-		std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
-
-		std::cout << R << "@@@RAW REQUEST IS :@@@\n" << RE << request_string << std::endl
-			<< R << "@@@@@ =" << _total_bytes_read << " bytes read and "
-			<< recv_it << " recv @@@@@\n" << RE;								//DEBUG
-
-
-		if (request.fill(request_string) == false)
+		infile.open(path.c_str(), std::ios::in);
+		if (infile.is_open())
 		{
-			std::cout << "Wrong HTTP REQUEST\n";
+			infile.close();
+			rep_code = 200;
+		}
+		else
+		{
 			rep_code = 404;
 			file_type.first = "html"; file_type.second = "html";
 			goto fill_rep;
 		}
 
-//		std::cout << "Parsed request:\n" << request << std::endl; //DEBUG
-
-		uri = request.get_URI();
-		path = root + uri;
-
-		std::cout << "***Try to access : {" << path << "}***\n";		//DEBUG
-
-		if (uri == "/")
+		std::size_t last_point = path.rfind(".");
+		if (last_point == 0)
 		{
+			std::cout << G << "YA QUUN POINT AU DEBUT\n" << RE;	//DEBUG
+
 			file_type.first = "html"; file_type.second = "html";
-			path += "index.html";
-			rep_code = 200;
+			goto fill_rep;
+		}
+		if (last_point != std::string::npos)
+		{
+			file_type.second = path.substr(last_point + 1);
+			if (file_type.second == "html")
+				file_type.first = "html";
+			else
+				file_type.first = "image";
 		}
 		else
 		{
-			std::ifstream	infile;
-
-			infile.open(path.c_str(), std::ios::in);
-			if (infile.is_open())
-			{
-				infile.close();
-				rep_code = 200;
-			}
-			else
-			{
-				rep_code = 404;
-				file_type.first = "html"; file_type.second = "html";
-				goto fill_rep;
-			}
-
-			std::size_t last_point = path.rfind(".");
-			if (last_point == 0)
-			{
-				std::cout << G << "YA QUUN POINT AU DEBUT\n" << RE;	//DEBUG
-
-				file_type.first = "html"; file_type.second = "html";
-				goto fill_rep;
-			}
-			if (last_point != std::string::npos)
-			{
-				file_type.second = path.substr(last_point + 1);
-				if (file_type.second == "html")
-					file_type.first = "html";
-				else
-					file_type.first = "image";
-			}
-			else
-			{
-				file_type.first = "html";
-				file_type.second = "html";
-			}
+			file_type.first = "html";
+			file_type.second = "html";
 		}
+	}
 
 fill_rep:
 		/*std::cout << G << "@@@@file type@@@@\n"					//
@@ -274,7 +268,6 @@ fill_rep:
 		_connectlist[listnum] = 0;
 
 		std::cout << Y << "^^^ FIN DE LA " << _req_handled << "eme REQUEST ^^^\n" << RE;//DEBUG
-	}
 }
 
 void	Network::read_socks(void)
