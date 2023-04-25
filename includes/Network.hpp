@@ -39,15 +39,17 @@ private:
 	
 //Variables
 	int					_sock;
+	int					_sock2; //multiport
 	int					_connectlist[5];
 	fd_set				_socks;
 	int					_highsock;
-	fd_set				_current_sock;
+	int					_current_sock; //multiport
 
 	Config				_config;
 //	unsigned int		_host;
 	int					_port;
 	struct sockaddr_in	_server_address;
+	struct sockaddr_in	_server_address2; //multiport
 	int					_reuse_addr;
 	struct timeval		_timeout;
 	int					_readsocks;
