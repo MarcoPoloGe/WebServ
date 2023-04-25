@@ -54,7 +54,7 @@ is_number(
 
 void
 Config::setPortServer(
-		const std::string& input)
+		std::string& input)
 {
 	unsigned long pos;
 	int port;
@@ -63,6 +63,8 @@ Config::setPortServer(
 	{
 		_amount_ports += 1;
 		std::string tmp_port = input.substr(0, pos);
+		input.erase(0, pos + 1);
+		getOnlyChar(tmp_port);
 		if (is_number(tmp_port)) {
 			port = std::atoi(tmp_port.c_str());
 			_ports.push_back(port);

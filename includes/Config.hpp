@@ -50,7 +50,7 @@ public:
 	void
 	setIpServer(std::string												ip);
 	void
-	setPortServer(const std::string&									port);
+	setPortServer(std::string&											port);
 	void
 	setServerConfig(std::vector<std::string> 							config);
 	void
