@@ -204,8 +204,11 @@ setUpServer(
 			s.setNameServer(AfterEqual(*first_bracket));
 		if (((*first_bracket).find("ip="))!= std::string::npos)
 			s.setIpServer(AfterEqual(*first_bracket));
-		if (((*first_bracket).find("port="))!= std::string::npos)
-			s.setPortServer(AfterEqual(*first_bracket));
+		if (((*first_bracket).find("port="))!= std::string::npos){
+
+			std::string raw_ports = AfterEqual(*first_bracket);
+			s.setPortServer(*first_bracket);
+		}
 		in.push_back(*first_bracket);
 		first_bracket++;
 	}
