@@ -8,12 +8,7 @@
 
 //HOMEMADE
 #include "../includes/Webserv_Includes.hpp"
-#include "../srcs/parse_config_file/Server.hpp"
-#include "../includes/Types.hpp"
 
-//STD
-#include <iostream>
-#include <stdlib.h>
 
 class CGI {
 
@@ -51,8 +46,6 @@ private:
 
 
 };
-
-
 
 const std::string _ENV[ 24 ];
 
