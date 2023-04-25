@@ -7,12 +7,13 @@ Network::Network(void)
 	return ;
 }
 
-Network::Network(int const port, Config config): _config(config), _port(port)
+Network::Network(int const port, Config config): _config(config) //port en int* et amount > go oveload avec un param en plus si +que 1
 {
 	//std::cout << "Parametric constructor called\n";
 
 	//std::cout << B << "AF_INET is equal to [" << AF_INET << "]\n" << RE; //to check macros
 
+	_port = _config.getPortServer;
 	_req_handled = 0; // DEBUG
 
 	_reuse_addr = 1;
@@ -26,10 +27,11 @@ Network::Network(int const port, Config config): _config(config), _port(port)
 
 	setnonblocking(_sock);
 
+
 	memset((char *) &_server_address, 0, sizeof(_server_address));
 	_server_address.sin_family = AF_INET;
 	_server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-//	_server_address.sin_addr.s_addr = inet_addr("127.0.0.5");
+//	_server_address.sin_addr.s_addr = inet_addr("127.0.0.5"); //TEST
 	_server_address.sin_port = htons(_port);
 
 	if (bind(_sock, (struct sockaddr *) &_server_address, sizeof(_server_address)) < 0 )
@@ -37,14 +39,33 @@ Network::Network(int const port, Config config): _config(config), _port(port)
 		close(_sock);
 		Ft_error	err("bind");
 	}
+	listen(_sock, BACKLOG);
 
-	listen(_sock, MAX_CLIENTS);
+	_sock2 = socket(AF_INET, SOCK_STREAM, 0);					//
+	if (_sock2 < 0)												//
+		Ft_error	err("socket");								//
+																//
+	setsockopt(_sock2, SOL_SOCKET, SO_REUSEADDR, &_reuse_addr,	//
+		sizeof(_reuse_addr));									//
+																//
+	setnonblocking(_sock2);												//multiport
+	memset((char *) &_server_address2, 0, sizeof(_server_address2));		//
+	_server_address2.sin_family = AF_INET;									//
+	_server_address2.sin_addr.s_addr = htonl(INADDR_ANY);					//
+	_server_address2.sin_port = htons(8081);												//
+																							//
+	if (bind(_sock2, (struct sockaddr *) &_server_address2, sizeof(_server_address2)) < 0 )	//
+	{																						//
+		close(_sock2);																		//
+		Ft_error	err("bind2");															//
+	}																					//mulitport
+	listen(_sock2, BACKLOG);
 	
-	_highsock = _sock;
+//	_highsock = _sock;
 	
 	memset((char *) &_connectlist, 0, sizeof(_connectlist));
 
- 	std::cout << "Server ready to listen on port [" << _port << "]\n";
+ 	std::cout << "Server ready to listen on port [" << _port << "] & [8081]\n";
 
 	return ;
 }
@@ -84,14 +105,14 @@ void	Network::build_select_list(void)
 
 	FD_ZERO(&_socks);
 	FD_SET(_sock, &_socks);
-//	FD_SET(_sock2, &_socks); //multiport
+	FD_SET(_sock2, &_socks); //multiport
 	
-//	if (_sock > _sock2)		//
-//		_highsock = _sock;	//
-//	else					//
-//		_highsock = _sock2;	// to find le plus grand
+	if (_sock > _sock2)				//
+		_highsock = _sock;			//
+	else							//
+		_highsock = _sock2;			// to find le plus grand
 
-	for (listnum = 0; listnum < 5; listnum++)
+	for (listnum = 0; listnum < MAX_CLIENTS ; listnum++)
 	{
 		if (_connectlist[listnum] != 0)
 		{
@@ -108,8 +129,16 @@ void	Network::handle_new_connection(void)
 	int connection;
 	sockaddr_in client_address;
 	socklen_t client_size = sizeof(client_address);
+	
+	if (FD_ISSET(_sock, &_socks))		//
+		_current_sock = _sock;			//
+	else if (FD_ISSET(_sock2, &_socks))	//
+		_current_sock = _sock2;			//trouver d'ou vient la connection
+	else
+		std::cout << R << "yapa trouve co\n" << RE;  //////////////
+										 ///AAAAAAAAAAAAAAAAAAAA
 
-	connection = accept(_sock, (struct sockaddr*) &client_address, &client_size);
+	connection = accept(_current_sock, (struct sockaddr*) &client_address, &client_size);
 	if (connection < 0)
 		Ft_error	err("accept");
 	setnonblocking(connection);
@@ -274,7 +303,7 @@ void	Network::read_socks(void)
 {
 	int	listnum;
 
-	if (FD_ISSET(_sock, &_socks))
+	if ( FD_ISSET(_sock, &_socks) || FD_ISSET(_sock2, &_socks) ) // check all sock
 		handle_new_connection();
 	for (listnum = 0; listnum < MAX_CLIENTS; listnum++)
 	{
