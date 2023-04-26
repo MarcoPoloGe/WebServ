@@ -16,8 +16,6 @@
 
 
 //HOMEMADE
-#include "../../includes/Webserv_Includes.hpp"
-#include "Types.hpp"
 
 class Types;
 
@@ -33,14 +31,14 @@ class Types;
 
 
 // Single Server config
-class Server {
+class Config {
 public:
 /**********************************************************************************************************************/
 /***************************                       Con/Destructors	           		           ************************/
 /**********************************************************************************************************************/
 
-	Server();
-	~Server();
+	Config();
+	~Config();
 
 
 /**********************************************************************************************************************/
@@ -61,6 +59,12 @@ public:
 	setKeyTemp(std::string 												key_temp);
 	void
 	setValueTemp(std::string 											value_temp);
+	void
+	setMimeMap(std::map<std::string,std::string>						mime_type);
+	void
+	setErrorPagesMap(std::map<int,std::string>							error_pages);
+	void
+	setErrorNamesMap(std::map<int,std::string>							error_names);
 
 /* weirdo setters */
 	void
@@ -76,9 +80,18 @@ public:
 	std::string 												&getPortServer();
 	std::vector<std::string> 									&getAllServerConfig ();
 	std::vector<std::map<std::string, std::string> >			&getAllLocations();
+	std::map<std::string,std::string>							&getMimeMap();
+	std::map<int,std::string>									&getErrorPagesMap();
+	std::map<int,std::string>									&getErrorNamesMap();
+
 
 	std::string 												&getKeyTemp();
 	std::string 												&getValueTemp();
+
+
+	std::string													getType(const std::string& format);
+	std::string													getErrorPages(int error_pages);
+	std::string													getErrorNames(int error_names);
 
 /* weirdo getters */
 
@@ -98,10 +111,12 @@ private:
 	std::vector<std::string> 										_serverconfig;
 	std::vector<std::string> 										_rawfile;
 	std::vector<std::map<std::string, std::string> > 				_locs;
+	std::map<std::string, std::string>								_mime_types;
+	std::map<int, std::string>										_error_pages;
+	std::map<int, std::string>										_error_names;
 
 	std::string														_key_temp;
 	std::string														_value_temp;
-
 
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/
@@ -123,7 +138,7 @@ public:
 /**********************************************************************************************************************/
 
 void
-main_parsing(char **av, std::vector<Server> &all_server, Types &t);
+main_parsing(char **av, std::vector<Config> &all_config);
 
 
 /**********************************************************************************************************************/
@@ -134,19 +149,18 @@ bool
 serverConfig(
 		std::vector<std::string> &stock,
 		std::vector<std::string>::iterator it,
-		std::vector<Server> &all_server,
-		Types &t);
+		std::vector<Config> &all_config);
 
 
 /**********************************************************************************************************************/
 /***************************                  Set Up one Server config	      		           ************************/
 /**********************************************************************************************************************/
 
-Server &
+Config &
 setUpServer(
 		std::vector<std::string>::iterator 	first_bracket,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s);
+		Config &s);
 
 
 /**********************************************************************************************************************/
@@ -164,7 +178,7 @@ std::vector<std::string>::iterator
 grabLocation (
 		std::vector<std::string>::iterator 	it,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s);
+		Config &s);
 
 
 /**********************************************************************************************************************/
@@ -179,5 +193,27 @@ printVector(std::vector<std::string> &x );
 
 void
 getOnlyChar(std::string &s);
+
+void
+insert_mime_type(
+		std::string input, std::map<std::string, std::string> &mime_types);
+
+std::map<std::string, std::string>
+save_mime_type(
+		std::vector<std::string>::iterator 	first_bracket,
+		std::vector<std::string>::iterator 	last_bracket);
+
+
+void
+insert_error(
+		std::string input,
+		std::map<std::string, std::string> &error);
+
+void
+save_error(
+		std::vector<std::string>::iterator 	first_bracket,
+		std::vector<std::string>::iterator 	last_bracket,
+		std::map<std::string, std::string> &error);
+
 
 #endif //CONFIG_PARSER_PARSER_HPP

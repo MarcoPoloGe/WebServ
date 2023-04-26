@@ -1,12 +1,11 @@
-SRCS		= main.cpp\
+SRCS		= srcs/main.cpp\
 			  srcs/utils/Ft_error.cpp\
 			  srcs/utils/Utils.cpp\
-			  srcs/ClassRequest.cpp\
-			  srcs/Network.cpp\
-			  srcs/ClassResponse.cpp\
-			  srcs/parse_config_file/main_parsing.cpp\
-              srcs/parse_config_file/Server.cpp\
-              srcs/parse_config_file/Types.cpp\
+			  srcs/class/ClassRequest.cpp\
+			  srcs/class/Network.cpp\
+			  srcs/class/ClassResponse.cpp\
+              srcs/class/Config.cpp\
+			  srcs/main_parsing.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 

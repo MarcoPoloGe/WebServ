@@ -1,7 +1,4 @@
-
-#include "Server.hpp"
-#include "Types.hpp"
-
+#include "../includes/Webserv_Includes.hpp"
 
 /**********************************************************************************************************************/
 /***************************                       Main		            		           ************************/
@@ -10,8 +7,7 @@
 void
 main_parsing(
 		char **av,
-		std::vector<Server> &all_server,
-		Types &t)
+		std::vector<Config> &all_config)
 {
 
 	std::string fileName = av[1];
@@ -31,9 +27,8 @@ main_parsing(
 		rawfile.push_back(line);
 	file.close();
 
-	// Set up Servers from config.conf file in all_server
-	serverConfig(rawfile, rawfile.begin(), all_server, t);
-
+	// Set up Servers from config.conf file in all_Config
+	serverConfig(rawfile, rawfile.begin(), all_config);
 }
 
 
@@ -41,22 +36,71 @@ main_parsing(
 /***************************            Server Config: parsing all config file          	   ************************/
 /**********************************************************************************************************************/
 
+
+void
+insert_error(
+		std::string input,
+		std::map<int, std::string> &error)
+{
+	std::string tmp_key;
+	int key;
+	std::string value;
+	unsigned long pos;
+
+	if((pos = input.find('=')) != std::string::npos)
+	{
+		tmp_key = input.substr(0, pos);
+		getOnlyChar(tmp_key);
+		key = std::atoi(tmp_key.c_str());
+		input.erase(0, pos + 1);
+		value = input;
+		getOnlyChar(value);
+//		std::cout <<G<< "error->key = " << key << " | value = " << value <<RE<< std::endl;
+		error.insert(std::pair<int, std::string>(key, value));
+	}
+	else {
+		std::cerr<<R<< "Error: @fn insert_error \nDelimiter '" << "=" << "' not found in " << input <<RE<< std::endl;
+	}
+}
+
+void
+save_error(
+		std::vector<std::string>::iterator 	first_bracket,
+		std::vector<std::string>::iterator 	last_bracket,
+		std::map<int, std::string> &error)
+{
+	std::map<std::string, std::string> mime_types;
+
+	while (first_bracket != last_bracket)
+	{
+		if (((*first_bracket).find("="))!= std::string::npos)
+			insert_error(*first_bracket, error);
+		first_bracket++;
+	}
+	std::cout <<G<< "error_* successfully saved " <<RE<< std::endl;
+}
+
 // In .conf vector, take first - server '{' - and launch parsing until the next corresponding '}'
 bool
 serverConfig(
 		std::vector<std::string> &stock,
 		std::vector<std::string>::iterator it,
-		std::vector<Server> &all_server,
-		Types &t)
+		std::vector<Config> &all_config)
 {
 	std::vector<std::string>::iterator 					first_bracket;
 	std::vector<std::string>::iterator 					last_bracket;
 
-	std::vector<Server>::iterator 						vit;
+	std::vector<Config>::iterator 						vit;
+
+	std::map<std::string,std::string> mime_type;
+	std::map<int,std::string> error_pages_map;
+	std::map<int,std::string> error_names_map;
 
 	bool get_in = false;
 	bool server = false;
-	bool mime_type = false;
+	bool mimes = false;
+	bool error_pages = false;
+	bool error_names = false;
 
 	int count = 0;
 
@@ -66,7 +110,11 @@ serverConfig(
 		if (((*it).find("server"))!= std::string::npos)
 			server = true;
 		if (((*it).find("mime_type"))!= std::string::npos)
-			mime_type = true;
+			mimes = true;
+		if (((*it).find("error_pages"))!= std::string::npos)
+			error_pages = true;
+		if (((*it).find("error_names"))!= std::string::npos)
+			error_names = true;
 		if (((*it).find("{"))!= std::string::npos) {
 			count += 1;
 			if (count == 1) {
@@ -83,22 +131,47 @@ serverConfig(
 		}
 		if (get_in && count == 0 && server)
 		{
-			Server s;
+			Config s;
 			s.setRawfile(first_bracket, last_bracket);
 			setUpServer(first_bracket, last_bracket, s);
-			all_server.push_back(s);
+			all_config.push_back(s);
 			get_in = false;
 			server = false;
 		}
-		if (get_in && count == 0 && mime_type)
+		if (get_in && count == 0 && mimes)
 		{
-			t.save_mime_type(first_bracket, last_bracket);
+			mime_type =	save_mime_type(first_bracket, last_bracket);
 			get_in = false;
-			mime_type = false;
+			mimes = false;
+		}
+		if (get_in && count == 0 && error_pages)
+		{
+			save_error(first_bracket, last_bracket, error_pages_map);
+			get_in = false;
+			error_pages = false;
+		}
+		if (get_in && count == 0 && error_names)
+		{
+			save_error(first_bracket, last_bracket, error_names_map);
+			get_in = false;
+			error_names = false;
 		}
 	}
+
+	if(mime_type.size() <= 0)
+		throw std::invalid_argument("input file does not contain mime_types data.");
+	for (std::vector<Config>::iterator itera = all_config.begin();
+		 itera != all_config.end() ; itera++)
+	{
+		itera->setMimeMap(mime_type);
+		itera->setErrorPagesMap(error_pages_map);
+		itera->setErrorNamesMap(error_names_map);
+	}
+
 	return (true);
 }
+
+
 
 
 /**********************************************************************************************************************/
@@ -106,11 +179,11 @@ serverConfig(
 /**********************************************************************************************************************/
 
 // CQFD
-Server &
+Config &
 setUpServer(
 		std::vector<std::string>::iterator 	first_bracket,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s)
+		Config &s)
 {
 	std::vector<std::string> 				in;
 	std::vector<std::string> 				server_config;
@@ -171,7 +244,7 @@ std::vector<std::string>::iterator
 grabLocation (
 		std::vector<std::string>::iterator 	it,
 		std::vector<std::string>::iterator 	last_bracket,
-		Server &s)
+		Config &s)
 {
 	std::vector<std::string>::iterator 	first_bracket;
 	std::map<std::string, std::string> loc_config;
@@ -224,3 +297,69 @@ getOnlyChar(std::string &s) {
 	s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
 	s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
 }
+
+void
+insert_mime_type(
+		std::string input,
+		std::map<std::string, std::string> &mime_types)
+{
+	std::string tmp_keys;
+	std::string key;
+	std::string value;
+
+	unsigned long pos;
+	unsigned long start;
+	unsigned long end;
+
+	if((pos = input.find('=')) != std::string::npos)
+	{
+		// Get value | ex: text/html
+		value = input.substr(0, pos);
+		getOnlyChar(value);
+		input.erase(0, pos + 1);
+		// Get key | ex: .css
+		while ((start = input.find('.')) != std::string::npos)
+		{
+			// erase .
+			input.erase(start, 1);
+			// ex: .html.htm.shtml -> insert html=text/html | htm=text/html | shtml=text/html
+			if ((end = input.find('.')) != std::string::npos){
+				key = input.substr(start, end - start );
+				getOnlyChar(key);
+				/*print*/
+//				std::cout <<G<< "mime_type->key = " << key << " | value = " << value <<RE<< std::endl;
+				mime_types.insert(std::pair<std::string, std::string>(key, value));
+				input.erase(start, end);
+			}
+				// ex: .css -> insert css=text/css
+			else
+			{
+				key = input;
+				getOnlyChar(key);
+//				std::cout <<G<< "mime_type->key = " << key << " | value = " << value <<RE<< std::endl;
+				mime_types.insert(std::pair<std::string, std::string>(key, value));
+			}
+		}
+	}
+	else {
+		std::cerr<<R<< "Error: @fn insert_mime_type \nDelimiter '" << "=" << "' not found in " << input <<RE<< std::endl;
+	}
+}
+
+std::map<std::string, std::string> save_mime_type(
+		std::vector<std::string>::iterator 	first_bracket,
+		std::vector<std::string>::iterator 	last_bracket)
+{
+	std::map<std::string, std::string> mime_types;
+
+	while (first_bracket != last_bracket)
+	{
+		if (((*first_bracket).find("="))!= std::string::npos)
+			insert_mime_type(*first_bracket, mime_types);
+		first_bracket++;
+	}
+	std::cout <<G<< "mime_types successfully saved " <<RE<< std::endl;
+	return (mime_types);
+}
+
+
