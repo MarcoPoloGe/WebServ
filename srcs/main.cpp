@@ -15,9 +15,9 @@ int	main(int ac, char **av)
 		std::cerr << "Error: main_parsing" << std::endl;
 	}
 
-	Config config1(all_config[0]);
-	Network	serv(8080, config1);
+	Network	serv(8080, all_config[0]);
 	serv.run();
+
 
 	return (0);
 }

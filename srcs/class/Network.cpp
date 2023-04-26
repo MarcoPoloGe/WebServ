@@ -267,7 +267,7 @@ fill_rep:
 		close(_connectlist[listnum]);
 		_connectlist[listnum] = 0;
 
-		std::cout << Y << "^^^ FIN DE LA " << _req_handled << "eme REQUEST ^^^\n" << RE;//DEBUG
+	std::cout << Y << "^^^ FIN DE LA " << _req_handled << "eme REQUEST ^^^\n" << RE;//DEBUG
 }
 
 void	Network::read_socks(void)

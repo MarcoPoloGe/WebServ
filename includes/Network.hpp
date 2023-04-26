@@ -42,7 +42,7 @@ private:
 	int					_connectlist[5];
 	fd_set				_socks;
 	int					_highsock;
-	fd_set				_current_sock;
+//	fd_set				_current_sock;
 
 	Config				_config;
 //	unsigned int		_host;

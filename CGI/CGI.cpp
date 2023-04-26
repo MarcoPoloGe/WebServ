@@ -9,7 +9,17 @@
 /***************************                       Con/Destructors	           		           ************************/
 /**********************************************************************************************************************/
 
-CGI::CGI() { std::cout << "++CGI" << std::endl; _bin = "./php.cgi"; }
+CGI::CGI() {
+	std::cout << "++CGI" << std::endl;
+}
+CGI::CGI(
+		Request &Request,
+		Network &Network )
+{
+	std::cout << "++CGI + Request + Network" << std::endl;
+
+}
+
 CGI::~CGI() { std::cout << "--CGI" << std::endl; }
 
 
@@ -18,7 +28,12 @@ CGI::~CGI() { std::cout << "--CGI" << std::endl; }
 /**********************************************************************************************************************/
 
 std::string CGI::getBin() {
+	_bin = ""
 	return (_bin);
+}
+
+void CGI::setENV(Request &req, Network &net, Config &conf) {
+	return;
 }
 
 

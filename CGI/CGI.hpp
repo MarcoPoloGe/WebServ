@@ -8,12 +8,6 @@
 
 //HOMEMADE
 #include "../includes/Webserv_Includes.hpp"
-#include "../srcs/parse_config_file/Server.hpp"
-#include "../includes/Types.hpp"
-
-//STD
-#include <iostream>
-#include <stdlib.h>
 
 class CGI {
 
@@ -23,6 +17,7 @@ public:
 /**********************************************************************************************************************/
 
 	CGI();
+	CGI( Request &Request, Network &Network );
 	~CGI();
 
 
@@ -31,6 +26,8 @@ public:
 /**********************************************************************************************************************/
 
 	const std::string *setENV();
+	void setENV(Request &req, Network &net, Config &conf);
+
 
 
 /**********************************************************************************************************************/
@@ -47,13 +44,11 @@ public:
 
 private:
 	std::string _bin;
-	std::string _ENV;
-
+	std::map<std::string, std::string> ENV;
 
 };
 
 
 
-const std::string _ENV[ 24 ];
 
 #endif //R5_WEBSERV_CGI_HPP
