@@ -7,24 +7,20 @@ Network::Network(void)
 	return ;
 }
 
-Network::Network(int const port, Config config): _config(config) //port en int* et amount > go oveload avec un param en plus si +que 1
+Network::Network(Config config, int portNo): _config(config)
 {
 	//std::cout << "Parametric constructor called\n";
 
-	//std::cout << B << "AF_INET is equal to [" << AF_INET << "]\n" << RE; //to check macros
+	(void)portNo;												//old
+	_port = std::atoi(_config.getPortServer().c_str());			//old
 
-	_port = _config.getPortServer;
-	_req_handled = 0; // DEBUG
-
+	//_port = _config.getPortServer()[portNo];					//new
 	_reuse_addr = 1;
-
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (_sock < 0)
 		Ft_error	err("socket");
-	
 	setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &_reuse_addr,
 		sizeof(_reuse_addr));
-
 	setnonblocking(_sock);
 
 
@@ -41,29 +37,28 @@ Network::Network(int const port, Config config): _config(config) //port en int* 
 	}
 	listen(_sock, BACKLOG);
 
+	///////////multiport/////////////
 	_sock2 = socket(AF_INET, SOCK_STREAM, 0);					//
 	if (_sock2 < 0)												//
 		Ft_error	err("socket");								//
 																//
 	setsockopt(_sock2, SOL_SOCKET, SO_REUSEADDR, &_reuse_addr,	//
-		sizeof(_reuse_addr));									//
-																//
-	setnonblocking(_sock2);												//multiport
-	memset((char *) &_server_address2, 0, sizeof(_server_address2));		//
-	_server_address2.sin_family = AF_INET;									//
-	_server_address2.sin_addr.s_addr = htonl(INADDR_ANY);					//
-	_server_address2.sin_port = htons(8081);												//
-																							//
-	if (bind(_sock2, (struct sockaddr *) &_server_address2, sizeof(_server_address2)) < 0 )	//
-	{																						//
-		close(_sock2);																		//
-		Ft_error	err("bind2");															//
-	}																					//mulitport
-	listen(_sock2, BACKLOG);
-	
-//	_highsock = _sock;
-	
+		sizeof(_reuse_addr));									
+															
+	setnonblocking(_sock2);									
+	memset((char *) &_server_address2, 0, sizeof(_server_address2));	
+	_server_address2.sin_family = AF_INET;								
+	_server_address2.sin_addr.s_addr = htonl(INADDR_ANY);				
+	_server_address2.sin_port = htons(8081);								
+																							
+	if (bind(_sock2, (struct sockaddr *) &_server_address2, sizeof(_server_address2)) < 0 )	
+	{																						
+		close(_sock2);																
+		Ft_error	err("bind2");												
+	}																					
+	listen(_sock2, BACKLOG);	
 	memset((char *) &_connectlist, 0, sizeof(_connectlist));
+	/////////////multiport///////////
 
  	std::cout << "Server ready to listen on port [" << _port << "] & [8081]\n";
 
@@ -85,17 +80,8 @@ Network::~Network(void)
 
 void Network::setnonblocking(int sock)
 {
-	int opts;
-
-	opts = fcntl(sock, F_GETFL);
-	if (opts < 0)
+	if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0)
 		Ft_error	err("fcntl");
-
-	opts = (opts | O_NONBLOCK);
-
-	if (fcntl(sock, F_SETFL, opts) < 0)
-		Ft_error	err("fcntl");
-
 	return;
 }
 
@@ -134,9 +120,6 @@ void	Network::handle_new_connection(void)
 		_current_sock = _sock;			//
 	else if (FD_ISSET(_sock2, &_socks))	//
 		_current_sock = _sock2;			//trouver d'ou vient la connection
-	else
-		std::cout << R << "yapa trouve co\n" << RE;  //////////////
-										 ///AAAAAAAAAAAAAAAAAAAA
 
 	connection = accept(_current_sock, (struct sockaddr*) &client_address, &client_size);
 	if (connection < 0)
@@ -168,24 +151,12 @@ void	Network::deal_with_data(int listnum)
 	Response			response(_config);
 	int					bytes_read = 1;
 	std::string 		request_string;
-	int					recv_it = 0;	// TEST MULTI RECV
-
-	_total_bytes_read = 0;
-	_req_handled++;
-	std::cout << Y << "\nvvv CECI EST LA " << _req_handled << "eme REQUEST HANDLED vvv\n" << RE;
 
 	while (bytes_read > 0)
 	{
 		for (int i = 0; i < BUFFER_SIZE; i++)
 			buffer[i] = 0;
-
-		bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE, 0);
-
-		_total_bytes_read += bytes_read;
-		recv_it++; // TEST MULTI RECV
-	
-//		std::cout << G << "It's the " << recv_it << "eme try of recv\n" << RE; // DEBUG
-	
+		bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE, 0);	
 		if (bytes_read < 0)
 		{
 			if (FD_ISSET(_connectlist[listnum], &_socks))
@@ -198,19 +169,13 @@ void	Network::deal_with_data(int listnum)
 		}
 		request_string += buffer;
 	}
-//	std::cout << Y << "Total bytes read = " << _total_bytes_read << std::endl << RE; //DEBUG
 	
 	std::string	root = "./website";  //a get dans le vrai config file
 	std::string	uri;
 	std::string	path;		
 	int	rep_code = 0;
 	std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
-	
-	std::cout << R << "@@@RAW REQUEST IS :@@@\n" << RE << request_string << std::endl
-			<< R << "@@@@@ =" << _total_bytes_read << " bytes read and "
-			<< recv_it << " recv @@@@@\n" << RE;								//DEBUG
-	
-	
+
 	if (request.fill(request_string) == false)
 	{
 		std::cout << "Wrong HTTP REQUEST\n";
@@ -295,8 +260,6 @@ fill_rep:
 
 		close(_connectlist[listnum]);
 		_connectlist[listnum] = 0;
-
-		std::cout << Y << "^^^ FIN DE LA " << _req_handled << "eme REQUEST ^^^\n" << RE;//DEBUG
 }
 
 void	Network::read_socks(void)

@@ -53,5 +53,7 @@ unsigned short	ft_bswap16(unsigned short x);
 unsigned short	ft_htons(unsigned short s);
 unsigned int	ft_bswap32(unsigned int x);
 unsigned int	ft_htonl(unsigned int l);
+void			set_nonblocking(int sock);
+int				ft_strlen(char *str);
 
 #endif

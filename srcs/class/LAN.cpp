@@ -31,19 +31,17 @@ LAN::~LAN(void)
 
 LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
 {
-	_net_amount = 0;
-
 	//std::cout << "Parametric constructor called\n";
-	return ;
-}
-
-int	LAN::initAllNetworks(void)
-{
+	
+	_net_amount = 0;
+	
+	int	i;
 	for (std::vector<Config>::iterator it = _vec_config.begin();
 			it != _vec_config.end(); it++)
 	{
-		Network	newNetwork(*it);
+		for (i = 0; i < (*it).getAmountPorts(); i++)
+		Network	newNetwork(*it, i);
 		_vec_network.push_back(newNetwork);
-		_net_amount++;   //VERIFY AMOUNT PORT ET CHECK NETWORK CONSTRUCTOR
+		_net_amount++;
 	}
 }

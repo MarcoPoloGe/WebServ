@@ -10,8 +10,7 @@ public:
 	LAN(std::vector<Config> all_config);
 	~LAN(void);
 
-	int		initAllNetworks(void);
-	void	runAll(void);
+	void	runAll(void);			//todo
 
 private:
 	LAN(void);						//

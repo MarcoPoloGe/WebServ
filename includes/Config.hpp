@@ -107,8 +107,9 @@ public:
 private:
 	std::string														_name;
 	std::string														_ip;
-	std::vector<int>												_ports;
-	int																_amount_ports;
+	std::string														_port;
+//	std::vector<int>												_ports;			//todo
+//	int																_amount_ports;	//todo
 	std::vector<std::string> 										_serverconfig;
 	std::vector<std::string> 										_rawfile;
 	std::vector<std::map<std::string, std::string> > 				_locs;

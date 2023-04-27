@@ -361,5 +361,3 @@ std::map<std::string, std::string> save_mime_type(
 	std::cout <<G<< "mime_types successfully saved " <<RE<< std::endl;
 	return (mime_types);
 }
-
-

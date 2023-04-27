@@ -6,14 +6,18 @@
 # include <cstdlib>
 # include <stdexcept>
 # include "Config.hpp"
+#include "Webserv_Includes.hpp"
 
+#ifndef MAX_CLIENTS
+#define MAX_CLIENTS 5
+#endif
 
 class Network
 {
 
 public:
 //Constructors
-	Network(int const port, Config config);
+	Network(Config config, int portNo);
 	Network(Network const &src);
 	~Network(void);
 
@@ -40,22 +44,18 @@ private:
 //Variables
 	int					_sock;
 	int					_sock2; //multiport
-	int					_connectlist[5];
+	int					_connectlist[MAX_CLIENTS];
 	fd_set				_socks;
 	int					_highsock;
 	int					_current_sock; //multiport
 
 	Config				_config;
-//	unsigned int		_host;
 	int					_port;
 	struct sockaddr_in	_server_address;
 	struct sockaddr_in	_server_address2; //multiport
 	int					_reuse_addr;
 	struct timeval		_timeout;
 	int					_readsocks;
-
-	int					_req_handled;		//DEBUG
-	int					_total_bytes_read;	//DEBUG
 
 };
 
