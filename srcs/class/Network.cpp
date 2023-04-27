@@ -11,8 +11,15 @@ Network::Network(Config config, int portNo): _config(config)
 {
 	//std::cout << "Parametric constructor called\n";
 
+<<<<<<< HEAD
 	(void)portNo;												//old
 	_port = std::atoi(_config.getPortServer().c_str());			//old
+=======
+	//std::cout << B << "AF_INET is equal to [" << AF_INET << "]\n" << RE; //to check macros
+	//TODO change for vector<int> as type because now
+	_port = _config.getPortServer();
+	_req_handled = 0; // DEBUG
+>>>>>>> a7121b1233a9bcaa9eb036398e841c64feb2bd3e
 
 	//_port = _config.getPortServer()[portNo];					//new
 	_reuse_addr = 1;
