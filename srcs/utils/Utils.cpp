@@ -50,3 +50,11 @@ unsigned int	ft_htonl(unsigned int l)
 		return (ft_bswap32(l));
 	return (0);
 }
+
+void	setnonblocking(int sock)
+{
+	if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0)
+		Ft_error	err("fcntl");
+
+	return ;
+}

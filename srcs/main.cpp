@@ -8,16 +8,20 @@ int	main(int ac, char **av)
 	/* Start Parsing deracineur de bitume */
 	std::cout << "🧚‍ Main_parsing launch" << std::endl;
 	std::vector<Config> all_config;
+
 	try {
 		main_parsing(av, all_config);
 	}
-	catch (...) {
-		std::cerr << "Error: main_parsing" << std::endl;
+	catch (std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		return (1);
 	}
+	
+	LAN	all_servers(all_config);
+	all_servers.runAll();
 
-	Config config1(all_config[0]);
-	Network	serv(8080, config1);
-	serv.run();
+//	Network	serv(all_config[0], 0);		//not
+//	serv.run();							//amymore
 
 	return (0);
 }

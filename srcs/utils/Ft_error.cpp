@@ -16,6 +16,7 @@ Ft_error::Ft_error(std::string str)
 	else
 		std::cout << str << std::endl;
 	std::cout << RE;
+
 	std::exit(1);
 	return ;
 }
