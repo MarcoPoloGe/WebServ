@@ -45,8 +45,8 @@ is_number(
 		const std::string& s)
 {
 	std::string::const_iterator it;
-	for (it = s.begin(); it != s.end() ; ++it){
-		if (std::isdigit(*it))
+	for (it = s.begin(); it != s.end() ; it++){
+		if (!std::isdigit(*it))
 			return (false);
 	}
 	return (true);
@@ -56,9 +56,12 @@ void
 Config::setPortServer(
 		std::string& input)
 {
-	unsigned long pos;
-	int port;
-	_amount_ports = 1;
+	input.erase(0, input.find("=") + 1);
+
+	unsigned long	pos;
+	int 			port;
+
+	_amount_ports = 0;
 	while ((pos = input.find(',')) != std::string::npos)
 	{
 		_amount_ports += 1;
@@ -67,6 +70,16 @@ Config::setPortServer(
 		getOnlyChar(tmp_port);
 		if (is_number(tmp_port)) {
 			port = std::atoi(tmp_port.c_str());
+			_ports.push_back(port);
+		}
+		else
+			throw std::invalid_argument("Error: port isn't an int");
+	}
+	if (!input.empty())
+	{
+		if (is_number(input)) {
+			_amount_ports += 1;
+			port = std::atoi(input.c_str());
 			_ports.push_back(port);
 		}
 		else

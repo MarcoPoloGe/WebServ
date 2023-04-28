@@ -16,47 +16,41 @@ class Network
 {
 
 public:
-//Constructors
+	//Constructors
+	
 	Network(Config config, int portNo);
 	Network(Network const &src);
 	~Network(void);
 
-//Accessors
 
-//Operators
-	Network	&operator=(Network const &rhs);
+	//Accessors
+
+	int		getSock(void);
 	
-//Public Functions
-	void	run(void);
+
+	//Public Functions
+	
+	int		deal_with_data(int connection, fd_set socks);
 
 
 private:
-//Constructors
+	//Nope nope nope
+
 	Network(void);
+	Network	&operator=(Network const &rhs);
 
-//Private Functions
-	void	setnonblocking(int sock);
-	void	build_select_list(void);
-	void	read_socks(void);
-	void	handle_new_connection(void);
-	void	deal_with_data(int listnum);
+	//Private Functions
 	
-//Variables
-	int					_sock;
-	int					_sock2; //multiport
-	int					_connectlist[MAX_CLIENTS];
-	fd_set				_socks;
-	int					_highsock;
-	int					_current_sock; //multiport
+	void	setnonblocking(int sock);
+	
 
+	//Variables
+	
+	int					_sock;
 	Config				_config;
 	int					_port;
 	struct sockaddr_in	_server_address;
-	struct sockaddr_in	_server_address2; //multiport
 	int					_reuse_addr;
-	struct timeval		_timeout;
-	int					_readsocks;
-
 };
 
 #endif

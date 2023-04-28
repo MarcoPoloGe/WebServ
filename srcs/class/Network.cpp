@@ -1,27 +1,10 @@
 #include "../../includes/Webserv_Includes.hpp"
 
-Network::Network(void)
-{
-	//PRIVATE!!!
-	//std::cout << "Default constructor called\n";
-	return ;
-}
-
 Network::Network(Config config, int portNo): _config(config)
 {
 	//std::cout << "Parametric constructor called\n";
 
-<<<<<<< HEAD
-	(void)portNo;												//old
-	_port = std::atoi(_config.getPortServer().c_str());			//old
-=======
-	//std::cout << B << "AF_INET is equal to [" << AF_INET << "]\n" << RE; //to check macros
-	//TODO change for vector<int> as type because now
-	_port = _config.getPortServer();
-	_req_handled = 0; // DEBUG
->>>>>>> a7121b1233a9bcaa9eb036398e841c64feb2bd3e
-
-	//_port = _config.getPortServer()[portNo];					//new
+	_port = _config.getPortServer()[portNo];
 	_reuse_addr = 1;
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (_sock < 0)
@@ -29,12 +12,9 @@ Network::Network(Config config, int portNo): _config(config)
 	setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &_reuse_addr,
 		sizeof(_reuse_addr));
 	setnonblocking(_sock);
-
-
 	memset((char *) &_server_address, 0, sizeof(_server_address));
 	_server_address.sin_family = AF_INET;
 	_server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-//	_server_address.sin_addr.s_addr = inet_addr("127.0.0.5"); //TEST
 	_server_address.sin_port = htons(_port);
 
 	if (bind(_sock, (struct sockaddr *) &_server_address, sizeof(_server_address)) < 0 )
@@ -44,45 +24,41 @@ Network::Network(Config config, int portNo): _config(config)
 	}
 	listen(_sock, BACKLOG);
 
-	///////////multiport/////////////
-	_sock2 = socket(AF_INET, SOCK_STREAM, 0);					//
-	if (_sock2 < 0)												//
-		Ft_error	err("socket");								//
-																//
-	setsockopt(_sock2, SOL_SOCKET, SO_REUSEADDR, &_reuse_addr,	//
-		sizeof(_reuse_addr));									
-															
-	setnonblocking(_sock2);									
-	memset((char *) &_server_address2, 0, sizeof(_server_address2));	
-	_server_address2.sin_family = AF_INET;								
-	_server_address2.sin_addr.s_addr = htonl(INADDR_ANY);				
-	_server_address2.sin_port = htons(8081);								
-																							
-	if (bind(_sock2, (struct sockaddr *) &_server_address2, sizeof(_server_address2)) < 0 )	
-	{																						
-		close(_sock2);																
-		Ft_error	err("bind2");												
-	}																					
-	listen(_sock2, BACKLOG);	
-	memset((char *) &_connectlist, 0, sizeof(_connectlist));
-	/////////////multiport///////////
-
- 	std::cout << "Server ready to listen on port [" << _port << "] & [8081]\n";
+ 	std::cout << "Server ready to listen on port [" << _port << "]\n";
 
 	return ;
 }
 
 Network::Network(Network const &src)
 {
-	*this = src;
 	//std::cout << "Copy constructor called\n";
+	
+	*this = src;
 	return ;
+}
+
+Network	&Network::operator=(Network const &rhs)
+{
+	//copy here the eventual values like :
+	this->_sock = rhs._sock;
+	this->_config = rhs._config;
+	this->_port = rhs._port;
+	this->_server_address = rhs._server_address;
+	this->_reuse_addr = rhs._reuse_addr;
+
+	//std::cout << "Copy assignment operator called\n";
+	return (*this);
 }
 
 Network::~Network(void)
 {
 	//std::cout << "Destructor called\n";
 	return ;
+}
+
+int	Network::getSock(void)
+{
+	return (_sock);
 }
 
 void Network::setnonblocking(int sock)
@@ -92,66 +68,7 @@ void Network::setnonblocking(int sock)
 	return;
 }
 
-void	Network::build_select_list(void)
-{
-	int listnum;
-
-	FD_ZERO(&_socks);
-	FD_SET(_sock, &_socks);
-	FD_SET(_sock2, &_socks); //multiport
-	
-	if (_sock > _sock2)				//
-		_highsock = _sock;			//
-	else							//
-		_highsock = _sock2;			// to find le plus grand
-
-	for (listnum = 0; listnum < MAX_CLIENTS ; listnum++)
-	{
-		if (_connectlist[listnum] != 0)
-		{
-			FD_SET(_connectlist[listnum], &_socks);
-			if (_connectlist[listnum] > _highsock)
-				_highsock = _connectlist[listnum];
-		}
-	}
-}
-
-void	Network::handle_new_connection(void)
-{
-	int listnum;
-	int connection;
-	sockaddr_in client_address;
-	socklen_t client_size = sizeof(client_address);
-	
-	if (FD_ISSET(_sock, &_socks))		//
-		_current_sock = _sock;			//
-	else if (FD_ISSET(_sock2, &_socks))	//
-		_current_sock = _sock2;			//trouver d'ou vient la connection
-
-	connection = accept(_current_sock, (struct sockaddr*) &client_address, &client_size);
-	if (connection < 0)
-		Ft_error	err("accept");
-	setnonblocking(connection);
-	for (listnum = 0; (listnum < MAX_CLIENTS) && (connection != -1); listnum ++)
-	{
-		if (_connectlist[listnum] == 0)
-		{
-			std::cout << "\nConnection detected from " << inet_ntoa(client_address.sin_addr)
-				<< ":" << ntohs(client_address.sin_port)
-				<< " [Slot no " << listnum << "]\n";
-			_connectlist[listnum] = connection;
-			connection = -1;
-		}
-	}
-	if (connection != -1)
-	{
-		std::cout << "\nNo more room left for the client\n";
-		send(connection,"Sorry, this server is too busy. Try again later!\r\n",50, 0);
-		close(connection);
-	}
-}
-
-void	Network::deal_with_data(int listnum)
+int	Network::deal_with_data(int connection, fd_set socks)
 {
 	char				buffer[BUFFER_SIZE];
 	Request 			request;
@@ -163,19 +80,17 @@ void	Network::deal_with_data(int listnum)
 	{
 		for (int i = 0; i < BUFFER_SIZE; i++)
 			buffer[i] = 0;
-		bytes_read = recv(_connectlist[listnum], buffer, BUFFER_SIZE, 0);	
+		bytes_read = recv(connection, buffer, BUFFER_SIZE, 0);
 		if (bytes_read < 0)
 		{
-			if (FD_ISSET(_connectlist[listnum], &_socks))
+			if (FD_ISSET(connection, &socks))
 				break ;
-			std::cout << "\nConnection lost with FD = " << _connectlist[listnum]
-				<< " & Slot = " << listnum << std::endl;
-			close(_connectlist[listnum]);
-			_connectlist[listnum] = 0;
-			return ;
+			return (1);
 		}
 		request_string += buffer;
 	}
+
+//	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE; //DEBUG
 	
 	std::string	root = "./website";  //a get dans le vrai config file
 	std::string	uri;
@@ -191,7 +106,7 @@ void	Network::deal_with_data(int listnum)
 		goto fill_rep;
 	}
 
-//	std::cout << "Parsed request:\n" << request << std::endl; //DEBUG
+	std::cout <<G<< "Parsed request:\n" << request << std::endl<<RE; //DEBUG
 
 	uri = request.get_URI();
 	path = root + uri;
@@ -263,65 +178,9 @@ fill_rep:
 		else																		//
 			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
 
-		response.send(_connectlist[listnum]);										//new
 
-		close(_connectlist[listnum]);
-		_connectlist[listnum] = 0;
-}
+//		std::cout << B << "my response is \n" << W << response << std::endl << RE;
+		response.send(connection);										//new
 
-void	Network::read_socks(void)
-{
-	int	listnum;
-
-	if ( FD_ISSET(_sock, &_socks) || FD_ISSET(_sock2, &_socks) ) // check all sock
-		handle_new_connection();
-	for (listnum = 0; listnum < MAX_CLIENTS; listnum++)
-	{
-		if (FD_ISSET(_connectlist[listnum], &_socks))
-			deal_with_data(listnum);
-	}
-}
-
-void	Network::run(void)
-{
-	std::string	dot[12] = {"🕛","🕐","🕑","🕒","🕓","🕔","🕕","🕖","🕗","🕘","🕙","🕚"};
-	int			n = 0;
-
-	while (true)
-	{
-		build_select_list();
-		_timeout.tv_sec = 0;
-		_timeout.tv_usec = 500000;
-
-		_readsocks = select(_highsock + 1, &_socks, (fd_set *)0, (fd_set *)0, &_timeout);
-		if (_readsocks < 0)
-			Ft_error	Err("select");
-		if (_readsocks == 0)
-		{
-			std::cout << "\rWaiting on a connection " << dot[n++] << std::flush;
-			if (n == 12)
-				n = 0;
-		}
-		else
-			read_socks();
-	}
-}
-
-Network	&Network::operator=(Network const &rhs)
-{
-	//copy here the eventual values like :
-	this->_sock = rhs._sock;
-	for (int i = 0; i < 5; i++)
-		this->_connectlist[i] = rhs._connectlist[i];
-	this->_socks = rhs._socks;
-	this->_highsock = rhs._highsock;
-
-	this->_port = rhs._port;
-	this->_server_address = rhs._server_address;
-	this->_reuse_addr = rhs._reuse_addr;
-	this->_timeout = rhs._timeout;
-	this->_readsocks = rhs._readsocks;
-
-	//std::cout << "Copy assignment operator called\n";
-	return (*this);
+		return (0);
 }

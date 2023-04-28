@@ -11,17 +11,17 @@ int	main(int ac, char **av)
 
 	try {
 		main_parsing(av, all_config);
-		handle_multiport(all_config);
 	}
-	catch (...) {
-		std::cerr << "Error: main_parsing" << std::endl;
+	catch (std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		return (1);
 	}
 	
-//	LAN	all_servers(all_config);
-//	all_servers.run();
+	LAN	all_servers(all_config);
+	all_servers.runAll();
 
-	Network	serv(all_config[0], 0);		//not
-	serv.run();							//amymore
+//	Network	serv(all_config[0], 0);		//not
+//	serv.run();							//amymore
 
 	return (0);
 }
