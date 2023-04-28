@@ -8,10 +8,10 @@ std::string ft_read_file(std::string file_name)
 
 	if(html_file.is_open())
 	{
-		std::cout << "yes \n\n\n";
+		std::cout << "file read OK  : " << file_name << "\n";
 	} else
 	{
-		std::cout << "fuck\n\n\n";
+		std::cout << "file read FAIL: " << file_name << "\n";
 	}
 	while (std::getline(html_file, line))
 	{

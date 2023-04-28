@@ -21,7 +21,7 @@ bool Request::fill(std::string request)
 		if(std::getline(file, temp, ' '))
 		{
 			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
-			if(!temp.empty() && (temp == "GET" || temp == "POST" || temp == "DELETE"))
+			if(!temp.empty() /*&& (temp == "GET" || temp == "POST" || temp == "DELETE")*/)
 				type = temp;
 			else
 				throw std::invalid_argument("Invalid HTTP request type : " + temp);
@@ -37,10 +37,12 @@ bool Request::fill(std::string request)
 		if(std::getline(file, temp))
 		{
 			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
-			if(!temp.empty() && temp == HTTP_VERSION)
+
+			//std::cout << std::strlen(HTTP_VERSION) << " " << temp.size() << std::endl;
+			if(!temp.empty()/* && temp == HTTP_VERSION*/)
 				HTTP_version = temp;
 			else
-				throw std::invalid_argument("Invalid HTTP request HTTP version : " + temp);
+				throw std::invalid_argument("Invalid HTTP request HTTP version : " + temp + " vs " + HTTP_VERSION );
 		}
 		while (std::getline(file, temp))
 		{
