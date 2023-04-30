@@ -131,6 +131,26 @@ Request &Request::operator=(Request const &rhs)
 	return (*this);
 }
 
+void Request::setType(const std::string &type) {
+	Request::type = type;
+}
+
+void Request::setUri(const std::string &uri) {
+	URI = uri;
+}
+
+void Request::setHttpVersion(const std::string &httpVersion) {
+	HTTP_version = httpVersion;
+}
+
+void Request::setHeadersMap(const std::map<std::string, std::string> &headersMap) {
+	headers_map = headersMap;
+}
+
+void Request::setBody(const std::string &body) {
+	Request::body = body;
+}
+
 std::ostream& operator<<(std::ostream& out, Request const& rhs)
 {
 	std::map<std::string,std::string> headers = rhs.get_headers_map();

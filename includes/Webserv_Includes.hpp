@@ -23,6 +23,7 @@
 #include "Ft_error.hpp"
 #include "Config.hpp"
 #include "Network.hpp"
+#include "CGI.hpp"
 
 
 #define MAX_CLIENTS 5

@@ -15,8 +15,12 @@ int	main(int ac, char **av)
 		std::cerr << "Error: main_parsing" << std::endl;
 	}
 
-	Network	serv(8080, all_config[0]);
-	serv.run();
+//	Network	serv(8080, all_config[0]);
+//	serv.run();
+
+	CGI test;
+	std::cout << "wesh" << std::endl;
+	test.execute();
 
 
 	return (0);

@@ -7,7 +7,7 @@
 
 
 //HOMEMADE
-#include "../includes/Webserv_Includes.hpp"
+#include "Webserv_Includes.hpp"
 
 class CGI {
 
@@ -17,7 +17,7 @@ public:
 /**********************************************************************************************************************/
 
 	CGI();
-	CGI( Request &Request, Network &Network );
+//	CGI( Request &Request, Network &Network );
 	~CGI();
 
 
@@ -25,8 +25,8 @@ public:
 /***************************                       Setters	            		               ************************/
 /**********************************************************************************************************************/
 
-	const std::string *setENV();
-	void setENV(Request &req, Network &net, Config &conf);
+//	const std::string *setENV();
+//	void setENV(Request &req, Network &net, Config &conf);
 
 
 
@@ -34,8 +34,8 @@ public:
 /***************************                       Getters	            		               ************************/
 /**********************************************************************************************************************/
 
-	std::string getBin();
-	int getenv ();
+//	std::string getBin();
+//	int getenv ();
 
 
 /**********************************************************************************************************************/
@@ -45,6 +45,24 @@ public:
 private:
 	std::string _bin;
 	std::map<std::string, std::string> ENV;
+	std::string _CGI_body;
+
+/**********************************************************************************************************************/
+/***************************                       Utils		                           ************************/
+/**********************************************************************************************************************/
+
+public:
+//	std::string execute(std::string scriptPath, Request request);
+	std::string execute();
+
+	std::string CGIstore();
+
+//	std::string CGIBody(const std::string& s);
+
+
+		public:
+	std::string CGI_body;
+
 
 };
 

@@ -6,6 +6,7 @@ SRCS		= srcs/main.cpp\
 			  srcs/class/ClassResponse.cpp\
               srcs/class/Config.cpp\
 			  srcs/main_parsing.cpp\
+			  srcs/class/CGI.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 
@@ -13,7 +14,7 @@ RM			= rm -f
 
 NAME		= webserv
 
-FLAGS		= -Wall -Wextra -Werror -std=c++98 -pedantic
+FLAGS		= -Wall -Wextra -Werror -std=c++98 -pedantic -fsanitize=address -g3
 
 CC			= g++
 
