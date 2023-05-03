@@ -100,6 +100,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	std::string	URI;
 	std::string extension;
 	int	rep_code = 0;
+	std::string slash_str;
 
 	std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
 
@@ -133,11 +134,20 @@ int	Network::deal_with_data(int connection, fd_set socks)
 //		exec_CGI();													//''
 
 	// normalement obsolete ⬇️  //
-	if (URI == "/")
+
+	//pr marco //
+	slash_str = "/";
+	std::cout <<R<< "I HAVE TO CHECK URI = [" << URI << "]\n" 
+		<< "URI.compare(\"/\") is equal to " << URI.compare("/") << std::endl
+		<< "slash_str.compare(\"/\") is equal to " << slash_str.compare("/") << std::endl <<RE;
+	//pr Marco (bail chelou avec l'URI) (BUG G ENVIE DE PETER MON CRANE)
+
+	if (URI.compare("/") == 0)
 	{
 		file_type.first = "html"; file_type.second = "html";
 		path += "index.html";
 		rep_code = 200;
+		std::cout <<R<< "URI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
 	}
 	else
 	{
@@ -146,11 +156,13 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		infile.open(path.c_str(), std::ios::in);
 		if (infile.is_open())
 		{
+			std::cout <<R<< "YES I OPENED [" << path << "]\n" << RE;//DEBUG
 			infile.close();
 			rep_code = 200;
 		}
 		else
 		{
+			std::cout <<R<< "NOPE I DID NOT OPEN [" << path << "]\n" << RE;//DEBUG
 			rep_code = 404;
 			file_type.first = "html"; file_type.second = "html";
 			goto fill_rep;
@@ -187,6 +199,7 @@ fill_rep:
 
 		response.set_error_code(rep_code);											//new
 
+		std::cout <<R<<  "MY REP CODE IS {" << rep_code << "}\n" << RE;//DEBUG
 
 		if (file_type.first == "html")												//a changer
 			response.set_content_type("text/html");									//quand on
