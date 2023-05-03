@@ -70,6 +70,8 @@ void Network::setnonblocking(int sock)
 
 int	Network::deal_with_data(int connection, fd_set socks)
 {
+	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
+
 	char				buffer[BUFFER_SIZE];
 	Request 			request;
 	Response			response(_config);
@@ -90,30 +92,48 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		request_string += buffer;
 	}
 
-//	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE; //DEBUG
+	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE;//DEBUG
 	
-	std::string	root = "./website";  //a get dans le vrai config file
-	std::string	uri;
+	std::string	root = "./website";//a changer 
+//	std::string root;	//remplir plus tard selon la location
 	std::string	path;		
+	std::string	URI;
+	std::string extension;
 	int	rep_code = 0;
+
 	std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
 
 	if (request.fill(request_string) == false)
 	{
-		std::cout << "Wrong HTTP REQUEST\n";
+		std::cout << R << "Wrong HTTP REQUEST\n" << RE;
 		rep_code = 404;
-		file_type.first = "html"; file_type.second = "html";
+		file_type.first = "text"; file_type.second = "html";
+//		extension = ".html"; 										//pr marco (extension)
 		goto fill_rep;
 	}
 
-	std::cout <<G<< "Parsed request:\n" << request << std::endl<<RE; //DEBUG
+	URI = request.get_URI();
+	extension = ft_get_extension(URI);								//pr marco (extension)
 
-	uri = request.get_URI();
-	path = root + uri;
+	std::cout <<B<< "my extension for {" << URI << "} is {" << extension << "}\n"<<RE; //DEBUG
+	
+//	root = compare_to_locs_config(_config, URI);					//pr marco et Lowell(locations)
 
-	std::cout << "***Try to access : {" << path << "}***\n";		//DEBUG
+	path = root + URI; //il faudra enlever le doublon de '/' (par exemple : /images//kittycat.png)
 
-	if (uri == "/")
+//	if (extension == "")											//pr Lowell (index/autoindex)
+//		check_index(_config);										//''
+
+	std::cout << "***Try to access : {" << path << "}***\n";//DEBUG
+
+//	if ( verify_method(request.get_type(), _config()) == false )	//pr marco et Lowell (method)
+//		error_wrong_method();										//''
+
+//	if ( CGI_extension(extension, _config) == true )				//pr Lowell (CGI)
+//		exec_CGI();													//''
+
+	// normalement obsolete ⬇️  //
+	if (URI == "/")
 	{
 		file_type.first = "html"; file_type.second = "html";
 		path += "index.html";
@@ -178,9 +198,11 @@ fill_rep:
 		else																		//
 			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
 
+	// normalement obsolete ⬆️ //
 
-//		std::cout << B << "my response is \n" << W << response << std::endl << RE;
+		std::cout << G << "my response is \n" << W << response << std::endl << RE;
 		response.send(connection);										//new
 
+	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
 		return (0);
 }

@@ -54,5 +54,6 @@ unsigned short	ft_htons(unsigned short s);
 unsigned int	ft_bswap32(unsigned int x);
 unsigned int	ft_htonl(unsigned int l);
 void			setnonblocking(int sock);
+std::string		ft_get_extension(std::string str);
 
 #endif

@@ -58,3 +58,16 @@ void	setnonblocking(int sock)
 
 	return ;
 }
+
+std::string	ft_get_extension(std::string str)
+{
+	std::size_t last_point = str.rfind(".");
+
+	if (last_point == std::string::npos)
+	{
+		std::cout << "No particular extension in string [" << str << "]\n";
+		return ("");
+	}
+	else
+		return ( str.substr(last_point) );
+}
