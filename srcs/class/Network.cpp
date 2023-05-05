@@ -113,8 +113,8 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		goto fill_rep;
 	}
 
-	URI = request.get_URI();
-	extension = ft_get_extension(URI);								//pr marco (extension)
+	URI = ft_remove_nonprintable( request.get_URI() );
+	extension = ft_get_extension(URI);//check size max extension?	//pr marco (extension)
 
 	std::cout <<B<< "my extension for {" << URI << "} is {" << extension << "}\n"<<RE; //DEBUG
 	
@@ -135,19 +135,12 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 	// normalement obsolete ⬇️  //
 
-	//pr marco //
-	slash_str = "/";
-	std::cout <<R<< "I HAVE TO CHECK URI = [" << URI << "]\n" 
-		<< "URI.compare(\"/\") is equal to " << URI.compare("/") << std::endl
-		<< "slash_str.compare(\"/\") is equal to " << slash_str.compare("/") << std::endl <<RE;
-	//pr Marco (bail chelou avec l'URI) (BUG G ENVIE DE PETER MON CRANE)
-
 	if (URI.compare("/") == 0)
 	{
 		file_type.first = "html"; file_type.second = "html";
 		path += "index.html";
 		rep_code = 200;
-		std::cout <<R<< "URI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
+		std::cout <<R<< "\n\nURI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
 	}
 	else
 	{

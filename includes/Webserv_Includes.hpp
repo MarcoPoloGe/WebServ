@@ -55,5 +55,6 @@ unsigned int	ft_bswap32(unsigned int x);
 unsigned int	ft_htonl(unsigned int l);
 void			setnonblocking(int sock);
 std::string		ft_get_extension(std::string str);
+std::string		ft_remove_nonprintable(std::string str);
 
 #endif

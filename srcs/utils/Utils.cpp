@@ -8,10 +8,10 @@ std::string ft_read_file(std::string file_name)
 
 	if(html_file.is_open())
 	{
-		std::cout << "file read OK  : " << file_name << "\n";
+		std::cout <<G<< "file read OK  : " << file_name << "\n" <<RE;
 	} else
 	{
-		std::cout << "file read FAIL: " << file_name << "\n";
+		std::cout <<R<< "file read FAIL: " << file_name << "\n" <<RE;
 	}
 	while (std::getline(html_file, line))
 	{
@@ -70,4 +70,25 @@ std::string	ft_get_extension(std::string str)
 	}
 	else
 		return ( str.substr(last_point) );
+}
+
+std::string ft_remove_nonprintable(std::string str)
+{
+	std::string ret;
+	int i = 0;
+	int size = 0;
+
+	for (int j = 0; str[j] != 0; j++)
+	{
+		if (31 < str[j] && str[j] < 127)
+			size++;
+	}
+	ret.resize(size);
+	for (int it = 0; str[it] != 0; it++)
+	{
+		if (31 < str[it] && str[it] < 127)
+			ret[i++] = str[it];
+	}
+	ret[i] = 0;
+	return (ret);
 }
