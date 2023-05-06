@@ -50,7 +50,7 @@ public:
 	void
 	setIpServer(std::string												ip);
 	void
-	setPortServer(std::string											port);
+	setPortServer(std::string&											port);
 	void
 	setServerConfig(std::vector<std::string> 							config);
 	void
@@ -77,7 +77,8 @@ public:
 
 	std::string 												&getNameServer();
 	std::string 												&getIpServer();
-	std::string 												&getPortServer();
+	std::vector<int> 											&getPortServer();
+	int			 												&getAmountPortServer();
 	std::vector<std::string> 									&getAllServerConfig ();
 	std::vector<std::map<std::string, std::string> >			&getAllLocations();
 	std::map<std::string,std::string>							&getMimeMap();
@@ -107,7 +108,8 @@ public:
 private:
 	std::string														_name;
 	std::string														_ip;
-	std::string														_port;
+	std::vector<int>												_ports;
+	int																_amount_ports;
 	std::vector<std::string> 										_serverconfig;
 	std::vector<std::string> 										_rawfile;
 	std::vector<std::map<std::string, std::string> > 				_locs;

@@ -11,17 +11,19 @@ int	main(int ac, char **av)
 	try {
 		main_parsing(av, all_config);
 	}
-	catch (...) {
-		std::cerr << "Error: main_parsing" << std::endl;
+	catch (std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		return (1);
 	}
 
-//	Network	serv(8080, all_config[0]);
-//	serv.run();
+	LAN	all_servers(all_config);
+	all_servers.runAll();
+
+//	Network	serv(all_config[0], 0);		//not
+//	serv.run();							//amymore
 
 	CGI test;
 	std::cout << "wesh" << std::endl;
 	test.execute();
-
-
 	return (0);
 }
