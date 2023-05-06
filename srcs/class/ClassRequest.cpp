@@ -7,6 +7,7 @@ Request::Request()
 Request::Request(std::string request)
 {
 	this->fill(request);
+
 }
 
 bool Request::fill(std::string request)
@@ -59,6 +60,14 @@ bool Request::fill(std::string request)
 				}
 			}
 		}
+
+		/*test*/
+		for(std::map<std::string, std::string >::const_iterator it = headers_map.begin();
+			it != headers_map.end(); ++it)
+		{
+			std::cout <<R<< it->first <<Y<<" " << it->second <<RE<<"\n";
+		}
+
 		if(this->type == "POST")
 		{
 			file >> std::ws;
@@ -120,6 +129,26 @@ Request &Request::operator=(Request const &rhs)
 	this->headers_map = rhs.headers_map;
 	this->body = rhs.body;
 	return (*this);
+}
+
+void Request::setType(const std::string &type) {
+	Request::type = type;
+}
+
+void Request::setUri(const std::string &uri) {
+	URI = uri;
+}
+
+void Request::setHttpVersion(const std::string &httpVersion) {
+	HTTP_version = httpVersion;
+}
+
+void Request::setHeadersMap(const std::map<std::string, std::string> &headersMap) {
+	headers_map = headersMap;
+}
+
+void Request::setBody(const std::string &body) {
+	Request::body = body;
 }
 
 std::ostream& operator<<(std::ostream& out, Request const& rhs)
