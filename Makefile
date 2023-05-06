@@ -6,6 +6,7 @@ SRCS		= srcs/main.cpp\
 			  srcs/class/ClassResponse.cpp\
               srcs/class/Config.cpp\
 			  srcs/main_parsing.cpp\
+			  srcs/class/LAN.cpp\
 
 OBJS		= ${SRCS:.cpp=.o}
 

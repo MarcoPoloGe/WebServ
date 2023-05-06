@@ -8,10 +8,10 @@ std::string ft_read_file(std::string file_name)
 
 	if(html_file.is_open())
 	{
-		std::cout << "yes \n\n\n";
+		std::cout <<G<< "file read OK  : " << file_name << "\n" <<RE;
 	} else
 	{
-		std::cout << "fuck\n\n\n";
+		std::cout <<R<< "file read FAIL: " << file_name << "\n" <<RE;
 	}
 	while (std::getline(html_file, line))
 	{
@@ -49,4 +49,46 @@ unsigned int	ft_htonl(unsigned int l)
 	else if (BYTE_ORDER == LITTLE_ENDIAN)
 		return (ft_bswap32(l));
 	return (0);
+}
+
+void	setnonblocking(int sock)
+{
+	if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0)
+		Ft_error	err("fcntl");
+
+	return ;
+}
+
+std::string	ft_get_extension(std::string str)
+{
+	std::size_t last_point = str.rfind(".");
+
+	if (last_point == std::string::npos)
+	{
+		std::cout << "No particular extension in string [" << str << "]\n";
+		return ("");
+	}
+	else
+		return ( str.substr(last_point) );
+}
+
+std::string ft_remove_nonprintable(std::string str)
+{
+	std::string ret;
+	int i = 0;
+	int size = 0;
+
+	for (int j = 0; str[j] != 0; j++)
+	{
+		if (31 < str[j] && str[j] < 127)
+			size++;
+	}
+	ret.resize(size);
+	for (int it = 0; str[it] != 0; it++)
+	{
+		if (31 < str[it] && str[it] < 127)
+			ret[i++] = str[it];
+	}
+	ret[i] = 0;
+	return (ret);
 }

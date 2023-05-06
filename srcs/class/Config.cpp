@@ -19,7 +19,6 @@ Config::~Config() 	{ /*std::cout <<W<< "--config" <<RE<< std::endl;*/ }
 
 void Config::setNameServer		(std::string name) 										{ this->_name = name; }
 void Config::setIpServer		(std::string ip)				 						{ this->_ip = ip; }
-void Config::setPortServer		(std::string port)										{ this->_port = port; }
 void Config::setServerConfig	(std::vector<std::string> config)						{ this->_serverconfig = config; }
 void Config::setAllLocation		(std::vector<std::map<std::string, std::string> > locs)	{ this->_locs = locs; }
 void Config::setKeyTemp			(std::string key_temp) 									{ this->_key_temp = key_temp; }
@@ -29,7 +28,8 @@ void Config::setErrorPagesMap	(std::map<int, std::string> error_pages)				{ this
 void Config::setErrorNamesMap	(std::map<int, std::string> error_names)				{ this->_error_names = error_names; }
 
 /* weirdo setters */
-void Config::setRawfile	(
+void
+Config::setRawfile	(
 		std::vector<std::string>::iterator first_bracket,
 		std::vector<std::string>::iterator last_bracket)
 {
@@ -40,13 +40,62 @@ void Config::setRawfile	(
 	}
 }
 
+bool
+is_number(
+		const std::string& s)
+{
+	std::string::const_iterator it;
+	for (it = s.begin(); it != s.end() ; it++){
+		if (!std::isdigit(*it))
+			return (false);
+	}
+	return (true);
+}
+
+void
+Config::setPortServer(
+		std::string& input)
+{
+	input.erase(0, input.find("=") + 1);
+
+	unsigned long	pos;
+	int 			port;
+
+	_amount_ports = 0;
+	while ((pos = input.find(',')) != std::string::npos)
+	{
+		_amount_ports += 1;
+		std::string tmp_port = input.substr(0, pos);
+		input.erase(0, pos + 1);
+		getOnlyChar(tmp_port);
+		if (is_number(tmp_port)) {
+			port = std::atoi(tmp_port.c_str());
+			_ports.push_back(port);
+		}
+		else
+			throw std::invalid_argument("Error: port isn't an int");
+	}
+	if (!input.empty())
+	{
+		if (is_number(input)) {
+			_amount_ports += 1;
+			port = std::atoi(input.c_str());
+			_ports.push_back(port);
+		}
+		else
+			throw std::invalid_argument("Error: port isn't an int");
+	}
+}
+
+
 /**********************************************************************************************************************/
 /***************************                       Getters	            		               ************************/
 /**********************************************************************************************************************/
 
 std::string 										&Config::getNameServer(void) 			{ return(this->_name); }
 std::string 										&Config::getIpServer(void) 				{ return(_ip); }
-std::string 										&Config::getPortServer(void) 			{ return(_port); }
+std::vector<int> 									&Config::getPortServer(void) 			{ return(_ports); }
+int 												&Config::getAmountPortServer(void) 		{ return(_amount_ports); }
 std::vector<std::string> 							&Config::getAllServerConfig (void)		{ return (_serverconfig); }
 std::vector<std::map<std::string, std::string> > 	&Config::getAllLocations(void)			{ return (_locs); }
 std::map<std::string,std::string>					&Config::getMimeMap(void)				{ return(_mime_types); }
