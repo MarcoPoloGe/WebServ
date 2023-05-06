@@ -12,6 +12,7 @@ Request::Request(std::string request)
 
 bool Request::fill(std::string request)
 {
+	request.erase(std::remove(request.begin(), request.end(), 6), request.end());
 	std::istringstream file(request);
 	std::string temp;
 	std::string first;
@@ -163,7 +164,7 @@ std::ostream& operator<<(std::ostream& out, Request const& rhs)
 
 	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 	{
-		out << it->first << " : " << it->second <<  std::endl;
+		out << it->first << ": " << it->second <<  std::endl;
 	}
 	out << std::endl;
 
