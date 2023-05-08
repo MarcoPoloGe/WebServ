@@ -92,7 +92,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		request_string += buffer;
 	}
 
-	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE;//DEBUG
+	std::cout <<G<< "My request is :\n" <<RE<< request_string << std::endl;//DEBUG
 	
 	std::string	root = "./website";//a changer 
 //	std::string root;	//remplir plus tard selon la location
@@ -116,7 +116,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	URI = ft_remove_nonprintable( request.get_URI() );
 	extension = ft_get_extension(URI);//check size max extension?	//pr marco (extension)
 
-	std::cout <<B<< "my extension for {" << URI << "} is {" << extension << "}\n"<<RE; //DEBUG
+//	std::cout <<B<< "my extension for {" << URI << "} is {" << extension << "}\n"<<RE; //DEBUG
 	
 //	root = compare_to_locs_config(_config, URI);					//pr marco et Lowell(locations)
 
@@ -125,7 +125,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 //	if (extension == "")											//pr Lowell (index/autoindex)
 //		check_index(_config);										//''
 
-	std::cout << "***Try to access : {" << path << "}***\n";//DEBUG
+//	std::cout << "***Try to access : {" << path << "}***\n";//DEBUG
 
 //	if ( verify_method(request.get_type(), _config()) == false )	//pr marco et Lowell (method)
 //		error_wrong_method();										//''
@@ -140,7 +140,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		file_type.first = "html"; file_type.second = "html";
 		path += "index.html";
 		rep_code = 200;
-		std::cout <<R<< "\n\nURI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
+//		std::cout <<R<< "\n\nURI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
 	}
 	else
 	{
@@ -149,13 +149,13 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		infile.open(path.c_str(), std::ios::in);
 		if (infile.is_open())
 		{
-			std::cout <<R<< "YES I OPENED [" << path << "]\n" << RE;//DEBUG
+//			std::cout <<R<< "YES I OPENED [" << path << "]\n" << RE;//DEBUG
 			infile.close();
 			rep_code = 200;
 		}
 		else
 		{
-			std::cout <<R<< "NOPE I DID NOT OPEN [" << path << "]\n" << RE;//DEBUG
+//			std::cout <<R<< "NOPE I DID NOT OPEN [" << path << "]\n" << RE;//DEBUG
 			rep_code = 404;
 			file_type.first = "html"; file_type.second = "html";
 			goto fill_rep;
@@ -192,7 +192,10 @@ fill_rep:
 
 		response.set_error_code(rep_code);											//new
 
-		std::cout <<R<<  "MY REP CODE IS {" << rep_code << "}\n" << RE;//DEBUG
+		std::cout <<R<< "The request body is : ######\n" <<RE<<  request.get_body()
+			<<R<< "\n#####\n"<<RE;
+
+//		std::cout <<R<<  "MY REP CODE IS {" << rep_code << "}\n" << RE;//DEBUG
 
 		if (file_type.first == "html")												//a changer
 			response.set_content_type("text/html");									//quand on
@@ -200,13 +203,13 @@ fill_rep:
 			response.set_content_type(file_type.first + "/" + file_type.second);	//mimes_type
 
 		if (response.get_error_code() == 200)										//
-			response.set_content_body(ft_read_file(path));							//
+			response.set_content_body(ft_remove_nonprintable(ft_read_file(path)));	//
 		else																		//
 			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
 
 	// normalement obsolete ⬆️ //
 
-		std::cout << G << "my response is \n" << W << response << std::endl << RE;
+		std::cout << G << "my response is \n" << RE << response << std::endl;
 		response.send(connection);										//new
 
 	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
