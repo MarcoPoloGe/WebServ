@@ -141,16 +141,25 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 //	path = root + URI; //il faudra enlever le doublon de '/' (par exemple : /images//kittycat.png)
 
-//todo Tester la fonction getPath_of_URI
-	/*
-	 * Va chercher si le file de l'URI existe,
-	 * et retourne le path ou il l'a trouvé
-	 * et store dans _loc_temp, la map location pour aller test si la method est autoriser
-	 * pour cette URI
-	 */
+//	localhost:8080/img/kittycat.jpg
+
+//	localhost:8080/kkk/jaimelespommes.txt
+
+	rep_code = _config.IsLocation(URI, request.get_type());
+	if (rep_code != 200) {
+		std::cout << "The type is : {" << request.get_type() << "}\n";
+		std::cout << "config.isLocation is pas content\n";
+		file_type.first = "text"; file_type.second = "html";
+		goto fill_rep;
+	}
+
+
 	if ((path = _config.getPath_of_URI(URI)).empty())
 		path = "./website/error_pages/error-404.html";
-	std::cout <<Y<< "path: " << path <<RE<< std::endl;
+
+	if (path == "./website/")
+		path += "index.html";
+//	std::cout <<Y<< "path Wesh : " << path <<RE<< std::endl;
 
 	//TODO verifier methods
 //	if ( verify_method(request.get_type(), _config()) == false )	//pr marco et Lowell (method)
@@ -171,7 +180,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	if (URI.compare("/") == 0)
 	{
 		file_type.first = "html"; file_type.second = "html";
-		path += "index.html";
+		//path += root;
 		rep_code = 200;
 		std::cout <<R<< "\n\nURI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
 	}
@@ -234,10 +243,12 @@ fill_rep:
 
 		if (response.get_error_code() == 200)										//
 			response.set_content_body(ft_read_file(path));							//
-		else																		//
+		else if (response.get_error_code() == 404)																		//
 			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
+		else
+			response.set_content_body(ft_read_file("./website/error_pages/error-405.html"));
 
-	// normalement obsolete ⬆️ //
+			// normalement obsolete ⬆️ //
 
 		std::cout << G << "my response is \n" << W << response << std::endl << RE;
 		response.send(connection);										//new

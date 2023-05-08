@@ -165,8 +165,9 @@ std::string CGI::execute()
 			ret = read(p_out[0], buffer, sizeof(buffer));
 			if (ret > 0)
 				result.append(std::string(buffer, ret));
-		} while (ret == sizeof(buffer));
-		close(p_out[0]);
+		}
+		while (ret == sizeof(buffer));
+			close(p_out[0]);
 	}
 	std::cout <<Y<< result <<RE<< std::endl;
 	return (result);

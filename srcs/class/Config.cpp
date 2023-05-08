@@ -149,18 +149,57 @@ Config::getErrorNames(int error_names) {
 }
 
 
+int
+Config::IsLocation(const std::string& URIraw, const std::string &Method) {
+
+	std::vector<std::map<std::string, std::string> >::iterator i;
+	std::map<std::string, std::string>::iterator im;
+	std::string folder;
+
+	unsigned long pos;
+	std::cout <<Y<< URIraw <<RE<< std::endl;
+	std::string URI = URIraw.substr(1, URIraw.size()); //= /kkk/pomme.txt
+
+	if ((pos = URI.find('/')) != std::string::npos)
+	{
+		folder = "/" + URI.substr(0, pos);
+
+		for (i = _locs.begin(); i != _locs.end(); i++)
+		{
+			if ((im = (*i).find("location")) != (*i).end())
+			{
+
+				if (im->second == folder)
+				{
+					if ((im = (*i).find("method")) != (*i).end())
+					{
+						if (im->second.find(Method) != std::string::npos)
+							return 200; // All good
+						else
+							return 405; // Method not allowed
+					}
+				}
+			}
+		}
+		if (i == _locs.end())
+			return 404;
+	}
+	return 200;
+}
+
+
 std::string
 Config::getPath_of_URI(const std::string& URIraw){
 	std::vector<std::map<std::string, std::string> >::iterator i;
 	std::map<std::string, std::string>::iterator im;
 
 	//take out / of URI
-	std::string URI = URIraw.substr(1, URIraw.size());
-
-	//for example: URI="/kittycat.jpg"
+	std::string URI = URIraw.substr(1, URIraw.size()); //= kkk/pomme.txt
+		//for example: URI="/kittycat.jpg"
 	//look into all locations map (location=/, location=/methods, ...)
 	for( i = _locs.begin(); i != _locs.end() ; i++ )
 	{
+
 		// find "root" in a location
 		if ((im = (*i).find("root")) != (*i).end())
 		{

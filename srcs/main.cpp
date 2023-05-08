@@ -13,7 +13,7 @@ int	main(int ac, char **av)
 	}
 	catch (std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		return (1);
+		exit (1);
 	}
 
 	LAN	all_servers(all_config);

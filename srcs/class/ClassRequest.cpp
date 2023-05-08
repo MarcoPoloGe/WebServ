@@ -62,12 +62,12 @@ bool Request::fill(std::string request)
 			}
 		}
 
-		/*test*/
-		for(std::map<std::string, std::string >::const_iterator it = headers_map.begin();
-			it != headers_map.end(); ++it)
-		{
-			std::cout <<R<< it->first <<Y<<" " << it->second <<RE<<"\n";
-		}
+//		/* Gather infos by Lowell */
+//		for(std::map<std::string, std::string >::const_iterator it = headers_map.begin();
+//			it != headers_map.end(); ++it)
+//		{
+//			std::cout <<R<< it->first <<Y<<" " << it->second <<RE<<"\n";
+//		}
 
 		if(this->type == "POST")
 		{

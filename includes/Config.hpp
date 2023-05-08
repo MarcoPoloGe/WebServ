@@ -96,6 +96,7 @@ public:
 	std::string													getErrorNames(int error_names);
 
 	std::string													getPath_of_URI(const std::string& URIraw);
+	int 														IsLocation(const std::string& URIraw, const std::string &Method);
 
 	/* weirdo getters */
 
