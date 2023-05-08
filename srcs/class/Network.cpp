@@ -72,7 +72,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 {
 	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
 
-	char				buffer[BUFFER_SIZE];
+	char				buffer[BUFFER_SIZE + 1];
 	Request 			request;
 	Response			response(_config);
 	int					bytes_read = 1;
@@ -89,7 +89,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 				break ;
 			return (1);
 		}
-		request_string += buffer;
+		request_string += std::string(buffer);
 	}
 
 	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE;//DEBUG
