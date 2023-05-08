@@ -93,7 +93,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	{
 		for (int i = 0; i < BUFFER_SIZE; i++)
 			buffer[i] = 0;
-		bytes_read = recv(connection, buffer, BUFFER_SIZE, 0);
+		bytes_read = recv(connection, buffer, BUFFER_SIZE - 1, 0);
 		if (bytes_read < 0)
 		{
 			if (FD_ISSET(connection, &socks))

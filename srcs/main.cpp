@@ -22,8 +22,8 @@ int	main(int ac, char **av)
 //	Network	serv(all_config[0], 0);		//not
 //	serv.run();							//amymore
 
-	CGI test;
-	std::cout << "wesh" << std::endl;
-	test.execute();
+//	CGI test;
+//	std::cout << "wesh" << std::endl;
+//	test.execute();
 	return (0);
 }
