@@ -47,7 +47,7 @@ void Response::set_error_code(int error_code)
 
 void Response::set_content(std::string content, std::string content_ext)
 {
-	this->set_content_body(content);
+	this->set_content_body(ft_read_file(content));
 	this->set_content_extension(content_ext);
 }
 
@@ -108,7 +108,7 @@ std::string Response::send(int client_socket)
 	if(_error_code != 200)
 	{
 		std::cout <<W<< "my errcode is :" << _error_code << std::endl <<RE; //DEBUG
-        set_content(ft_error_page(this->_error_code), "text/html");
+        set_content(ft_error_page(this->_error_code), "html");
 	}
 	else if(get_content().empty() || get_content_type().empty())
 	{
@@ -119,6 +119,7 @@ std::string Response::send(int client_socket)
 	message << std::endl;
 	message << get_content();
 
+	std::cout <<Y<< message.str() <<RE<<std::endl;
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.
 	return (message.str());

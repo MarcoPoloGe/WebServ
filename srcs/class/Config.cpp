@@ -107,7 +107,10 @@ std::string &Config::getValueTemp(void) 			{return (_value_temp); }
 
 std::string
 Config::getType(const std::string& format) {
-	std::map<std::string, std::string>::iterator itm;
+	std::map<std::string, std::string>::iterator itm ;//= _mime_types.begin();
+	std::cout << "{" << format << "}" << std::endl;
+//	for (; itm != _mime_types.end(); itm++)
+//		std::cout <<B<< "first: " << itm->first << " sec: {" << itm->second << "}"<<RE<< std::endl;
 	itm = _mime_types.find(format);
 	if (itm != _mime_types.end()){
 		return (itm->second);
@@ -118,6 +121,23 @@ Config::getType(const std::string& format) {
 		return (std::string());
 	}
 }
+
+
+std::string
+Config::getContentType(const std::string& format) {
+	std::map<std::string, std::string>::iterator itm ;
+
+	itm = _mime_types.find(format);
+	if (itm != _mime_types.end()){
+		return (itm->first);
+	}
+	else
+	{
+		std::cerr<<R<< "Error: getType: "<< format << " not found." <<RE<< std::endl;
+		return (std::string());
+	}
+}
+
 
 std::string
 Config::getErrorPages(int error_pages) {

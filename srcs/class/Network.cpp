@@ -149,7 +149,6 @@ int	Network::deal_with_data(int connection, fd_set socks)
 //	localhost:8080/kkk/jaimelespommes.txt
 
 	rep_code = _config.IsLocation(URI, request.get_type());
-
 	std::cout << "ON EST LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
 
 	if (rep_code != 200) {
@@ -161,7 +160,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 
 	if ((path = _config.getPath_of_URI(URI)).empty())
-		path = "./website/error_pages/error-404.html";
+		path = "";
 
 	if (path == "./website/")
 		path += "index.html";
@@ -183,54 +182,54 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 	// normalement obsolete ⬇️  //
 
-	if (URI.compare("/") == 0)
-	{
-		file_type.first = "html"; file_type.second = "html";
-		//path += root;
-		rep_code = 200;
-//		std::cout <<R<< "\n\nURI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
-	}
-	else
-	{
-		std::ifstream	infile;
-
-		infile.open(path.c_str(), std::ios::in | std::ios::out | std::ios::binary);
-		if (infile.is_open())
-		{
-//			std::cout <<R<< "YES I OPENED [" << path << "]\n" << RE;//DEBUG
-			infile.close();
-			rep_code = 200;
-		}
-		else
-		{
-//			std::cout <<R<< "NOPE I DID NOT OPEN [" << path << "]\n" << RE;//DEBUG
-			rep_code = 404;
-			file_type.first = "html"; file_type.second = "html";
-			goto fill_rep;
-		}
-
-		std::size_t last_point = path.rfind(".");
-		if (last_point == 0)
-		{
-			std::cout << G << "YA QUUN POINT AU DEBUT\n" << RE;	//DEBUG
-
-			file_type.first = "html"; file_type.second = "html";
-			goto fill_rep;
-		}
-		if (last_point != std::string::npos)
-		{
-			file_type.second = path.substr(last_point + 1);
-			if (file_type.second == "html")
-				file_type.first = "html";
-			else
-				file_type.first = "image";
-		}
-		else
-		{
-			file_type.first = "html";
-			file_type.second = "html";
-		}
-	}
+//	if (URI.compare("/") == 0)
+//	{
+//		file_type.first = "html"; file_type.second = "html";
+//		//path += root;
+//		rep_code = 200;
+////		std::cout <<R<< "\n\nURI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
+//	}
+//	else
+//	{
+//		std::ifstream	infile;
+//
+//		infile.open(path.c_str(), std::ios::in | std::ios::out | std::ios::binary);
+//		if (infile.is_open())
+//		{
+////			std::cout <<R<< "YES I OPENED [" << path << "]\n" << RE;//DEBUG
+//			infile.close();
+//			rep_code = 200;
+//		}
+//		else
+//		{
+////			std::cout <<R<< "NOPE I DID NOT OPEN [" << path << "]\n" << RE;//DEBUG
+//			rep_code = 404;
+//			file_type.first = "html"; file_type.second = "html";
+//			goto fill_rep;
+//		}
+//
+//		std::size_t last_point = path.rfind(".");
+//		if (last_point == 0)
+//		{
+//			std::cout << G << "YA QUUN POINT AU DEBUT\n" << RE;	//DEBUG
+//
+//			file_type.first = "html"; file_type.second = "html";
+//			goto fill_rep;
+//		}
+//		if (last_point != std::string::npos)
+//		{
+//			file_type.second = path.substr(last_point + 1);
+//			if (file_type.second == "html")
+//				file_type.first = "html";
+//			else
+//				file_type.first = "image";
+//		}
+//		else
+//		{
+//			file_type.first = "html";
+//			file_type.second = "html";
+//		}
+//	}
 
 fill_rep:
 		/*std::cout << G << "@@@@file type@@@@\n"					//
@@ -244,7 +243,8 @@ fill_rep:
 			<<R<< "\n#####\n"<<RE;
 
 //		std::cout <<R<<  "MY REP CODE IS {" << rep_code << "}\n" << RE;//DEBUG
-
+		std::cout <<B<< file_type.second <<RE<< std::endl;
+		std::cout <<B<< file_type.first <<RE<< std::endl;
 		if (file_type.second == "html")
 		{																			//a changer
 			response.set_content_type("text/html");									//quand on
@@ -258,7 +258,10 @@ fill_rep:
 		else if (response.get_error_code() == 404)												//
 			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
 		else
+		{
+//			response.set_error_code(200);
 			response.set_content_body(ft_read_file("./website/error_pages/error-405.html"));
+		}
 
 			// normalement obsolete ⬆️ //
 

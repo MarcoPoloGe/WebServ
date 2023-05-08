@@ -92,6 +92,7 @@ public:
 
 
 	std::string													getType(const std::string& format);
+	std::string 												getContentType(const std::string& format);
 	std::string													getErrorPages(int error_pages);
 	std::string													getErrorNames(int error_names);
 
