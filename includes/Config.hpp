@@ -86,6 +86,7 @@ public:
 	std::map<int,std::string>									&getErrorNamesMap();
 
 
+
 	std::string 												&getKeyTemp();
 	std::string 												&getValueTemp();
 
@@ -94,7 +95,9 @@ public:
 	std::string													getErrorPages(int error_pages);
 	std::string													getErrorNames(int error_names);
 
-/* weirdo getters */
+	std::string													getPath_of_URI(const std::string& URIraw);
+
+	/* weirdo getters */
 
 //	s0->getInLocationValue("/methods", "root");
 	bool
@@ -119,6 +122,7 @@ private:
 
 	std::string														_key_temp;
 	std::string														_value_temp;
+//	std::map<std::string, std::string>								_loc_temp;
 
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/

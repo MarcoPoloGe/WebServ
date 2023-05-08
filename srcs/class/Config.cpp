@@ -148,6 +148,49 @@ Config::getErrorNames(int error_names) {
 	}
 }
 
+
+std::string
+Config::getPath_of_URI(const std::string& URIraw){
+	std::vector<std::map<std::string, std::string> >::iterator i;
+	std::map<std::string, std::string>::iterator im;
+
+	//take out / of URI
+	std::string URI = URIraw.substr(1, URIraw.size());
+
+	//for example: URI="/kittycat.jpg"
+	//look into all locations map (location=/, location=/methods, ...)
+	for( i = _locs.begin(); i != _locs.end() ; i++ )
+	{
+		// find "root" in a location
+		if ((im = (*i).find("root")) != (*i).end())
+		{
+			// take value of root=./website, so "./website", add URI, like "/kittycat.jpg"
+			std::string all = im->second + URI;
+			// check if it can be open()
+			int fd;
+			if((fd = open(all.c_str(), O_CREAT | O_EXCL)) != -1) {
+				continue;
+			}
+			else {
+				// if open() success = store and return
+				// close fd if exist
+				close(fd);
+				// store location map where path have been found
+//				_loc_temp = (*i);
+				// return string of path tested = ./website/kittycat.jpg";
+//				std::cerr <<G<< all << "WEEEESHHHHH" << RE << std::endl;
+				return (all);
+			}
+
+		}
+		else
+			throw std::invalid_argument ("No root found in location");
+	}
+	// if not file found, return empty string
+	return (std::string(""));
+}
+
+
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/
 /**********************************************************************************************************************/
