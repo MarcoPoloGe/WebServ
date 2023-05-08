@@ -2,10 +2,11 @@
 
 std::string ft_read_file(std::string file_name)
 {
-	std::ifstream html_file(file_name.c_str());
+	std::ifstream html_file;
 	std::string content;
 	std::string line;
 
+	html_file.open(file_name.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 	if(html_file.is_open())
 	{
 		std::cout <<G<< "file read OK  : " << file_name << "\n" <<RE;

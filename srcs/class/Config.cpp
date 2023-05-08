@@ -160,7 +160,7 @@ Config::IsLocation(const std::string& URIraw, const std::string &Method) {
 	std::cout <<Y<< URIraw <<RE<< std::endl;
 	std::string URI = URIraw.substr(1, URIraw.size()); //= /kkk/pomme.txt
 
-	if ((pos = URI.find('/')) != std::string::npos)
+	if ((pos = URI.find('/')) != std::string::npos || URI == "")
 	{
 		folder = "/" + URI.substr(0, pos);
 
@@ -173,6 +173,8 @@ Config::IsLocation(const std::string& URIraw, const std::string &Method) {
 				{
 					if ((im = (*i).find("method")) != (*i).end())
 					{
+						std::cout <<B<< "method is : {" << Method << "}\n"			//DEBUG
+							<< "and im..second is : [" << im->second << "]\n" <<RE;	//DEBUG
 						if (im->second.find(Method) != std::string::npos)
 							return 200; // All good
 						else
@@ -206,14 +208,15 @@ Config::getPath_of_URI(const std::string& URIraw){
 			// take value of root=./website, so "./website", add URI, like "/kittycat.jpg"
 			std::string all = im->second + URI;
 			// check if it can be open()
-			int fd;
-			if((fd = open(all.c_str(), O_CREAT | O_EXCL)) != -1) {
+			//int fd;
+			//if((fd = open(all.c_str(), O_CREAT | O_EXCL)) != -1) {
+			std::ifstream to_open(all.c_str(), std::ios::in);
+			if ( !to_open.is_open() )
 				continue;
-			}
 			else {
 				// if open() success = store and return
 				// close fd if exist
-				close(fd);
+				to_open.close();
 				// store location map where path have been found
 //				_loc_temp = (*i);
 				// return string of path tested = ./website/kittycat.jpg";

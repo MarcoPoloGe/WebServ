@@ -107,6 +107,7 @@ std::string Response::send(int client_socket)
 
 	if(_error_code != 200)
 	{
+		std::cout <<W<< "my errcode is :" << _error_code << std::endl <<RE; //DEBUG
         set_content(ft_error_page(this->_error_code), "text/html");
 	}
 	else if(get_content().empty() || get_content_type().empty())

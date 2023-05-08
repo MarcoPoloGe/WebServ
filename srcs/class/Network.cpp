@@ -103,6 +103,9 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		request_string += std::string(buffer);
 	}
 
+	if (request_string.empty())
+		return (0);
+
 	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE;//DEBUG
 
 
@@ -146,6 +149,9 @@ int	Network::deal_with_data(int connection, fd_set socks)
 //	localhost:8080/kkk/jaimelespommes.txt
 
 	rep_code = _config.IsLocation(URI, request.get_type());
+
+	std::cout << "ON EST LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
+
 	if (rep_code != 200) {
 		std::cout << "The type is : {" << request.get_type() << "}\n";
 		std::cout << "config.isLocation is pas content\n";
@@ -188,7 +194,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	{
 		std::ifstream	infile;
 
-		infile.open(path.c_str(), std::ios::in);
+		infile.open(path.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 		if (infile.is_open())
 		{
 //			std::cout <<R<< "YES I OPENED [" << path << "]\n" << RE;//DEBUG
@@ -239,15 +245,17 @@ fill_rep:
 
 //		std::cout <<R<<  "MY REP CODE IS {" << rep_code << "}\n" << RE;//DEBUG
 
-		if (file_type.first == "html")												//a changer
+		if (file_type.second == "html")
+		{																			//a changer
 			response.set_content_type("text/html");									//quand on
+			std::cout <<R<< "wallah ses du text/html\n"<<RE;						//
+		}																			//
 		else if (file_type.first == "image")										//aura les
 			response.set_content_type(file_type.first + "/" + file_type.second);	//mimes_type
 
 		if (response.get_error_code() == 200)										//
 			response.set_content_body(ft_read_file(path));							//
-		else if (response.get_error_code() == 404)																		//
-
+		else if (response.get_error_code() == 404)												//
 			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
 		else
 			response.set_content_body(ft_read_file("./website/error_pages/error-405.html"));
