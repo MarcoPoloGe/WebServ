@@ -79,7 +79,6 @@ std::string Response::ft_error_name(int error_code)
 std::string Response::ft_error_page(int error_code)
 {
 	std::string page_name;
-	std::string page_content;
 
 	page_name = _config.getErrorPages(error_code);
 	if(page_name.empty())
@@ -88,10 +87,7 @@ std::string Response::ft_error_page(int error_code)
 		message << "error_page cannot be found :" << error_code << " please add it in config file." <<std::endl;
 		throw std::invalid_argument(message.str());
 	}
-	page_content = ft_read_file(page_name);
-	if(page_content.empty())
-		throw std::runtime_error("could not read file : " + page_name);
-	return (page_content);
+	return (page_name);
 }
 
 std::string Response::send(int client_socket)
@@ -111,7 +107,7 @@ std::string Response::send(int client_socket)
 
 	if(_error_code != 200)
 	{
-        set_content(ft_error_page(this->_error_code), "html");
+        set_content(ft_error_page(this->_error_code), "text/html");
 	}
 	else if(get_content().empty() || get_content_type().empty())
 	{

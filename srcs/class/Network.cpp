@@ -1,5 +1,7 @@
 #include "../../includes/Webserv_Includes.hpp"
 
+
+
 Network::Network(Config config, int portNo): _config(config)
 {
 	//std::cout << "Parametric constructor called\n";
@@ -68,11 +70,20 @@ void Network::setnonblocking(int sock)
 	return;
 }
 
+
+//std::string compare_to_locs_config(Config conf, std::string &URI){
+//	std::string root;
+////	if (!conf.getRoot(URI).empty())
+//	(void)conf;
+//	(void)URI;
+//	return (root);
+//}
+
 int	Network::deal_with_data(int connection, fd_set socks)
 {
 	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
 
-	char				buffer[BUFFER_SIZE];
+	char				buffer[BUFFER_SIZE + 1];
 	Request 			request;
 	Response			response(_config);
 	int					bytes_read = 1;
@@ -82,19 +93,27 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	{
 		for (int i = 0; i < BUFFER_SIZE; i++)
 			buffer[i] = 0;
-		bytes_read = recv(connection, buffer, BUFFER_SIZE, 0);
+		bytes_read = recv(connection, buffer, BUFFER_SIZE - 1, 0);
 		if (bytes_read < 0)
 		{
 			if (FD_ISSET(connection, &socks))
 				break ;
 			return (1);
 		}
-		request_string += buffer;
+		request_string += std::string(buffer);
 	}
 
-	std::cout <<G<< "My request is :\n" <<RE<< request_string << std::endl;//DEBUG
-	
-	std::string	root = "./website";//a changer 
+	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE;//DEBUG
+
+
+//	std::string	root = "./website";
+	_config.setValueTemp("");
+	_config.getInLocationValue("/", "root");
+	std::string	root = _config.getValueTemp();// root = "./website"
+	_config.setValueTemp("");
+//	std::cout <<Y<< "root = " << root <<RE<< std::endl; // tested: "root = ./website/"
+
+
 //	std::string root;	//remplir plus tard selon la location
 	std::string	path;		
 	std::string	URI;
@@ -120,15 +139,29 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	
 //	root = compare_to_locs_config(_config, URI);					//pr marco et Lowell(locations)
 
-	path = root + URI; //il faudra enlever le doublon de '/' (par exemple : /images//kittycat.png)
+//	path = root + URI; //il faudra enlever le doublon de '/' (par exemple : /images//kittycat.png)
 
-//	if (extension == "")											//pr Lowell (index/autoindex)
+//todo Tester la fonction getPath_of_URI
+	/*
+	 * Va chercher si le file de l'URI existe,
+	 * et retourne le path ou il l'a trouvé
+	 * et store dans _loc_temp, la map location pour aller test si la method est autoriser
+	 * pour cette URI
+	 */
+	if ((path = _config.getPath_of_URI(URI)).empty())
+		path = "./website/error_pages/error-404.html";
+	std::cout <<Y<< "path: " << path <<RE<< std::endl;
+
+	//TODO verifier methods
+//	if ( verify_method(request.get_type(), _config()) == false )	//pr marco et Lowell (method)
+//		error_wrong_method();										//''
+
+	//	if (extension == "")											//pr Lowell (index/autoindex)
 //		check_index(_config);										//''
 
 //	std::cout << "***Try to access : {" << path << "}***\n";//DEBUG
 
-//	if ( verify_method(request.get_type(), _config()) == false )	//pr marco et Lowell (method)
-//		error_wrong_method();										//''
+
 
 //	if ( CGI_extension(extension, _config) == true )				//pr Lowell (CGI)
 //		exec_CGI();													//''

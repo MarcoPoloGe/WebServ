@@ -23,11 +23,12 @@
 #include "Ft_error.hpp"
 #include "Config.hpp"
 #include "Network.hpp"
+#include "CGI.hpp"
 #include "LAN.hpp"
 
 #define BACKLOG 2
 #define MAX_CLIENTS 5
-#define BUFFER_SIZE 1
+#define BUFFER_SIZE 100
 #define HTTP_VERSION "HTTP/1.1"
 
 // Bytes for endian conversion
