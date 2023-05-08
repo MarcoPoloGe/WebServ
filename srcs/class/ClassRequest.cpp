@@ -7,10 +7,12 @@ Request::Request()
 Request::Request(std::string request)
 {
 	this->fill(request);
+
 }
 
 bool Request::fill(std::string request)
 {
+	request.erase(std::remove(request.begin(), request.end(), 6), request.end());
 	std::istringstream file(request);
 	std::string temp;
 	std::string first;
@@ -21,7 +23,7 @@ bool Request::fill(std::string request)
 		if(std::getline(file, temp, ' '))
 		{
 			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
-			if(!temp.empty() /*&& (temp == "GET" || temp == "POST" || temp == "DELETE")*/)
+			if(!temp.empty() && (temp == "GET" || temp == "POST" || temp == "DELETE"))
 				type = temp;
 			else
 				throw std::invalid_argument("Invalid HTTP request type : " + temp);
@@ -37,12 +39,10 @@ bool Request::fill(std::string request)
 		if(std::getline(file, temp))
 		{
 			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
-
-			//std::cout << std::strlen(HTTP_VERSION) << " " << temp.size() << std::endl;
-			if(!temp.empty()/* && temp == HTTP_VERSION*/)
+			if(!temp.empty() && temp == HTTP_VERSION)
 				HTTP_version = temp;
 			else
-				throw std::invalid_argument("Invalid HTTP request HTTP version : " + temp + " vs " + HTTP_VERSION );
+				throw std::invalid_argument("Invalid HTTP request HTTP version : " + temp);
 		}
 		while (std::getline(file, temp))
 		{
@@ -61,6 +61,14 @@ bool Request::fill(std::string request)
 				}
 			}
 		}
+
+		/*test*/
+		for(std::map<std::string, std::string >::const_iterator it = headers_map.begin();
+			it != headers_map.end(); ++it)
+		{
+			std::cout <<R<< it->first <<Y<<" " << it->second <<RE<<"\n";
+		}
+
 		if(this->type == "POST")
 		{
 			file >> std::ws;
@@ -124,6 +132,26 @@ Request &Request::operator=(Request const &rhs)
 	return (*this);
 }
 
+void Request::setType(const std::string &type) {
+	Request::type = type;
+}
+
+void Request::setUri(const std::string &uri) {
+	URI = uri;
+}
+
+void Request::setHttpVersion(const std::string &httpVersion) {
+	HTTP_version = httpVersion;
+}
+
+void Request::setHeadersMap(const std::map<std::string, std::string> &headersMap) {
+	headers_map = headersMap;
+}
+
+void Request::setBody(const std::string &body) {
+	Request::body = body;
+}
+
 std::ostream& operator<<(std::ostream& out, Request const& rhs)
 {
 	std::map<std::string,std::string> headers = rhs.get_headers_map();
@@ -136,7 +164,7 @@ std::ostream& operator<<(std::ostream& out, Request const& rhs)
 
 	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 	{
-		out << it->first << " : " << it->second <<  std::endl;
+		out << it->first << ": " << it->second <<  std::endl;
 	}
 	out << std::endl;
 

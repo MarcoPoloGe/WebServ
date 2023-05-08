@@ -7,13 +7,7 @@
 
 
 //HOMEMADE
-#include "../includes/Webserv_Includes.hpp"
-#include "../srcs/parse_config_file/Server.hpp"
-#include "../includes/Types.hpp"
-
-//STD
-#include <iostream>
-#include <stdlib.h>
+#include "Webserv_Includes.hpp"
 
 class CGI {
 
@@ -23,6 +17,7 @@ public:
 /**********************************************************************************************************************/
 
 	CGI();
+//	CGI( Request &Request, Network &Network );
 	~CGI();
 
 
@@ -30,15 +25,17 @@ public:
 /***************************                       Setters	            		               ************************/
 /**********************************************************************************************************************/
 
-	const std::string *setENV();
+//	const std::string *setENV();
+//	void setENV(Request &req, Network &net, Config &conf);
+
 
 
 /**********************************************************************************************************************/
 /***************************                       Getters	            		               ************************/
 /**********************************************************************************************************************/
 
-	std::string getBin();
-	int getenv ();
+//	std::string getBin();
+//	int getenv ();
 
 
 /**********************************************************************************************************************/
@@ -47,13 +44,29 @@ public:
 
 private:
 	std::string _bin;
-	std::string _ENV;
+	std::map<std::string, std::string> ENV;
+	std::string _CGI_body;
+
+/**********************************************************************************************************************/
+/***************************                       Utils		                           ************************/
+/**********************************************************************************************************************/
+
+public:
+//	std::string execute(std::string scriptPath, Request request);
+	std::string execute();
+
+	std::string CGIstore();
+
+//	std::string CGIBody(const std::string& s);
+
+
+		public:
+	std::string CGI_body;
 
 
 };
 
 
 
-const std::string _ENV[ 24 ];
 
 #endif //R5_WEBSERV_CGI_HPP

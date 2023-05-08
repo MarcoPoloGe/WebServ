@@ -24,6 +24,16 @@ public:
 
 	Request &operator=(Request const &rhs);
 
+	void setType(const std::string &type);
+
+	void setUri(const std::string &uri);
+
+	void setHttpVersion(const std::string &httpVersion);
+
+	void setHeadersMap(const std::map<std::string, std::string> &headersMap);
+
+	void setBody(const std::string &body);
+
 private:
 	std::string type;
 	std::string URI; // le lien donné apres la requete. GET -> /lelien.html <- HTML/1.1

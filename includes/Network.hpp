@@ -20,6 +20,9 @@ public:
 	
 	Network(Config config, int portNo);
 	Network(Network const &src);
+
+	Network(const int port, Config config);
+
 	~Network(void);
 
 
