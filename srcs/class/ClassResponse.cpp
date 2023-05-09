@@ -4,7 +4,7 @@ Response::Response(Config config) : _config(config), _error_code(200)
 {
 }
 
-Response::Response(Response &rhs)
+Response::Response(Response const &rhs)
 {
 	this->_config = rhs._config;
 	this->_error_code = rhs._error_code;
@@ -17,10 +17,9 @@ Response::Response(int error_code, Config config) : _config(config)
     set_error_code(error_code);
 }
 
-Response::Response(std::string content, std::string content_ext, Config config) : _config(config)
+Response::Response(std::string path, Config config) : _config(config), _error_code(200)
 {
-    set_error_code(200);
-    set_content(content, content_ext);
+	set_path(path);
 }
 
 int Response::get_error_code() const
@@ -28,7 +27,7 @@ int Response::get_error_code() const
 	return (this->_error_code);
 }
 
-std::string Response::get_content() const
+std::string Response::get_content_body() const
 {
 	return (this->_content);
 }
@@ -38,27 +37,31 @@ std::string Response::get_content_type() const
 	return (this->_content_type);
 }
 
+void Response::set_path(std::string path)
+{
+	if(path.empty())
+		throw std::invalid_argument("@fn void Response::set_path(std::string path)\npath is empty");
+	set_error_code(200);
+	std::string ext;
+
+	ext = ft_get_extension(path);
+	if(ext.empty())
+		throw std::invalid_argument("@fn void Response::set_path(std::string path)\npath : "+ path +" has no exception");
+	set_content_body(ft_read_file(path));
+	set_content_extension(ext);
+
+}
+
 void Response::set_error_code(int error_code)
 {
 	if(this->_config.getErrorNames(error_code).empty())
-		throw std::invalid_argument("error_code does not exist\n");
+		throw std::invalid_argument("@fn void Response::set_error_code(int error_code)\nerror_code does not exist\n");
 	this->_error_code = error_code;
-}
-
-void Response::set_content(std::string content, std::string content_ext)
-{
-	this->set_content_body(ft_read_file(content));
-	this->set_content_extension(content_ext);
 }
 
 void Response::set_content_body(std::string body)
 {
 	this->_content = body;
-}
-
-void Response::set_content_type(std::string type)
-{
-	this->_content_type = type;
 }
 
 void Response::set_content_extension(std::string extension)
@@ -110,16 +113,17 @@ std::string Response::send(int client_socket)
 	{
 		std::cout <<W<< "@fn Response::send(int client_socket)" <<RE<< std::endl;
 		std::cout <<B<< "my errcode is :" << _error_code << std::endl <<RE; //DEBUG
-        set_content(ft_error_page(this->_error_code), "html");
+        set_content_body(ft_error_page(this->_error_code));
+		set_content_extension("html");
 	}
-	else if(get_content().empty() || get_content_type().empty())
+	else if(get_content_body().empty() || get_content_type().empty())
 	{
 		throw std::invalid_argument("@fn Response::send(int client_socket)\nCan't send response because it is incomplete");
 	}
-	message << "Content-Length:" << get_content().length() << std::endl;
+	message << "Content-Length:" << get_content_body().length() << std::endl;
 	message << "Content-Type:" << get_content_type() << std::endl;
 	message << std::endl;
-	message << get_content();
+	message << get_content_body();
 
 	std::cout <<Y<< message.str() <<RE<<std::endl;
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
@@ -127,13 +131,13 @@ std::string Response::send(int client_socket)
 	return (message.str());
 }
 
-Response Response::operator=(Response &rhs)
+Response &Response::operator=(const Response &rhs)
 		{
-    this->_error_code = rhs._error_code;
-    this->_content_type = rhs._content_type;
-    this->_content = rhs._content;
-	return (*this);
-}
+			this->_error_code = rhs._error_code;
+			this->_content_type = rhs._content_type;
+			this->_content = rhs._content;
+			return (*this);
+		}
 
 std::ostream& operator<<(std::ostream& out, Response const& rhs)
 {
@@ -145,9 +149,9 @@ std::ostream& operator<<(std::ostream& out, Response const& rhs)
 	out << "error_code : " << rhs.get_error_code() << std::endl;
 	out << "content_type : " << rhs.get_content_type() << std::endl;
 
-	short_content = rhs.get_content().substr(0,100);
+	short_content = rhs.get_content_body().substr(0,100);
 	out << "content : " << short_content;
-	if(rhs.get_content().length() > 100)
+	if(rhs.get_content_body().length() > 100)
 		out << "...";
 	out << std::endl;
 

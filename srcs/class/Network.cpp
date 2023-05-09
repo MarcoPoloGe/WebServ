@@ -113,137 +113,24 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		std::cout << R << "Wrong HTTP REQUEST\n" << RE;
 		Response error(404, _config);
 		error.send(connection);
-		return ;
+		return (1);
 	}
 
 	_config.getInLocationValue("/", "root");
 	std::string	root = _config.getValueTemp();// root = "./website"
 
-	std::string	path;
 	std::string	URI;
-	std::string extension;
-//	int	rep_code = 0;
-	Response ret();
-
-	std::string slash_str;
-
-	std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
-
-	URI = ft_remove_nonprintable( request.get_URI() );
-	extension = ft_get_extension(URI);//check size max extension?	//pr marco (extension)
-
-//	std::cout <<B<< "my extension for {" << URI << "} is {" << extension << "}\n"<<RE; //DEBUG
-//	path = root + URI; //il faudra enlever le doublon de '/' (par exemple : /images//kittycat.png)
-
-
-
-
-//  /kittycat.jpg
-// 	/img/kittycat.jpg
-
-	/* /img/
-
-
-	_config.IsLocation(URI, request.get_type(), ret);
-	if (rep_code != 200) {
-//		std::cout << "The type is : {" << request.get_type() << "}\n";
-		file_type.first = "text"; file_type.second = "html";
-		goto fill_rep;
-	}
-
-	if ((path = _config.getPath_of_URI(URI)).empty())
-		path = "";
-
-	if (path == "./website/")
-		path += "index.html";
-
-	//	if (extension == "")											//pr Lowell (index/autoindex)
-//		check_index(_config);										//''
-
-//	if ( CGI_extension(extension, _config) == true )				//pr Lowell (CGI)
-//		exec_CGI();													//''
-
-	// normalement obsolete ⬇️  //
-
-//	if (URI.compare("/") == 0)
-//	{
-//		file_type.first = "html"; file_type.second = "html";
-//		//path += root;
-//		rep_code = 200;
-////		std::cout <<R<< "\n\nURI IS '/' : SO MY PATH IS {" << path << "}\n" << RE;//DEBUG
-//	}
-//	else
-//	{
-//		std::ifstream	infile;
-//
-//		infile.open(path.c_str(), std::ios::in | std::ios::out | std::ios::binary);
-//		if (infile.is_open())
-//		{
-////			std::cout <<R<< "YES I OPENED [" << path << "]\n" << RE;//DEBUG
-//			infile.close();
-//			rep_code = 200;
-//		}
-//		else
-//		{
-////			std::cout <<R<< "NOPE I DID NOT OPEN [" << path << "]\n" << RE;//DEBUG
-//			rep_code = 404;
-//			file_type.first = "html"; file_type.second = "html";
-//			goto fill_rep;
-//		}
-//
-//		std::size_t last_point = path.rfind(".");
-//		if (last_point == 0)
-//		{
-//			std::cout << G << "YA QUUN POINT AU DEBUT\n" << RE;	//DEBUG
-//
-//			file_type.first = "html"; file_type.second = "html";
-//			goto fill_rep;
-//		}
-//		if (last_point != std::string::npos)
-//		{
-//			file_type.second = path.substr(last_point + 1);
-//			if (file_type.second == "html")
-//				file_type.first = "html";
-//			else
-//				file_type.first = "image";
-//		}
-//		else
-//		{
-//			file_type.first = "html";
-//			file_type.second = "html";
-//		}
-//	}
-
-fill_rep:
-		/*std::cout << G << "@@@@file type@@@@\n"					//
-			<< "file type first = " << file_type.first << "\n"		//
-			<< "file type second = "  << file_type.second << "\n"	//
-			<< "@@@@@@@@@@@@@@@@@\n" << RE;*/						// DEBUG
-
-		response.set_error_code(rep_code);											//new
-//		std::cout <<W<< "@fn Network::deal_with_data(int connection, fd_set socks)" <<RE<< std::endl;
-//		std::cout <<R<< "The request body is : ######\n" <<RE<<  request.get_body()
-//			<<R<< "\n#####\n"<<RE;
-
-//		std::cout <<R<<  "MY REP CODE IS {" << rep_code << "}\n" << RE;//DEBUG
-		if (file_type.second == "html"){
-			response.set_content_extension("html");
-		}
-		else if (file_type.first == "image")
-			response.set_content_type(file_type.first + "/" + file_type.second);
-
-		if (response.get_error_code() == 200)
-			response.set_content_body(ft_read_file(path));
-		else if (response.get_error_code() == 404)
-			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
-		else
-			response.set_content_body(ft_read_file("./website/error_pages/error-405.html")); //new
-
-			// normalement obsolete ⬆️ //
-		std::cout <<W<< "@fn Network::deal_with_data(int connection, fd_set socks)" <<RE<< std::endl;
-		std::cout << G << "my response is \n" << RE << response << std::endl;
-		response.send(connection);										//new
+	URI = request.get_URI();
+	if (URI == "/")
+		URI = "index.html"; // todo remove and use instead default pages for each folder
+	response = _config.IsLocation(URI, request.get_type());
+	response.send(connection);										//new
 
 	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
-		return (0);
+	return (0);
+
+	Response r3(_config);
+	Response r4(_config);
+
+	r3 = r4;
 }

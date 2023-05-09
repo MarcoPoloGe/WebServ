@@ -13,28 +13,28 @@ class Response {
 
 public:
 	Response(Config config);
-	Response(Response&);
+	Response(Response const &rhs);
 	Response(int error_code, Config config);
-	Response(std::string content, std::string content_type, Config config);
+	Response(std::string path, Config config);
 
 	int get_error_code() const;
 	std::string get_content_type() const;
-	std::string get_content() const;
+	std::string get_content_body() const;
 
+	void set_path(std::string path);
 	void set_error_code(int error_code);
-	void set_content(std::string content, std::string content_type);
 	void set_content_body(std::string body);
-	void set_content_type(std::string type); // setters content-type ex : text/html text/plain
 	void set_content_extension(std::string extension); // setter content-type from extension ex : html > text/html txt > text/plain
 
 	std::string send(int client_socket);
+
+	Response &operator=(Response const &rhs);
 
 private:
 	Config _config;
 	int _error_code;
 	std::string _content_type; //ex text/plain image/jpeg
 	std::string _content;  //what will be put in the body of the response
-	Response operator=(Response&);
 
 	//these are helper functions;
 		//returns the name of the error_code ex: 200 -> OK

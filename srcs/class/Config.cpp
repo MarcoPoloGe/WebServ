@@ -178,6 +178,7 @@ Config::IsLocation(const std::string& URIraw,
 
 	unsigned long pos;
 	std::string URI = URIraw.substr(1, URIraw.size()); //= /pomme.txt
+	std::string path;
 
 	if ((pos = URI.find('/')) != std::string::npos || URI == "") //
 	{
@@ -186,8 +187,8 @@ Config::IsLocation(const std::string& URIraw,
 			if (((im = (*i).find("location")) != (*i).end()) && (im->second == folder)) {
 				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos)) {
 					if (im->second.find(Method) != std::string::npos) {
-						std::string path = getPath_of_URI(URIraw, i, im);
-						if (!path.empty()){
+						path = getPath_of_URI(URIraw, i, im);
+						if (path.empty()){
 							ret.set_error_code(404); // file doesn't exist in folder from locations
 							return (ret);
 						}
