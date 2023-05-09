@@ -228,7 +228,7 @@ Config::IsLocation(const std::string& URIraw,
 				{
 					if (im->second.find(Method) != std::string::npos)
 					{
-						URI.erase(0, 1);
+//						URI.erase(0, 1);
 						path = getPath_of_URI(URIraw, i, im); //  URIraw = "/index.html"
 						if (path.empty())
 						{

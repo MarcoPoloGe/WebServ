@@ -129,6 +129,8 @@ private:
 	std::map<int, std::string>										_error_pages;
 	std::map<int, std::string>										_error_names;
 
+	std::string														_root;
+
 	std::string														_key_temp;
 	std::string														_value_temp;
 //	std::map<std::string, std::string>								_loc_temp;
