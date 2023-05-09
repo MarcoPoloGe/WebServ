@@ -26,6 +26,11 @@ public:
 	void set_content_body(std::string body);
 	void set_content_extension(std::string extension); // setter content-type from extension ex : html > text/html txt > text/plain
 
+	////TRICK TEST////
+	void	set_manual_content_type(std::string content_type);
+	void	set_manual_content(std::string content);
+	////TRICK TEST/////
+
 	std::string send(int client_socket);
 
 	Response &operator=(Response const &rhs);

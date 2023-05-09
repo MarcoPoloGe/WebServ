@@ -37,6 +37,19 @@ std::string Response::get_content_type() const
 	return (this->_content_type);
 }
 
+/////////////////TRICK TEST //////////////////////
+
+void Response::set_manual_content_type(std::string content_type)
+{
+	this->_content_type = content_type;
+}
+
+void Response::set_manual_content(std::string content)
+{
+	this->_content = content;
+}
+/////////////////TRICK TEST //////////////////////
+
 void Response::set_path(std::string path)
 {
 	if(path.empty())
@@ -125,7 +138,7 @@ std::string Response::send(int client_socket)
 	message << std::endl;
 	message << get_content_body();
 
-	std::cout <<Y<< message.str() <<RE<<std::endl;
+	std::cout <<Y<< "My reponse is : \n" << message.str() <<RE<<std::endl;//DEBUG
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.
 	return (message.str());
@@ -143,7 +156,7 @@ std::ostream& operator<<(std::ostream& out, Response const& rhs)
 {
 	std::string short_content;
 
-	out <<W<< "@fn operator<<(std::ostream& out, Response const& rhs)" <<RE<< std::endl;
+//	out <<W<< "@fn operator<<(std::ostream& out, Response const& rhs)" <<RE<< std::endl;
 	out << "--Response_start--" << std::endl;
 
 	out << "error_code : " << rhs.get_error_code() << std::endl;
