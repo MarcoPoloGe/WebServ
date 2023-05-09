@@ -71,7 +71,7 @@ std::string	ft_get_extension(std::string str)
 		return ("");
 	}
 	else
-		return ( str.substr(last_point) );
+		return ( str.substr(last_point + 1) );
 }
 
 std::string ft_remove_nonprintable(std::string str)
