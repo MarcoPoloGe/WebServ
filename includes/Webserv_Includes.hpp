@@ -17,6 +17,12 @@
 #include <iomanip>
 #include <sstream>
 #include <cstdio>
+#include <ctime>
+#include <cstdlib>
+#include <cstdio>
+#include <dirent.h>
+#include <sys/stat.h>
+
 
 #include "ClassResponse.hpp"
 #include "ClassRequest.hpp"
@@ -57,5 +63,6 @@ unsigned int	ft_htonl(unsigned int l);
 void			setnonblocking(int sock);
 std::string		ft_get_extension(std::string str);
 std::string		ft_remove_nonprintable(std::string str);
+std::string		ft_generate_html_dir(std::string dir_path);
 
 #endif

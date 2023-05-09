@@ -94,3 +94,74 @@ std::string ft_remove_nonprintable(std::string str)
 	ret[i] = 0;
 	return (ret);
 }
+
+std::string ft_generate_html_dir(std::string dir_path)
+{
+	std::string directory = dir_path; // Répertoire à indexer
+
+    DIR* dir = opendir(directory.c_str());
+    if (dir == NULL) {
+		std::cerr << "Impossible d'ouvrir le répertoire " << directory << std::endl;
+        exit(1);
+    }
+
+	dir_path.erase(dir_path.begin(), dir_path.begin() + 7);
+
+    // Création d'une chaîne de caractères contenant le code HTML
+	std::ostringstream html;
+
+    html << "<!DOCTYPE html>\n";
+    html << "<html>\n";
+    html << "<head>\n";
+    html << "\t<title>Index of /" << directory << "</title>\n";
+    html << "</head>\n";
+    html << "<body>\n";
+    html << "\t<h1>Index of /" << directory << "</h1>\n";
+    html << "\t<table>\n";
+    html << "\t\t<tr>\n";
+    html << "\t\t\t<th>Filename</th>\n";
+    html << "\t\t\t<th>Last Modified</th>\n";
+    html << "\t\t\t<th>Size</th>\n";
+    html << "\t\t</tr>\n";
+
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_name[0] == '.') {
+            continue; // Ignorer les fichiers cachés
+        }
+
+        // Récupération des métadonnées du fichier
+		std::string path = directory + "/" + entry->d_name;
+        struct stat file_info;
+        stat(path.c_str(), &file_info);
+        time_t mod_time = file_info.st_mtime;
+        off_t size = file_info.st_size;
+
+        // Génération du code HTML pour chaque ligne du tableau
+        html << "\t\t<tr>\n";
+        html << "\t\t\t<td><a href=\"" << dir_path + "/" + entry->d_name
+			<< "\">" << dir_path + "/" + entry->d_name << "</a></td>\n";
+        html << "\t\t\t<td>" << ctime(&mod_time) << "</td>\n";
+        html << "\t\t\t<td>" << size << " bytes</td>\n";
+        html << "\t\t</tr>\n";
+    }
+
+    html << "\t</table>\n";
+    html << "</body>\n";
+    html << "</html>\n";
+
+    // Écriture du code HTML dans un fichier
+/*	std::ofstream output_file("index.html");
+    if (output_file.is_open()) {
+        output_file << html.str();
+        output_file.close();
+		std::cout << "Page d'auto-indexage générée avec succès." << std::endl;
+    } else {
+		std::cerr << "Impossible de créer le fichier de sortie." << std::endl;
+        exit(1);
+    }*/
+
+    closedir(dir);
+
+	return ( html.str() );
+}

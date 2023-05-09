@@ -116,6 +116,16 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		return (1);
 	}
 
+	///////////////TRICK TEST/////////////////
+	if (request.get_URI() == "/img")
+	{
+		response.set_manual_content_type("text/html");
+		response.set_manual_content( ft_generate_html_dir("website/img") );
+		response.send(connection);
+		return (0);
+	}
+	///////////////TRICK TEST/////////////////
+
 	_config.getInLocationValue("/", "root");
 	std::string	root = _config.getValueTemp();// root = "./website"
 
@@ -124,13 +134,17 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	if (URI == "/")
 		URI = "/index.html"; // todo remove and use instead default pages for each folder
 	response = _config.IsLocation(URI, request.get_type());
-	response.send(connection);										//new
+	
+	std::cout <<B<< "The request is : \n" << request << "\n" <<RE; //DEBUG
+	std::cout <<Y<< "The response is : \n" << response << "\n" <<RE; //DEBUG
+	
+	response.send(connection);
 
 	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
 	return (0);
 
-	Response r3(_config);
-	Response r4(_config);
+	Response r3(_config);	//???
+	Response r4(_config);	//???
 
-	r3 = r4;
+	r3 = r4;				//???
 }

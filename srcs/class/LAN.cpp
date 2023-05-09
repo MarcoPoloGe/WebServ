@@ -56,7 +56,7 @@ void	LAN::runAll(void)
 			Ft_error	Err("select");
 		if (ready_socks == 0)
 		{
-			std::cout << "@fn LAN::runAll(void)\rWaiting on a connection " << dot[n++] << std::flush;
+			std::cout << "\rWaiting on a connection " << dot[n++] << std::flush;
 			if (n == 12)
 				n = 0;
 		}
