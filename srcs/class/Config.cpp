@@ -307,6 +307,9 @@ Config::getInLocationValue(std::string PathLocation, std::string key)
 	std::vector<std::map<std::string, std::string> >::iterator itv;
 	std::map<std::string, std::string>::iterator itm;
 
+	setKeyTemp("");
+	setValueTemp("");
+
 	for (itv = _locs.begin(); itv != _locs.end(); itv++)
 	{
 		itm = (*itv).find("location");

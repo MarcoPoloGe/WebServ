@@ -70,15 +70,12 @@ void Network::setnonblocking(int sock)
 	return;
 }
 
-int	Network::deal_with_data(int connection, fd_set socks)
+Request receive_request(int connection, fd_set &socks)
 {
-	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
-
 	char				buffer[BUFFER_SIZE + 1];
-	Request 			request;
-	Response			response(_config);
 	int					bytes_read = 1;
 	std::string 		request_string;
+	Request				request;
 
 	while (bytes_read > 0)
 	{
@@ -89,20 +86,38 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		{
 			if (FD_ISSET(connection, &socks))
 				break ;
-			return (1);
+			throw std::runtime_error("@fn receive_request(int connection, fd_set &socks)\nrecv connection error");
 		}
 		request_string += std::string(buffer);
 	}
-
 	if (request_string.empty())
-		return (0);
+		throw std::runtime_error("@fn receive_request(int connection, fd_set &socks)\nrequest is empty");
+	request.fill(request_string);
+	return (request);
+}
 
-//	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE;//DEBUG
 
-	_config.setValueTemp("");
+int	Network::deal_with_data(int connection, fd_set socks)
+{
+	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
+
+	Request 			request;
+	Response			response(_config);
+
+	try
+	{
+		request = receive_request(connection, socks);
+	}
+	catch(...)
+	{
+		std::cout << R << "Wrong HTTP REQUEST\n" << RE;
+		Response error(404, _config);
+		error.send(connection);
+		return ;
+	}
+
 	_config.getInLocationValue("/", "root");
 	std::string	root = _config.getValueTemp();// root = "./website"
-	_config.setValueTemp("");
 
 	std::string	path;
 	std::string	URI;
@@ -111,15 +126,6 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	std::string slash_str;
 
 	std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
-
-	if (request.fill(request_string) == false)
-	{
-		std::cout << R << "Wrong HTTP REQUEST\n" << RE;
-		rep_code = 404;
-		file_type.first = "text"; file_type.second = "html";
-//		extension = ".html"; 										//pr marco (extension)
-		goto fill_rep;
-	}
 
 	URI = ft_remove_nonprintable( request.get_URI() );
 	extension = ft_get_extension(URI);//check size max extension?	//pr marco (extension)
@@ -210,8 +216,7 @@ fill_rep:
 
 //		std::cout <<R<<  "MY REP CODE IS {" << rep_code << "}\n" << RE;//DEBUG
 		if (file_type.second == "html"){
-
-			response.set_content_type("html");
+			response.set_content_extension("html");
 		}
 		else if (file_type.first == "image")
 			response.set_content_type(file_type.first + "/" + file_type.second);
