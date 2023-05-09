@@ -122,7 +122,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	std::string	URI;
 	URI = request.get_URI();
 	if (URI == "/")
-		URI = "index.html"; // todo remove and use instead default pages for each folder
+		URI = "/index.html"; // todo remove and use instead default pages for each folder
 	response = _config.IsLocation(URI, request.get_type());
 	response.send(connection);										//new
 

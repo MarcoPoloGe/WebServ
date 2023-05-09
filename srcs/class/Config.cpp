@@ -170,30 +170,42 @@ Config::IsLocation(const std::string& URIraw,
 				   const std::string &Method
 				   )
 {
+	// URIraw = "/"
+	// URI = "index.html"
+	// URI = "./website/index.html"
+	// folder = ""
+
 
 	std::vector<std::map<std::string, std::string> >::iterator i;
 	std::map<std::string, std::string>::iterator im;
+	std::map<std::string, std::string>::iterator rootwebsite;
 	std::string folder;
 	Response ret((*this));
 
 	unsigned long pos;
-	std::string URI = URIraw.substr(1, URIraw.size()); //= /pomme.txt
+	std::string URI = URIraw.substr(1, URIraw.size());
 	std::string path;
 
-	if ((pos = URI.find('/')) != std::string::npos || URI == "") //
+	if ((pos = URI.find('/')) != std::string::npos || URI.empty()) //
 	{
 		folder = "/" + URI.substr(0, pos);
-		for (i = _locs.begin(); i != _locs.end(); i++) {
-			if (((im = (*i).find("location")) != (*i).end()) && (im->second == folder)) {
-				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos)) {
-					if (im->second.find(Method) != std::string::npos) {
+		for (i = _locs.begin(); i != _locs.end(); i++)
+		{
+			if (((im = (*i).find("location")) != (*i).end()) && (im->second == folder))
+			{
+				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos))
+				{
+					if (im->second.find(Method) != std::string::npos)
+					{
 						path = getPath_of_URI(URIraw, i, im);
-						if (path.empty()){
+						if (path.empty())
+						{
 							ret.set_error_code(404); // file doesn't exist in folder from locations
 							return (ret);
 						}
 					}
-					else {
+					else
+					{
 						ret.set_error_code(405);
 						return (ret); // Method not allowed
 					}
@@ -203,6 +215,32 @@ Config::IsLocation(const std::string& URIraw,
 		if (i == _locs.end()) {
 			ret.set_error_code(404);
 			return (ret);// no folder location for ./website/folder/ in config
+		}
+	}
+	else
+	{
+		for (i = _locs.begin(); i != _locs.end(); i++)
+		{
+			if (((im = (*i).find("location")) != (*i).end()) && (im->second == "/"))
+			{
+				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos))
+				{
+					if (im->second.find(Method) != std::string::npos)
+					{
+						path = getPath_of_URI(URIraw, i, im); //  URIraw = "/index.html"
+						if (path.empty())
+						{
+							ret.set_error_code(404); // file doesn't exist in folder from locations
+							return (ret);
+						}
+					}
+					else
+					{
+						ret.set_error_code(405);
+						return (ret); // Method not allowed
+					}
+				}
+			}
 		}
 	}
 	ret.set_path(path);
@@ -222,7 +260,7 @@ Config::getPath_of_URI(const std::string& URIraw,
 	if ((im = (*i).find("root")) != (*i).end())
 	{
 		// take value of root=./website, so "./website", add URI, like "/kittycat.jpg"
-		std::string all = im->second + URI;
+		std::string all = im->second + URI; // URI = ./website/index.html
 		// check if it exist
 		std::ifstream to_open(all.c_str(), std::ios::in);
 		if ( !to_open.is_open() )
