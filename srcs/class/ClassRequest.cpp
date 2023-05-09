@@ -26,7 +26,7 @@ bool Request::fill(std::string request)
 			if(!temp.empty() && (temp == "GET" || temp == "POST" || temp == "DELETE"))
 				type = temp;
 			else
-				throw std::invalid_argument("Invalid HTTP request type : " + temp);
+				throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request type : " + temp);
 		}
 		if(std::getline(file, temp, ' '))
 		{
@@ -34,7 +34,7 @@ bool Request::fill(std::string request)
 			if(!temp.empty())
 				URI = temp;
 			else
-				throw std::invalid_argument("Invalid HTTP request URI");
+				throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request URI");
 		}
 		if(std::getline(file, temp))
 		{
@@ -42,7 +42,7 @@ bool Request::fill(std::string request)
 			if(!temp.empty() && temp == HTTP_VERSION)
 				HTTP_version = temp;
 			else
-				throw std::invalid_argument("Invalid HTTP request HTTP version : " + temp);
+				throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request HTTP version : " + temp);
 		}
 		while (std::getline(file, temp))
 		{
@@ -56,7 +56,7 @@ bool Request::fill(std::string request)
 				if(std::getline(stemp >> std::ws, second)) // >> std:ws skips white spaces before reading
 				{
 					if(first.empty() || second.empty())
-						throw std::invalid_argument("Invalid HTTP request header");
+						throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request header");
 					headers_map.insert(std::make_pair(first, second));
 				}
 			}
@@ -77,7 +77,7 @@ bool Request::fill(std::string request)
 				if(!temp.empty())
 					this->body = temp;
 				else
-					throw std::invalid_argument("Invalid HTTP request body");
+					throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request body");
 			}
 		}
 	}
@@ -156,7 +156,7 @@ std::ostream& operator<<(std::ostream& out, Request const& rhs)
 {
 	std::map<std::string,std::string> headers = rhs.get_headers_map();
 	std::string short_body;
-
+	out <<W<< "@fn operator<<(std::ostream& out, Request const& rhs)" <<RE<< std::endl;
 	out << "--Request_start--" << std::endl;
 	out << "type : " << rhs.get_type() << std::endl;
 	out << "URI : " << rhs.get_URI() << std::endl;

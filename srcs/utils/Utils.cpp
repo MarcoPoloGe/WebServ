@@ -9,10 +9,10 @@ std::string ft_read_file(std::string file_name)
 	html_file.open(file_name.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 	if(html_file.is_open())
 	{
-		std::cout <<G<< "file read OK  : " << file_name << "\n" <<RE;
+		std::cout <<W<< "@fn ft_read_file(std::string file_name)\n"<<G<<"☑️ OK  : " << file_name << "\n" <<RE;
 	} else
 	{
-		std::cout <<R<< "file read FAIL: " << file_name << "\n" <<RE;
+		std::cout <<W<< "@fn ft_read_file(std::string file_name)\n"<<G<<"🔘️ ERROR  : " << file_name << "\n" <<RE;
 	}
 	while (std::getline(html_file, line))
 	{
@@ -66,7 +66,8 @@ std::string	ft_get_extension(std::string str)
 
 	if (last_point == std::string::npos)
 	{
-		std::cout << "No particular extension in string [" << str << "]\n";
+		std::cout <<W<< "@fn ft_get_extension(std::string str)\n"
+		<<B<< "No particular extension in string [" << str << "]\n" <<RE;
 		return ("");
 	}
 	else

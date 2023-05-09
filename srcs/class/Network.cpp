@@ -70,15 +70,6 @@ void Network::setnonblocking(int sock)
 	return;
 }
 
-
-//std::string compare_to_locs_config(Config conf, std::string &URI){
-//	std::string root;
-////	if (!conf.getRoot(URI).empty())
-//	(void)conf;
-//	(void)URI;
-//	return (root);
-//}
-
 int	Network::deal_with_data(int connection, fd_set socks)
 {
 	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
@@ -106,19 +97,14 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	if (request_string.empty())
 		return (0);
 
-	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE;//DEBUG
+//	std::cout <<G<< "My request is :\n" << Y << request_string << std::endl << RE;//DEBUG
 
-
-//	std::string	root = "./website";
 	_config.setValueTemp("");
 	_config.getInLocationValue("/", "root");
 	std::string	root = _config.getValueTemp();// root = "./website"
 	_config.setValueTemp("");
-//	std::cout <<Y<< "root = " << root <<RE<< std::endl; // tested: "root = ./website/"
 
-
-//	std::string root;	//remplir plus tard selon la location
-	std::string	path;		
+	std::string	path;
 	std::string	URI;
 	std::string extension;
 	int	rep_code = 0;
@@ -139,43 +125,23 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	extension = ft_get_extension(URI);//check size max extension?	//pr marco (extension)
 
 //	std::cout <<B<< "my extension for {" << URI << "} is {" << extension << "}\n"<<RE; //DEBUG
-	
-//	root = compare_to_locs_config(_config, URI);					//pr marco et Lowell(locations)
-
 //	path = root + URI; //il faudra enlever le doublon de '/' (par exemple : /images//kittycat.png)
 
-//	localhost:8080/img/kittycat.jpg
-
-//	localhost:8080/kkk/jaimelespommes.txt
-
 	rep_code = _config.IsLocation(URI, request.get_type());
-	std::cout << "ON EST LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
-
 	if (rep_code != 200) {
-		std::cout << "The type is : {" << request.get_type() << "}\n";
-		std::cout << "config.isLocation is pas content\n";
+//		std::cout << "The type is : {" << request.get_type() << "}\n";
 		file_type.first = "text"; file_type.second = "html";
 		goto fill_rep;
 	}
-
 
 	if ((path = _config.getPath_of_URI(URI)).empty())
 		path = "";
 
 	if (path == "./website/")
 		path += "index.html";
-//	std::cout <<Y<< "path Wesh : " << path <<RE<< std::endl;
-
-	//TODO verifier methods
-//	if ( verify_method(request.get_type(), _config()) == false )	//pr marco et Lowell (method)
-//		error_wrong_method();										//''
 
 	//	if (extension == "")											//pr Lowell (index/autoindex)
 //		check_index(_config);										//''
-
-//	std::cout << "***Try to access : {" << path << "}***\n";//DEBUG
-
-
 
 //	if ( CGI_extension(extension, _config) == true )				//pr Lowell (CGI)
 //		exec_CGI();													//''
@@ -238,33 +204,27 @@ fill_rep:
 			<< "@@@@@@@@@@@@@@@@@\n" << RE;*/						// DEBUG
 
 		response.set_error_code(rep_code);											//new
-
-		std::cout <<R<< "The request body is : ######\n" <<RE<<  request.get_body()
-			<<R<< "\n#####\n"<<RE;
+//		std::cout <<W<< "@fn Network::deal_with_data(int connection, fd_set socks)" <<RE<< std::endl;
+//		std::cout <<R<< "The request body is : ######\n" <<RE<<  request.get_body()
+//			<<R<< "\n#####\n"<<RE;
 
 //		std::cout <<R<<  "MY REP CODE IS {" << rep_code << "}\n" << RE;//DEBUG
-		std::cout <<B<< file_type.second <<RE<< std::endl;
-		std::cout <<B<< file_type.first <<RE<< std::endl;
-		if (file_type.second == "html")
-		{																			//a changer
-			response.set_content_type("text/html");									//quand on
-			std::cout <<R<< "wallah ses du text/html\n"<<RE;						//
-		}																			//
-		else if (file_type.first == "image")										//aura les
-			response.set_content_type(file_type.first + "/" + file_type.second);	//mimes_type
+		if (file_type.second == "html"){
 
-		if (response.get_error_code() == 200)										//
-			response.set_content_body(ft_read_file(path));							//
-		else if (response.get_error_code() == 404)												//
+			response.set_content_type("html");
+		}
+		else if (file_type.first == "image")
+			response.set_content_type(file_type.first + "/" + file_type.second);
+
+		if (response.get_error_code() == 200)
+			response.set_content_body(ft_read_file(path));
+		else if (response.get_error_code() == 404)
 			response.set_content_body(ft_read_file("./website/error_pages/error-404.html"));	//new
 		else
-		{
-//			response.set_error_code(200);
-			response.set_content_body(ft_read_file("./website/error_pages/error-405.html"));
-		}
+			response.set_content_body(ft_read_file("./website/error_pages/error-405.html")); //new
 
 			// normalement obsolete ⬆️ //
-
+		std::cout <<W<< "@fn Network::deal_with_data(int connection, fd_set socks)" <<RE<< std::endl;
 		std::cout << G << "my response is \n" << RE << response << std::endl;
 		response.send(connection);										//new
 

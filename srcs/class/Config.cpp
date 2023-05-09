@@ -73,7 +73,7 @@ Config::setPortServer(
 			_ports.push_back(port);
 		}
 		else
-			throw std::invalid_argument("Error: port isn't an int");
+			throw std::invalid_argument("@fn Config::setPortServer(std::string& input)\nError: port isn't an int");
 	}
 	if (!input.empty())
 	{
@@ -83,7 +83,7 @@ Config::setPortServer(
 			_ports.push_back(port);
 		}
 		else
-			throw std::invalid_argument("Error: port isn't an int");
+			throw std::invalid_argument("@fn Config::setPortServer(std::string& input)\nError: port isn't an int");
 	}
 }
 
@@ -107,17 +107,14 @@ std::string &Config::getValueTemp(void) 			{return (_value_temp); }
 
 std::string
 Config::getType(const std::string& format) {
-	std::map<std::string, std::string>::iterator itm ;//= _mime_types.begin();
-	std::cout << "{" << format << "}" << std::endl;
-//	for (; itm != _mime_types.end(); itm++)
-//		std::cout <<B<< "first: " << itm->first << " sec: {" << itm->second << "}"<<RE<< std::endl;
+	std::map<std::string, std::string>::iterator itm ;
 	itm = _mime_types.find(format);
 	if (itm != _mime_types.end()){
 		return (itm->second);
 	}
 	else
 	{
-		std::cerr<<R<< "Error: getType: "<< format << " not found." <<RE<< std::endl;
+		std::cerr<<R<< "@fn Config::getType(const std::string& format)\nError: getType: "<< format << " not found." <<RE<< std::endl;
 		return (std::string());
 	}
 }
@@ -133,7 +130,7 @@ Config::getContentType(const std::string& format) {
 	}
 	else
 	{
-		std::cerr<<R<< "Error: getType: "<< format << " not found." <<RE<< std::endl;
+		std::cerr<<R<< "@fn Config::getContentType(const std::string& format)\nError: getType: "<< format << " not found." <<RE<< std::endl;
 		return (std::string());
 	}
 }
@@ -148,7 +145,7 @@ Config::getErrorPages(int error_pages) {
 	}
 	else
 	{
-		std::cerr << R << "Error: getErrorPages: " << error_pages << " not found." << RE << std::endl;
+		std::cerr << R << "@fn Config::getErrorPages(int error_pages)\nError: getErrorPages: " << error_pages << " not found." << RE << std::endl;
 		return (std::string());
 	}
 }
@@ -163,7 +160,7 @@ Config::getErrorNames(int error_names) {
 	}
 	else
 	{
-		std::cerr << R << "Error: getErrorNames: " << error_names << " not found." << RE << std::endl;
+		std::cerr << R << "@fn Config::getErrorNames(int error_names) \nError: getErrorNames: " << error_names << " not found." << RE << std::endl;
 		return (std::string());
 	}
 }
@@ -177,24 +174,19 @@ Config::IsLocation(const std::string& URIraw, const std::string &Method) {
 	std::string folder;
 
 	unsigned long pos;
-	std::cout <<Y<< URIraw <<RE<< std::endl;
 	std::string URI = URIraw.substr(1, URIraw.size()); //= /kkk/pomme.txt
 
-	if ((pos = URI.find('/')) != std::string::npos || URI == "")
+	if ((pos = URI.find('/')) != std::string::npos || URI == "") //
 	{
 		folder = "/" + URI.substr(0, pos);
-
 		for (i = _locs.begin(); i != _locs.end(); i++)
 		{
 			if ((im = (*i).find("location")) != (*i).end())
 			{
-
 				if (im->second == folder)
 				{
 					if ((im = (*i).find("method")) != (*i).end())
 					{
-						std::cout <<B<< "method is : {" << Method << "}\n"			//DEBUG
-							<< "and im..second is : [" << im->second << "]\n" <<RE;	//DEBUG
 						if (im->second.find(Method) != std::string::npos)
 							return 200; // All good
 						else
@@ -203,7 +195,7 @@ Config::IsLocation(const std::string& URIraw, const std::string &Method) {
 				}
 			}
 		}
-		if (i == _locs.end())
+		if (i == _locs.end()) // no folder location for ./website/folder/ in config
 			return 404;
 	}
 	return 200;
@@ -216,7 +208,7 @@ Config::getPath_of_URI(const std::string& URIraw){
 	std::map<std::string, std::string>::iterator im;
 
 	//take out / of URI
-	std::string URI = URIraw.substr(1, URIraw.size()); //= kkk/pomme.txt
+	std::string URI = URIraw.substr(1, URIraw.size()); /* = kkk/pomme.txt */
 		//for example: URI="/kittycat.jpg"
 	//look into all locations map (location=/, location=/methods, ...)
 	for( i = _locs.begin(); i != _locs.end() ; i++ )
@@ -227,9 +219,7 @@ Config::getPath_of_URI(const std::string& URIraw){
 		{
 			// take value of root=./website, so "./website", add URI, like "/kittycat.jpg"
 			std::string all = im->second + URI;
-			// check if it can be open()
-			//int fd;
-			//if((fd = open(all.c_str(), O_CREAT | O_EXCL)) != -1) {
+			// check if it exist
 			std::ifstream to_open(all.c_str(), std::ios::in);
 			if ( !to_open.is_open() )
 				continue;
@@ -240,13 +230,11 @@ Config::getPath_of_URI(const std::string& URIraw){
 				// store location map where path have been found
 //				_loc_temp = (*i);
 				// return string of path tested = ./website/kittycat.jpg";
-//				std::cerr <<G<< all << "WEEEESHHHHH" << RE << std::endl;
 				return (all);
 			}
-
 		}
 		else
-			throw std::invalid_argument ("No root found in location");
+			throw std::invalid_argument ("@fn Config::getPath_of_URI(const std::string& URIraw)\nNo root found in location");
 	}
 	// if not file found, return empty string
 	return (std::string(""));
@@ -264,18 +252,17 @@ Config::printAllLocation()
 	std::vector<std::map<std::string, std::string> >::iterator itv;
 	std::map<std::string, std::string>::iterator itm;
 
-	std::cout << "***********************************************************************************" << std::endl;
 	for (itv = _locs.begin(); itv != _locs.end(); itv++)
 	{
 		for (itm = (*itv).begin(); itm != (*itv).end(); itm++)
 			std::cout <<G<< itm->first << " | "<<RE<<Y<< itm->second <<RE<<  std::endl;
-		std::cout << "***********************************************************************************" << std::endl;
 	}
 }
 // Print all content of a location | ex: s0->printAllContentsLocation("/methods");
 bool
 Config::printAllContentsLocation(std::string pathLocation) {
 
+	std::cout <<W<< "@fn Config::printAllContentsLocation(std::string pathLocation)"<<RE<< std::endl;
 	std::vector<std::map<std::string, std::string> >::iterator itv;
 	std::map<std::string, std::string>::iterator itm;
 
@@ -347,6 +334,7 @@ Config::getInLocationValue(std::string PathLocation, std::string key)
 			}
 		}
 		else {
+			std::cerr << W << "@fn Config::getInLocationValue(std::string PathLocation, std::string key)" <<RE<< std::endl;
 			std::cerr << R << "Location path: '" << RE << Y << PathLocation << RE << R << "' not found" << std::endl;
 			return (false);
 		}

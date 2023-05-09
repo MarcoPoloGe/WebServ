@@ -61,7 +61,7 @@ std::string CGI::CGIstore(){
 	//TODO fileName = Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
 	std::string fileName = "website/cgi/cgi.py";
 	std::vector<std::string> rawfile;
-	std::cout <<W<< "Store cgi.py" <<RE<< std::endl;
+	std::cout <<W<< "@fn CGI::CGIstore() \nStore cgi.py" <<RE<< std::endl;
 	std::string rawstring;
 	std::string line;
 	std::ifstream file;
@@ -156,7 +156,7 @@ std::string CGI::execute()
 		if (waitpid(pid, &ret, 0) == -1)
 			throw(std::exception());
 		if (ret != 0) {
-			result.append("Status: 502 Error in CGI application\r\n");
+			result.append("@fn CGI::execute()\nStatus: 502 Error in CGI application\r\n");
 		}
 
 		do

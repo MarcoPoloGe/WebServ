@@ -56,7 +56,7 @@ void	LAN::runAll(void)
 			Ft_error	Err("select");
 		if (ready_socks == 0)
 		{
-			std::cout << "\rWaiting on a connection " << dot[n++] << std::flush;
+			std::cout << "@fn LAN::runAll(void)\rWaiting on a connection " << dot[n++] << std::flush;
 			if (n == 12)
 				n = 0;
 		}
@@ -133,7 +133,7 @@ void	LAN::handle_new_connection(void)
 	{
 		if (_connectlist[listnum].co == 0)
 		{
-			std::cout << "\nConnection detected from " << inet_ntoa(client_address.sin_addr)
+			std::cout << "@fn LAN::handle_new_connection(void)\nConnection detected from " << inet_ntoa(client_address.sin_addr)
 				<< ":" << ntohs(client_address.sin_port)
 				<< " [Slot no " << listnum << "]\n";
 			_connectlist[listnum].co = connection;
@@ -143,8 +143,8 @@ void	LAN::handle_new_connection(void)
 	}
 	if (connection != -1)
 	{
-		std::cout << "\nNo more room left for the client\n";
-		send(connection,"Sorry, this server is too busy. Try again later!\r\n",50, 0);
+		std::cout << "@fn LAN::handle_new_connection(void)\nNo more room left for the client\n";
+		send(connection,"@fn LAN::handle_new_connection(void)\nSorry, this server is too busy. Try again later!\r\n",50, 0);
 		close(connection);
 	}
 }
@@ -153,7 +153,7 @@ void	LAN::deal_with_data(int listnum)
 {
 	if ((*_connectlist[listnum].net).deal_with_data(_connectlist[listnum].co, _read_socks))
 	{
-		std::cout << "\nConnection lost with FD = " << _connectlist[listnum].co
+		std::cout << "@fn LAN::deal_with_data(int listnum)\nConnection lost with FD = " << _connectlist[listnum].co
 				<< " & Slot = " << listnum << std::endl;
 	}
 	close(_connectlist[listnum].co);

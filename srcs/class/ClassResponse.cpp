@@ -72,7 +72,7 @@ std::string Response::ft_error_name(int error_code)
 
 	name = _config.getErrorNames(error_code);
 	if(name.empty())
-		throw std::invalid_argument("error_name cannot be found\n");
+		throw std::invalid_argument("@fn std::string Response::ft_error_name(int error_code)\nerror_name cannot be found\n");
 	return (name);
 }
 
@@ -84,7 +84,7 @@ std::string Response::ft_error_page(int error_code)
 	if(page_name.empty())
 	{
 		std::stringstream message;
-		message << "error_page cannot be found :" << error_code << " please add it in config file." <<std::endl;
+		message << "@fn std::string Response::ft_error_page(int error_code)\nerror_page cannot be found :" << error_code << " please add it in config file." <<std::endl;
 		throw std::invalid_argument(message.str());
 	}
 	return (page_name);
@@ -101,18 +101,20 @@ std::string Response::send(int client_socket)
 	std::stringstream message;
 
 	//building the message to send;
+	std::cout <<W<< "@fn Response::send(int client_socket)" <<RE<< std::endl;
 	message << HTTP_VERSION << " "
 	<< this->get_error_code() << " "
 	<< ft_error_name(this->get_error_code()) << std::endl;
 
 	if(_error_code != 200)
 	{
-		std::cout <<W<< "my errcode is :" << _error_code << std::endl <<RE; //DEBUG
+		std::cout <<W<< "@fn Response::send(int client_socket)" <<RE<< std::endl;
+		std::cout <<B<< "my errcode is :" << _error_code << std::endl <<RE; //DEBUG
         set_content(ft_error_page(this->_error_code), "html");
 	}
 	else if(get_content().empty() || get_content_type().empty())
 	{
-		throw std::invalid_argument("can't send response because it is incomplete");
+		throw std::invalid_argument("@fn Response::send(int client_socket)\nCan't send response because it is incomplete");
 	}
 	message << "Content-Length:" << get_content().length() << std::endl;
 	message << "Content-Type:" << get_content_type() << std::endl;
@@ -137,6 +139,7 @@ std::ostream& operator<<(std::ostream& out, Response const& rhs)
 {
 	std::string short_content;
 
+	out <<W<< "@fn operator<<(std::ostream& out, Response const& rhs)" <<RE<< std::endl;
 	out << "--Response_start--" << std::endl;
 
 	out << "error_code : " << rhs.get_error_code() << std::endl;
