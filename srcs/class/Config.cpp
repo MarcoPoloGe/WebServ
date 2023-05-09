@@ -178,7 +178,6 @@ Config::IsLocation(const std::string& URIraw,
 
 	std::vector<std::map<std::string, std::string> >::iterator i;
 	std::map<std::string, std::string>::iterator im;
-	std::map<std::string, std::string>::iterator rootwebsite;
 	std::string folder;
 	Response ret((*this));
 
@@ -188,7 +187,7 @@ Config::IsLocation(const std::string& URIraw,
 
 	if ((pos = URI.find('/')) != std::string::npos || URI.empty()) //
 	{
-		folder = "/" + URI.substr(0, pos);
+		folder = "/" + URI.substr(0, pos); // img/
 		for (i = _locs.begin(); i != _locs.end(); i++)
 		{
 			if (((im = (*i).find("location")) != (*i).end()) && (im->second == folder))
@@ -197,7 +196,8 @@ Config::IsLocation(const std::string& URIraw,
 				{
 					if (im->second.find(Method) != std::string::npos)
 					{
-						path = getPath_of_URI(URIraw, i, im);
+						URI.erase(0, folder.size());
+						path = getPath_of_URI(URI, i, im);
 						if (path.empty())
 						{
 							ret.set_error_code(404); // file doesn't exist in folder from locations
@@ -210,6 +210,7 @@ Config::IsLocation(const std::string& URIraw,
 						return (ret); // Method not allowed
 					}
 				}
+				break;
 			}
 		}
 		if (i == _locs.end()) {
@@ -227,6 +228,7 @@ Config::IsLocation(const std::string& URIraw,
 				{
 					if (im->second.find(Method) != std::string::npos)
 					{
+						URI.erase(0, 1);
 						path = getPath_of_URI(URIraw, i, im); //  URIraw = "/index.html"
 						if (path.empty())
 						{
@@ -240,6 +242,7 @@ Config::IsLocation(const std::string& URIraw,
 						return (ret); // Method not allowed
 					}
 				}
+				break;
 			}
 		}
 	}
@@ -253,14 +256,12 @@ Config::getPath_of_URI(const std::string& URIraw,
 					   std::map<std::string, std::string>::iterator &im
 					   )
 {
-	//take out / of URI
-	std::string URI = URIraw.substr(1, URIraw.size()); /* = kkk/pomme.txt */
 	//look into all locations map (location=/, location=/methods, ...)
 	// find "root" in a location
 	if ((im = (*i).find("root")) != (*i).end())
 	{
 		// take value of root=./website, so "./website", add URI, like "/kittycat.jpg"
-		std::string all = im->second + URI; // URI = ./website/index.html
+		std::string all = im->second + URIraw; // URI = ./website/index.html
 		// check if it exist
 		std::ifstream to_open(all.c_str(), std::ios::in);
 		if ( !to_open.is_open() )
