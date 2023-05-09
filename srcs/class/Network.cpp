@@ -142,9 +142,4 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
 	return (0);
-
-	Response r3(_config);	//???
-	Response r4(_config);	//???
-
-	r3 = r4;				//???
 }
