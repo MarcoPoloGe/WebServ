@@ -182,17 +182,15 @@ Config::IsLocation(const std::string& URIraw,
 	if ((pos = URI.find('/')) != std::string::npos || URI == "") //
 	{
 		folder = "/" + URI.substr(0, pos);
-		for (i = _locs.begin(); i != _locs.end(); i++)
-		{
-			if (((im = (*i).find("location")) != (*i).end()) && (im->second == folder))
-			{
-				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos))
-				{
-					if (im->second.find(Method) != std::string::npos)
-					{
+		for (i = _locs.begin(); i != _locs.end(); i++) {
+			if (((im = (*i).find("location")) != (*i).end()) && (im->second == folder)) {
+				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos)) {
+					if (im->second.find(Method) != std::string::npos) {
 						std::string path = getPath_of_URI(URIraw, i, im);
-						if (!path.empty())
-							ret.set_error_code(404);
+						if (!path.empty()){
+							ret.set_error_code(404); // file doesn't exist in folder from locations
+							return (ret);
+						}
 					}
 					else {
 						ret.set_error_code(405);
@@ -201,11 +199,10 @@ Config::IsLocation(const std::string& URIraw,
 				}
 			}
 		}
-		if (i == _locs.end())
-		{
+		if (i == _locs.end()) {
 			ret.set_error_code(404);
-			return (ret);
-		}// no folder location for ./website/folder/ in config
+			return (ret);// no folder location for ./website/folder/ in config
+		}
 	}
 	ret.set_path(path);
 	return (ret);
