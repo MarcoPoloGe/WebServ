@@ -122,7 +122,9 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	std::string	path;
 	std::string	URI;
 	std::string extension;
-	int	rep_code = 0;
+//	int	rep_code = 0;
+	Response ret();
+
 	std::string slash_str;
 
 	std::pair<std::string, std::string> file_type = std::make_pair("type", "imgtype");
@@ -133,7 +135,16 @@ int	Network::deal_with_data(int connection, fd_set socks)
 //	std::cout <<B<< "my extension for {" << URI << "} is {" << extension << "}\n"<<RE; //DEBUG
 //	path = root + URI; //il faudra enlever le doublon de '/' (par exemple : /images//kittycat.png)
 
-	rep_code = _config.IsLocation(URI, request.get_type());
+
+
+
+//  /kittycat.jpg
+// 	/img/kittycat.jpg
+
+	/* /img/
+
+
+	_config.IsLocation(URI, request.get_type(), ret);
 	if (rep_code != 200) {
 //		std::cout << "The type is : {" << request.get_type() << "}\n";
 		file_type.first = "text"; file_type.second = "html";

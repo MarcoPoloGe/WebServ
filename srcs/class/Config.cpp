@@ -165,79 +165,79 @@ Config::getErrorNames(int error_names) {
 	}
 }
 
-
-int
-Config::IsLocation(const std::string& URIraw, const std::string &Method) {
+Response
+Config::IsLocation(const std::string& URIraw,
+				   const std::string &Method
+				   )
+{
 
 	std::vector<std::map<std::string, std::string> >::iterator i;
 	std::map<std::string, std::string>::iterator im;
 	std::string folder;
+	Response ret((*this));
 
 	unsigned long pos;
-	std::string URI = URIraw.substr(1, URIraw.size()); //= /kkk/pomme.txt
+	std::string URI = URIraw.substr(1, URIraw.size()); //= /pomme.txt
 
 	if ((pos = URI.find('/')) != std::string::npos || URI == "") //
 	{
 		folder = "/" + URI.substr(0, pos);
-		for (i = _locs.begin(); i != _locs.end(); i++)
-		{
-			if ((im = (*i).find("location")) != (*i).end())
-			{
-				if (im->second == folder)
-				{
-					if ((im = (*i).find("method")) != (*i).end())
-					{
-						if (im->second.find(Method) != std::string::npos)
-							return 200; // All good
-						else
-							return 405; // Method not allowed
+		for (i = _locs.begin(); i != _locs.end(); i++) {
+			if (((im = (*i).find("location")) != (*i).end()) && (im->second == folder)) {
+				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos)) {
+					if (im->second.find(Method) != std::string::npos) {
+						std::string path = getPath_of_URI(URIraw, i, im);
+						if (!path.empty()){
+							ret.set_error_code(404); // file doesn't exist in folder from locations
+							return (ret);
+						}
+					}
+					else {
+						ret.set_error_code(405);
+						return (ret); // Method not allowed
 					}
 				}
 			}
 		}
-		if (i == _locs.end()) // no folder location for ./website/folder/ in config
-			return 404;
+		if (i == _locs.end()) {
+			ret.set_error_code(404);
+			return (ret);// no folder location for ./website/folder/ in config
+		}
 	}
-	return 200;
+	ret.set_path(path);
+	return (ret);
 }
 
-
 std::string
-Config::getPath_of_URI(const std::string& URIraw){
-	std::vector<std::map<std::string, std::string> >::iterator i;
-	std::map<std::string, std::string>::iterator im;
-
+Config::getPath_of_URI(const std::string& URIraw,
+					   std::vector<std::map<std::string, std::string> >::iterator &i,
+					   std::map<std::string, std::string>::iterator &im
+					   )
+{
 	//take out / of URI
 	std::string URI = URIraw.substr(1, URIraw.size()); /* = kkk/pomme.txt */
-		//for example: URI="/kittycat.jpg"
 	//look into all locations map (location=/, location=/methods, ...)
-	for( i = _locs.begin(); i != _locs.end() ; i++ )
+	// find "root" in a location
+	if ((im = (*i).find("root")) != (*i).end())
 	{
-
-		// find "root" in a location
-		if ((im = (*i).find("root")) != (*i).end())
-		{
-			// take value of root=./website, so "./website", add URI, like "/kittycat.jpg"
-			std::string all = im->second + URI;
-			// check if it exist
-			std::ifstream to_open(all.c_str(), std::ios::in);
-			if ( !to_open.is_open() )
-				continue;
-			else {
-				// if open() success = store and return
-				// close fd if exist
-				to_open.close();
-				// store location map where path have been found
+		// take value of root=./website, so "./website", add URI, like "/kittycat.jpg"
+		std::string all = im->second + URI;
+		// check if it exist
+		std::ifstream to_open(all.c_str(), std::ios::in);
+		if ( !to_open.is_open() )
+			return ("");
+		else {
+			// if open() success = store and return
+			// close fd if exist
+			to_open.close();
+			// store location map where path have been found
 //				_loc_temp = (*i);
-				// return string of path tested = ./website/kittycat.jpg";
-				return (all);
-			}
+			// return string of path tested = ./website/kittycat.jpg";
+			return (all);
 		}
-		else
-			throw std::invalid_argument ("@fn Config::getPath_of_URI(const std::string& URIraw)\nNo root found in location");
 	}
-	// if not file found, return empty string
-	return (std::string(""));
+	else
+		throw std::invalid_argument ("@fn Config::getPath_of_URI(const std::string& URIraw)\nNo root found in location");
 }
 
 
