@@ -18,6 +18,7 @@
 //HOMEMADE
 
 class Types;
+class Response;
 
 //STD
 #include <iostream>
@@ -28,6 +29,7 @@ class Types;
 // Containers
 #include <vector>
 #include <map>
+#include "ClassResponse.hpp"
 
 
 // Single Server config
@@ -96,14 +98,19 @@ public:
 	std::string													getErrorPages(int error_pages);
 	std::string													getErrorNames(int error_names);
 
-	std::string													getPath_of_URI(const std::string& URIraw);
-	int 														IsLocation(const std::string& URIraw, const std::string &Method);
+
+	Response 													IsLocation(const std::string& URIraw, const std::string &Method);
 
 	/* weirdo getters */
 
 //	s0->getInLocationValue("/methods", "root");
 	bool
 	getInLocationValue(std::string key, std::string LocationPath);
+
+	std::string
+	getPath_of_URI(const std::string& URIraw,
+				   std::vector<std::map<std::string, std::string> >::iterator &i,
+				   std::map<std::string, std::string>::iterator &im);
 
 
 /**********************************************************************************************************************/
