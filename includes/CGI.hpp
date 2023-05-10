@@ -17,56 +17,22 @@ public:
 /**********************************************************************************************************************/
 
 	CGI();
-//	CGI( Request &Request, Network &Network );
 	~CGI();
-
-
-/**********************************************************************************************************************/
-/***************************                       Setters	            		               ************************/
-/**********************************************************************************************************************/
-
-//	const std::string *setENV();
-//	void setENV(Request &req, Network &net, Config &conf);
-
-
-
-/**********************************************************************************************************************/
-/***************************                       Getters	            		               ************************/
-/**********************************************************************************************************************/
-
-//	std::string getBin();
-//	int getenv ();
-
-
-/**********************************************************************************************************************/
-/***************************                       Private Vars		                           ************************/
-/**********************************************************************************************************************/
-
-private:
-	std::string _bin;
-	std::map<std::string, std::string> ENV;
-	std::string _CGI_body;
 
 /**********************************************************************************************************************/
 /***************************                       Utils		                           ************************/
 /**********************************************************************************************************************/
 
 public:
-	std::string IsQuery(const std::string &URIraw);
-	std::string execute(Request &request, Response &rep, Config &conf);
-//	std::string execute();
-	std::string CGIstore(Response &rep);
-
-//	std::string CGIBody(const std::string& s);
-
-
-		public:
-	std::string CGI_body;
-
+	std::string 									execute(Request &request, Response &rep, Config &conf, int port);
+	std::string 									CGIstore(Response &rep);
+	static std::map<std::string, std::string> 		setUpEnvVariablesCGI(Request &request, Config &conf, int port);
+	bool											check(Request &r);
 
 };
 
-
+//	if (cgi.check(request))
+//		cgi.execute(request, response, _config, _port);
 
 
 #endif //R5_WEBSERV_CGI_HPP

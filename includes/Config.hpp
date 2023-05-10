@@ -120,6 +120,14 @@ public:
 private:
 	std::string														_name;
 	std::string														_ip;
+	std::string														_binCGI;
+public:
+	void setBinCgi(const std::string &binCgi);
+
+public:
+	const std::string &getBinCgi() const;
+
+private:
 	std::vector<int>												_ports;
 	int																_amount_ports;
 	std::vector<std::string> 										_serverconfig;

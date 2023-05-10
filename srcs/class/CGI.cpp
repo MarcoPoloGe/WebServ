@@ -9,53 +9,20 @@
 /***************************                       Con/Destructors	           		           ************************/
 /**********************************************************************************************************************/
 
-CGI::CGI() {
-	std::cout << "++CGI" << std::endl;
-}
-//CGI::CGI(
-//		Request &Req,
-//		Network &Net )
-//{
-//	Request test;
-//	test.setHttpVersion("HTTP/1.1");
-//	test.setType("");
-//	std::cout << "++CGI + Request + Network" << std::endl;
-//}
+CGI::CGI() { /*std::cout << "++CGI" << std::endl; */}
 
-CGI::~CGI() { std::cout << "--CGI" << std::endl; }
-
-
-/**********************************************************************************************************************/
-/***************************                       Getters	            		               ************************/
-/**********************************************************************************************************************/
-
-//std::string CGI::getBin() {
-//	_bin = "/usr/bin/python3";
-//	return (_bin);
-//}
-//
-//void CGI::setENV(Request &req, Network &net, Config &conf) {
-//	(void)req;
-//	(void)net;
-//	(void)conf;
-//	return;
-//}
-
+CGI::~CGI() { /*std::cout << "--CGI" << std::endl;*/ }
 
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/
 /**********************************************************************************************************************/
 
-/*
- * pos = token[1].find("?");
-					if (pos != std::string::npos)
-					{
-						setUrl(token[1].substr(0, pos));
-						setQuery(token[1].substr(pos + 1));
-					}
-*/
-
-
+bool CGI::check(Request &r)
+{
+	if (r.get_URI().find('?') != std::string::npos)
+		return true;
+	return false;
+}
 
 std::string CGI::CGIstore(Response &rep){
 	//TODO fileName = Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
@@ -82,16 +49,57 @@ std::string CGI::CGIstore(Response &rep){
 }
 
 
-std::string CGI::IsQuery(const std::string &URIraw) {
-	unsigned long pos;
-	if ((pos = URIraw.find('?')) != std::string::npos) {
-		return (URIraw.substr(pos + 1));
+std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, Config &conf, int port)
+{
+	std::map<std::string, std::string> envmap;
+
+	std::string binpath = conf.getBinCgi();
+
+	std::string URI = request.get_URI();
+
+	size_t pos = URI.rfind('/');
+	std::string nameScript = URI.substr(pos + 1, URI.size());
+
+	request.get_header("Content-Type");
+
+	envmap["AUTH_TYPE"] = "null";
+	envmap["CONTENT_TYPE"] = request.get_header("Content-Type");
+	envmap["CONTENT_LENGTH"] = numberToString(request.get_body().size());
+
+	envmap["GATEWAY_INTERFACE"] = "CGI/1.1";
+	envmap["PATH_INFO"] = binpath;
+	envmap["PATH_TRANSLATED"] = binpath;
+	envmap["REQUEST_URI"] = binpath;
+
+	envmap["SERVER_NAME"] = conf.getIpServer();
+	envmap["SERVER_PROTOCOL"] = request.get_HTTP_version();
+	envmap["SERVER_PORT"] = numberToString(port);
+
+	envmap["REQUEST_METHOD"] = request.get_type();
+	envmap["SCRIPT_FILENAME"] = nameScript;
+	envmap["SCRIPT_NAME"] = nameScript;
+	envmap["QUERY_STRING"] = IsQuery(request.get_URI());
+
+	envmap["REDIRECT_STATUS"] = "CGI";
+
+	std::map<std::string, std::string> map = request.get_headers_map();
+
+	for (std::map<std::string, std::string>::iterator it = map.begin(); it != map.end(); it++)
+	{
+		if (!it->second.empty())
+		{
+			std::string up = it->first;
+			std::string header = "HTTP_" + str_toupper(up);
+			std::replace(header.begin(), header.end(), '-', '_');
+			envmap[header] = it->second;
+		}
 	}
-	return ("");
+
+	return (envmap);
 }
 
 //TODO Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
-std::string CGI::execute(Request &request, Response &rep, Config &conf)
+std::string CGI::execute(Request &request, Response &rep, Config &conf, int port)
 {
 	(void)request;	//to
 	(void)conf;		//remove
@@ -112,40 +120,23 @@ std::string CGI::execute(Request &request, Response &rep, Config &conf)
 	fcntl(p_out[1], F_SETFL, O_NONBLOCK);
 	fcntl(p_in[0], F_SETFL, O_NONBLOCK);
 	fcntl(p_in[1], F_SETFL, O_NONBLOCK);
-	/* Infos:
-	 * F_SETFL            Set descriptor status flags to arg.
-	 *
-	 * O_NONBLOCK   Non-blocking I/O; if no data is available to a read
-                        call, or if a write operation would block, the read or
-                        write call returns -1 with the error EAGAIN.
-	 */
 
-	//TODO pars Query form Request object
-//	std::vector<char *> path = preparePath(request.getQuery());
-//	std::map<std::string, std::string> env = prepareEnv(request);
+	const std::string& binCGI = conf.getBinCgi();
+	const std::string& URIPathClean = rep.getUriPathClean();
 
-	//TODO Protection: scriptPath arg openning
-//	std::string pathstring = "/website/cgi/cgi.py";
-//	if (access(pathstring.c_str(), X_OK))
-//			throw(std::exception());
-
-	std::string _location = "/usr/bin/python3";
-	std::string _scriptPath = "./website/cgi/cgi.py";
-
-	//TODO set up _location like "/usr/bin/python3" and scriptPath arg like ""website/cgi/cgi.py""
 	std::vector<char *> path;
-	path.push_back(const_cast<char *>(_location.c_str()));
-	path.push_back(const_cast<char *>(_scriptPath.c_str()));
+	path.push_back(const_cast<char *>(binCGI.c_str()));
+	path.push_back(const_cast<char *>(URIPathClean.c_str()));
 
-	//TODO if Request object have a '?', so query need to be handle
-//	if (!query.empty())
-//		path.push_back(const_cast<char *>(_query.c_str()));
+	std::map<std::string, std::string> envmap = setUpEnvVariablesCGI(request, conf, port);
+
+	if (!envmap["QUERY_STRING"].empty()) {
+		path.push_back(const_cast<char *>(envmap["QUERY_STRING"].c_str()));
+	}
 	path.push_back(NULL);
 
 	pid_t pid = fork();
 
-	//TODO set up env variables from Request and Config
-	char *const *envtest = NULL;
 	if (pid == 0)
 	{
 		close(p_out[0]);
@@ -155,7 +146,7 @@ std::string CGI::execute(Request &request, Response &rep, Config &conf)
 		close(p_in[1]);
 		dup2(p_in[0], STDIN_FILENO);
 		close(p_in[0]);
-		execve(path[0], &path[0], envtest);
+		execve(path[0], &path[0], maptoarray(envmap));
 		exit(0);
 	}
 	else
@@ -180,6 +171,6 @@ std::string CGI::execute(Request &request, Response &rep, Config &conf)
 		while (ret == sizeof(buffer));
 			close(p_out[0]);
 	}
-	std::cout <<Y<< result <<RE<< std::endl;
+//	std::cout <<Y<< result <<RE<< std::endl;
 	return (result);
 }

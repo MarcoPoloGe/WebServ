@@ -147,6 +147,10 @@ void Response::setUriPathClean(const std::string &uriPathClean) {
 	_URIPathClean = uriPathClean; // ./website/cgi/cgi.py / /cgi/cgi.py
 }
 
+const Config &Response::getConfig() const {
+	return _config;
+}
+
 std::ostream& operator<<(std::ostream& out, Response const& rhs)
 {
 	std::string short_content;

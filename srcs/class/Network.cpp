@@ -122,6 +122,9 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		URI = "/index.html"; // todo remove and use instead default pages for each folder
 	response = _config.IsLocation(URI, request.get_type()); // ./website
 
+//	if (cgi.check(request))
+//		cgi.execute(request, response, _config, _port);
+
 /*	///////////////TRICK TEST/////////////////
 	
 	if ( no_extension() )
@@ -138,7 +141,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 			return (0);
 		}
 		else
-			path = _config.getlocationvalue(location, "default"); //a cehck pour plus tard
+			path = _config.getlocationvalue(location, "default"); //a check pour plus tard
 	}
 
 
@@ -148,12 +151,8 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 	if(request.get_type() == "GET")
 	{
-//		if (cgi.check(request))
-//			cgi.execute(request, response, _config);
-//		else
-//		{
-//		}
-		std::cout <<"";
+
+
 	}
 	else if(request.get_type() == "POST")
 	{
@@ -167,7 +166,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	}
 /*	// if resquest = cgi -- gooooooooo
 	CGI cgi;
-	cgi.execute(request, response, _config);*/ //todo later 
+	cgi.execute(request, response, _config, _port);*/ //todo later
 
 	std::cout <<Y<< response << "\n" <<RE; //DEBUG
 	
