@@ -117,31 +117,43 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		return (1);
 	}
 
-	///////////////TRICK TEST/////////////////
-	if (request.get_URI() == "/img")
+	std::string	URI = request.get_URI();
+	if (URI == "/")
+		URI = "/index.html"; // todo remove and use instead default pages for each folder
+	response = _config.IsLocation(URI, request.get_type()); // ./website
+
+/*	///////////////TRICK TEST/////////////////
+	
+	if ( no_extension() )
 	{
-		response.set_manual_content_type("text/html");
-		response.set_manual_content( ft_generate_html_dir("website/img") );
-		response.send(connection);
-		return (0);
+		if (request.get_URI() == "/img") //coupe pour path
+
+		std::string location = "/img";
+		std::string bool_val = _config.getlocationvalue(location, "autoindex");
+		if (bool_val == "true")
+		{
+			response.set_manual_content_type("text/html");
+			response.set_manual_content( ft_generate_html_dir("website/img") );
+			response.send(connection);
+			return (0);
+		}
+		else
+			path = _config.getlocationvalue(location, "default"); //a cehck pour plus tard
 	}
-	///////////////TRICK TEST/////////////////
+
+
+	///////////////TRICK TEST//////////////// */
 
 	std::cout <<B<< request << "\n" <<RE; //DEBUG
 
 	if(request.get_type() == "GET")
 	{
-		if (cgi.check(request))
-			cgi.execute(request, response, _config);
-		else
-		{
-			std::string	URI = request.get_URI();
-			if (URI == "/")
-				URI = "/index.html"; // todo remove and use instead default pages for each folder
-			response = _config.IsLocation(URI, request.get_type()); // ./webiste
-		}
-
-
+//		if (cgi.check(request))
+//			cgi.execute(request, response, _config);
+//		else
+//		{
+//		}
+		std::cout <<"";
 	}
 	else if(request.get_type() == "POST")
 	{
@@ -153,9 +165,9 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		std::cout << R <<"DELETE request not implemented yet" << std::endl;
 		response.set_path("./website/index.html");
 	}
-	// if resquest = cgi -- gooooooooo
+/*	// if resquest = cgi -- gooooooooo
 	CGI cgi;
-	cgi.execute(request, response, _config);
+	cgi.execute(request, response, _config);*/ //todo later 
 
 	std::cout <<Y<< response << "\n" <<RE; //DEBUG
 	

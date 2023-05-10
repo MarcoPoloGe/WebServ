@@ -93,6 +93,9 @@ std::string CGI::IsQuery(const std::string &URIraw) {
 //TODO Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
 std::string CGI::execute(Request &request, Response &rep, Config &conf)
 {
+	(void)request;	//to
+	(void)conf;		//remove
+
 	int p_out[2];
 	int p_in[2];
 	int ret;
