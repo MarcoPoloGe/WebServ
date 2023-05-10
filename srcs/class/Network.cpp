@@ -120,10 +120,9 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	std::string	URI = request.get_URI();
 	if (URI == "/")
 		URI = "/index.html"; // todo remove and use instead default pages for each folder
-	response = _config.IsLocation(URI, request.get_type()); // ./website
 
-//	if (cgi.check(request))
-//		cgi.execute(request, response, _config, _port);
+
+
 
 /*	///////////////TRICK TEST/////////////////
 	
@@ -146,7 +145,16 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 
 	///////////////TRICK TEST//////////////// */
-
+	URI = "./website/cgi/cgi.py";//todo
+	if (ft_get_extension(URI) == "py")
+	{
+		response.set_manual_content_type("text/html");
+		response.set_manual_content(cgi.execute(request, response, _config, _port));
+		response.send(connection);
+		return (0);
+	}
+	response = _config.IsLocation(URI, request.get_type()); // ./website
+//	response = _config.IsLocation(URI, request.get_type()); // ./website
 	std::cout <<B<< request << "\n" <<RE; //DEBUG
 
 	if(request.get_type() == "GET")

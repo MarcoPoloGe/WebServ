@@ -17,20 +17,30 @@ CGI::~CGI() { /*std::cout << "--CGI" << std::endl;*/ }
 /***************************                       Utils		            		           ************************/
 /**********************************************************************************************************************/
 
+
 bool CGI::check(Request &r)
 {
 	if (r.get_URI().find('?') != std::string::npos)
 		return true;
 	return false;
 }
+//
+//bool CGI::check(Request &r)
+//{
+//	if (r.get_URI().find('?') != std::string::npos)
+//		return true;
+//	return false;
+//}
 
 std::string CGI::CGIstore(Response &rep){
 	//TODO fileName = Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
-	const std::string& fileName = rep.getUriPathClean();
+//	const std::string& fileName = rep.getUriPathClean();
 
+	(void)rep;
+	const std::string& fileName = "./website/cgi/cgi.py"; //todo
 	std::vector<std::string> rawfile;
-	std::cout <<W<< "@fn CGI::CGIstore() \n"
-	<<B<< "Store: UriPathClean{" << rep.getUriPathClean() << "}" <<RE<< std::endl;
+//	std::cout <<W<< "@fn CGI::CGIstore() \n"
+//	<<B<< "Store: UriPathClean{" << rep.getUriPathClean() << "}" <<RE<< std::endl;
 	std::string rawcontent;
 	std::string line;
 	std::ifstream file;
@@ -52,8 +62,8 @@ std::string CGI::CGIstore(Response &rep){
 std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, Config &conf, int port)
 {
 	std::map<std::string, std::string> envmap;
-
-	std::string binpath = conf.getBinCgi();
+	std::string binpath = "/usr/bin/python3";
+//	std::string binpath = conf.getBinCgi();
 
 	std::string URI = request.get_URI();
 
@@ -122,7 +132,8 @@ std::string CGI::execute(Request &request, Response &rep, Config &conf, int port
 	fcntl(p_in[1], F_SETFL, O_NONBLOCK);
 
 	const std::string& binCGI = conf.getBinCgi();
-	const std::string& URIPathClean = rep.getUriPathClean();
+//	const std::string& URIPathClean = rep.getUriPathClean();//todo
+	const std::string& URIPathClean = "./website/cgi/cgi.py";
 
 	std::vector<char *> path;
 	path.push_back(const_cast<char *>(binCGI.c_str()));
@@ -171,6 +182,6 @@ std::string CGI::execute(Request &request, Response &rep, Config &conf, int port
 		while (ret == sizeof(buffer));
 			close(p_out[0]);
 	}
-//	std::cout <<Y<< result <<RE<< std::endl;
+	std::cout <<Y<< result <<RE<< std::endl;
 	return (result);
 }
