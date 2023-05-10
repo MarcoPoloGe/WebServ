@@ -108,37 +108,24 @@ std::string Response::ft_error_page(int error_code)
 
 std::string Response::send(int client_socket)
 {
-	if ( _content_type.empty() || _content.empty() )
-	{
-//		std::cout << B << "Nothing send : it was empty\n" << RE; // DEBUG
-		return ("");
-	}
-
 	std::stringstream message;
 
+	if((get_content_body().empty() || get_content_type().empty()) && get_error_code() == 200)
+	{
+		std::cout << B << "@fn Response::send()\nNothing was send : response was empty\n" << RE; // DEBUG
+		return ("");
+	}
 	//building the message to send;
-	std::cout <<W<< "@fn Response::send(int client_socket)" <<RE<< std::endl;
 	message << HTTP_VERSION << " "
 	<< this->get_error_code() << " "
 	<< ft_error_name(this->get_error_code()) << std::endl;
-
 	if(_error_code != 200)
-	{
-		std::cout <<W<< "@fn Response::send(int client_socket)" <<RE<< std::endl;
-		std::cout <<B<< "my errcode is :" << _error_code << std::endl <<RE; //DEBUG
-        set_content_body(ft_error_page(this->_error_code));
-		set_content_extension("html");
-	}
-	else if(get_content_body().empty() || get_content_type().empty())
-	{
-		throw std::invalid_argument("@fn Response::send(int client_socket)\nCan't send response because it is incomplete");
-	}
+		set_path(ft_error_page(this->_error_code));
 	message << "Content-Length:" << get_content_body().length() << std::endl;
 	message << "Content-Type:" << get_content_type() << std::endl;
 	message << std::endl;
 	message << get_content_body();
 
-	std::cout <<Y<< "My reponse is : \n" << message.str() <<RE<<std::endl;//DEBUG
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.
 	return (message.str());
@@ -156,18 +143,19 @@ std::ostream& operator<<(std::ostream& out, Response const& rhs)
 {
 	std::string short_content;
 
-//	out <<W<< "@fn operator<<(std::ostream& out, Response const& rhs)" <<RE<< std::endl;
 	out << "--Response_start--" << std::endl;
 
 	out << "error_code : " << rhs.get_error_code() << std::endl;
-	out << "content_type : " << rhs.get_content_type() << std::endl;
-
-	short_content = rhs.get_content_body().substr(0,100);
-	out << "content : " << short_content;
-	if(rhs.get_content_body().length() > 100)
-		out << "...";
-	out << std::endl;
-
+	if(!rhs.get_content_type().empty())
+		out << "content_type : " << rhs.get_content_type() << std::endl;
+	if(!rhs.get_content_body().empty())
+	{
+		short_content = rhs.get_content_body().substr(0,200);
+		out << "content : " << short_content;
+		if(rhs.get_content_body().length() > 200)
+			out << std::endl <<"...";
+		out << std::endl;
+	}
 	out << "--Response_end--" << std::endl;
 	return (out);
 }
