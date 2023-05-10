@@ -156,22 +156,21 @@ std::ostream& operator<<(std::ostream& out, Request const& rhs)
 {
 	std::map<std::string,std::string> headers = rhs.get_headers_map();
 	std::string short_body;
-	out <<W<< "@fn operator<<(std::ostream& out, Request const& rhs)" <<RE<< std::endl;
+
 	out << "--Request_start--" << std::endl;
+
 	out << "type : " << rhs.get_type() << std::endl;
 	out << "URI : " << rhs.get_URI() << std::endl;
 	out << "HTTP_version : " << rhs.get_HTTP_version() << std::endl;
-
 	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 	{
 		out << it->first << ": " << it->second <<  std::endl;
 	}
 	out << std::endl;
-
-	short_body = rhs.get_body().substr(0,100);
+	short_body = rhs.get_body().substr(0,1000);
 	out << short_body;
-	if(rhs.get_body().length() > 100)
-		out << "...";
+	if(rhs.get_body().length() > 1000)
+		out << std::endl << "...";
 	out << std::endl;
 
 	out << "--Request_end--" << std::endl;

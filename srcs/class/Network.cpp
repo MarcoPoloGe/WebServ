@@ -126,17 +126,27 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	}
 	///////////////TRICK TEST/////////////////
 
-	_config.getInLocationValue("/", "root");
-	std::string	root = _config.getValueTemp();// root = "./website"
+	std::cout <<B<< request << "\n" <<RE; //DEBUG
 
-	std::string	URI;
-	URI = request.get_URI();
-	if (URI == "/")
-		URI = "/index.html"; // todo remove and use instead default pages for each folder
-	response = _config.IsLocation(URI, request.get_type());
-	
-	std::cout <<B<< "The request is : \n" << request << "\n" <<RE; //DEBUG
-	std::cout <<Y<< "The response is : \n" << response << "\n" <<RE; //DEBUG
+	if(request.get_type() == "GET")
+	{
+		std::string	URI = request.get_URI();
+		if (URI == "/")
+			URI = "/index.html"; // todo remove and use instead default pages for each folder
+		response = _config.IsLocation(URI, request.get_type());
+	}
+	else if(request.get_type() == "POST")
+	{
+		std::cout << R << "POST request not implemented yet" << std::endl;
+		response.set_path("./website/index.html");
+	}
+	else if(request.get_type() == "DELETE")
+	{
+		std::cout << R <<"DELETE request not implemented yet" << std::endl;
+		response.set_path("./website/index.html");
+	}
+
+	std::cout <<Y<< response << "\n" <<RE; //DEBUG
 	
 	response.send(connection);
 
