@@ -139,6 +139,14 @@ Response &Response::operator=(const Response &rhs)
 			return (*this);
 		}
 
+const std::string &Response::getUriPathClean() const {
+	return _URIPathClean;
+}
+
+void Response::setUriPathClean(const std::string &uriPathClean) {
+	_URIPathClean = uriPathClean; // ./website/cgi/cgi.py / /cgi/cgi.py
+}
+
 std::ostream& operator<<(std::ostream& out, Response const& rhs)
 {
 	std::string short_content;

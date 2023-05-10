@@ -247,6 +247,7 @@ Config::IsLocation(const std::string& URIraw,
 		}
 	}
 	ret.set_path(path);
+	ret.setUriPathClean(path);
 	return (ret);
 }
 

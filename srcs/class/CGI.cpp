@@ -57,12 +57,14 @@ CGI::~CGI() { std::cout << "--CGI" << std::endl; }
 
 
 
-std::string CGI::CGIstore(){
+std::string CGI::CGIstore(Response &rep){
 	//TODO fileName = Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
-	std::string fileName = "website/cgi/cgi.py";
+	const std::string& fileName = rep.getUriPathClean();
+
 	std::vector<std::string> rawfile;
-	std::cout <<W<< "@fn CGI::CGIstore() \nStore cgi.py" <<RE<< std::endl;
-	std::string rawstring;
+	std::cout <<W<< "@fn CGI::CGIstore() \n"
+	<<B<< "Store: UriPathClean{" << rep.getUriPathClean() << "}" <<RE<< std::endl;
+	std::string rawcontent;
 	std::string line;
 	std::ifstream file;
 
@@ -72,27 +74,33 @@ std::string CGI::CGIstore(){
 		throw std::bad_exception();
 
 	while (std::getline(file, line)){
-		rawstring.append(line);
+		rawcontent.append(line);
 	}
 
 	file.close();
-	return (rawstring);
+	return (rawcontent);
+}
+
+
+std::string CGI::IsQuery(const std::string &URIraw) {
+	unsigned long pos;
+	if ((pos = URIraw.find('?')) != std::string::npos) {
+		return (URIraw.substr(pos + 1));
+	}
+	return ("");
 }
 
 //TODO Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
-//std::string CGI::execute(std::string scriptPath, Request request)
-std::string CGI::execute()
+std::string CGI::execute(Request &request, Response &rep, Config &conf)
 {
-//	(void)scriptPath;
-//	(void)request;
 	int p_out[2];
 	int p_in[2];
 	int ret;
 	char buffer[4096];
 	std::string result = "";
 
-	// test en brut
-	std::string raw = CGIstore();
+	// test with path found by getPath_of_URI in @deal_with_data
+	std::string rawcontent = CGIstore(rep);
 
 	pipe(p_out);
 	pipe(p_in);
@@ -119,7 +127,7 @@ std::string CGI::execute()
 //			throw(std::exception());
 
 	std::string _location = "/usr/bin/python3";
-	std::string _scriptPath = "website/cgi/cgi.py";
+	std::string _scriptPath = "./website/cgi/cgi.py";
 
 	//TODO set up _location like "/usr/bin/python3" and scriptPath arg like ""website/cgi/cgi.py""
 	std::vector<char *> path;
@@ -151,7 +159,7 @@ std::string CGI::execute()
 	{
 		close(p_in[0]);
 		close(p_out[1]);
-		write(p_in[1], raw.c_str(), raw.size());
+		write(p_in[1], rawcontent.c_str(), rawcontent.size());
 		close(p_in[1]);
 		if (waitpid(pid, &ret, 0) == -1)
 			throw(std::exception());

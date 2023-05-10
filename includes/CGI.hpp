@@ -52,10 +52,10 @@ private:
 /**********************************************************************************************************************/
 
 public:
-//	std::string execute(std::string scriptPath, Request request);
-	std::string execute();
-
-	std::string CGIstore();
+	std::string IsQuery(const std::string &URIraw);
+	std::string execute(Request &request, Response &rep, Config &conf);
+//	std::string execute();
+	std::string CGIstore(Response &rep);
 
 //	std::string CGIBody(const std::string& s);
 

@@ -40,6 +40,14 @@ private:
 	int _error_code;
 	std::string _content_type; //ex text/plain image/jpeg
 	std::string _content;  //what will be put in the body of the response
+	std::string _URIPathClean;
+public:
+	void setUriPathClean(const std::string &uriPathClean);
+
+public:
+	const std::string &getUriPathClean() const;
+
+private:
 
 	//these are helper functions;
 		//returns the name of the error_code ex: 200 -> OK

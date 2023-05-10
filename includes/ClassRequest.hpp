@@ -36,7 +36,7 @@ public:
 
 private:
 	std::string type;
-	std::string URI; // le lien donné apres la requete. GET -> /lelien.html <- HTML/1.1
+	std::string URI; // le lien donné apres la requete. GET -> /lelien.html <- HTML/1.1 // ./website/cgi/cgi.py
 	std::string HTTP_version;
 	std::map<std::string,std::string> headers_map;
 	std::string body;

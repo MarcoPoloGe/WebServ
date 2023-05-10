@@ -103,6 +103,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 	Request 			request;
 	Response			response(_config);
+	CGI 				cgi;
 
 	try
 	{
@@ -130,10 +131,17 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 	if(request.get_type() == "GET")
 	{
-		std::string	URI = request.get_URI();
-		if (URI == "/")
-			URI = "/index.html"; // todo remove and use instead default pages for each folder
-		response = _config.IsLocation(URI, request.get_type());
+		if (cgi.check(request))
+			cgi.execute(request, response, _config);
+		else
+		{
+			std::string	URI = request.get_URI();
+			if (URI == "/")
+				URI = "/index.html"; // todo remove and use instead default pages for each folder
+			response = _config.IsLocation(URI, request.get_type()); // ./webiste
+		}
+
+
 	}
 	else if(request.get_type() == "POST")
 	{
@@ -145,6 +153,9 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		std::cout << R <<"DELETE request not implemented yet" << std::endl;
 		response.set_path("./website/index.html");
 	}
+	// if resquest = cgi -- gooooooooo
+	CGI cgi;
+	cgi.execute(request, response, _config);
 
 	std::cout <<Y<< response << "\n" <<RE; //DEBUG
 	
