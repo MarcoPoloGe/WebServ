@@ -66,12 +66,16 @@ std::string	ft_get_extension(std::string str)
 
 	if (last_point == std::string::npos)
 	{
-		std::cout <<W<< "@fn ft_get_extension(std::string str)\n"
-		<<B<< "No particular extension in string [" << str << "]\n" <<RE;
+//		std::cout <<W<< "@fn ft_get_extension(std::string str)\n"
+//		<<B<< "No particular extension in string [" << str << "]\n" <<RE; //DEBUG
 		return ("");
 	}
 	else
+	{
+		if (str[last_point + 1] == '/')
+			return ("");
 		return ( str.substr(last_point + 1) );
+	}
 }
 
 std::string ft_remove_nonprintable(std::string str)
@@ -105,7 +109,7 @@ std::string ft_generate_html_dir(std::string dir_path)
         exit(1);
     }
 
-	dir_path.erase(dir_path.begin(), dir_path.begin() + 7);
+	dir_path.erase(dir_path.begin(), dir_path.begin() + 10); //veux int taille prepath
 
     // Création d'une chaîne de caractères contenant le code HTML
 	std::ostringstream html;
@@ -113,10 +117,10 @@ std::string ft_generate_html_dir(std::string dir_path)
     html << "<!DOCTYPE html>\n";
     html << "<html>\n";
     html << "<head>\n";
-    html << "\t<title>Index of /" << directory << "</title>\n";
+    html << "\t<title>Index of " << directory << "</title>\n";
     html << "</head>\n";
     html << "<body>\n";
-    html << "\t<h1>Index of /" << directory << "</h1>\n";
+    html << "\t<h1>Index of " << directory << "</h1>\n";
     html << "\t<table>\n";
     html << "\t\t<tr>\n";
     html << "\t\t\t<th>Filename</th>\n";
@@ -139,8 +143,8 @@ std::string ft_generate_html_dir(std::string dir_path)
 
         // Génération du code HTML pour chaque ligne du tableau
         html << "\t\t<tr>\n";
-        html << "\t\t\t<td><a href=\"" << dir_path + "/" + entry->d_name
-			<< "\">" << dir_path + "/" + entry->d_name << "</a></td>\n";
+        html << "\t\t\t<td><a href=\"" << /*dir_path + "/" + */entry->d_name
+			<< "\">" << /*dir_path + "/" + */entry->d_name << "</a></td>\n";
         html << "\t\t\t<td>" << ctime(&mod_time) << "</td>\n";
         html << "\t\t\t<td>" << size << " bytes</td>\n";
         html << "\t\t</tr>\n";
@@ -164,4 +168,16 @@ std::string ft_generate_html_dir(std::string dir_path)
     closedir(dir);
 
 	return ( html.str() );
+}
+
+std::string ft_what_location(std::string URI)
+{
+	std::size_t	first_slash = URI.find("/");
+	std::size_t	sec_slash = URI.find("/", first_slash + 1);
+
+	if (sec_slash == std::string::npos) //only one slash
+		return ( URI ); //a tester
+	if (sec_slash == URI.length() - 1) //final slash is cropped
+		return ( URI.substr( 0, (URI.length() - 1) ) );
+	return ( URI.substr( 0, (URI.length() - sec_slash) ) );
 }

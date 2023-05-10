@@ -116,35 +116,54 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		error.send(connection);
 		return (1);
 	}
-
 	std::string	URI = request.get_URI();
 	if (URI == "/")
 		URI = "/index.html"; // todo remove and use instead default pages for each folder
-	response = _config.IsLocation(URI, request.get_type()); // ./website
 
-/*	///////////////TRICK TEST/////////////////
+	///////////////TRICK TEST/////////////////
+	std::cout <<R<< "the URI is :{" << URI << "}\n" <<RE;//DEBUG
 	
-	if ( no_extension() )
+	if ( ft_get_extension(URI) == "" )
 	{
-		if (request.get_URI() == "/img") //coupe pour path
+		std::string location = ft_what_location(URI);
+		_config.getInLocationValue(location, "autoindex");
+		std::string val_autoindex = _config.getValueTemp();
 
-		std::string location = "/img";
-		std::string bool_val = _config.getlocationvalue(location, "autoindex");
-		if (bool_val == "true")
+		std::cout <<R<< "the location is :{" << location << "}\n" <<RE;//DEBUG
+
+		if (val_autoindex == "true")
 		{
+			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
+			
+			_config.getInLocationValue("/", "root");
+			std::string site_root = _config.getValueTemp();
+		
+			std::cout <<R<< "the siteroot is :{" << site_root << "}\n" <<RE;//DEBUG
+
 			response.set_manual_content_type("text/html");
-			response.set_manual_content( ft_generate_html_dir("website/img") );
+			response.set_manual_content( ft_generate_html_dir( site_root + location ) );
 			response.send(connection);
 			return (0);
 		}
 		else
-			path = _config.getlocationvalue(location, "default"); //a cehck pour plus tard
+		{
+			std::cout <<Y<< "###AUTOINDEX IS FALSE###\n" <<RE;//DEBUG
+
+			if (URI.rfind("/") != URI.length() - 1 )
+				URI += "/";
+
+			_config.getInLocationValue(location, "default");
+			URI += _config.getValueTemp();
+		
+			std::cout <<R<< "the modified URI is :{" << URI << "}\n" <<RE;//DEBUG
+		}
 	}
 
+	///////////////TRICK TEST////////////////
 
-	///////////////TRICK TEST//////////////// */
+//	std::cout <<B<< request << "\n" <<RE; //DEBUG
 
-	std::cout <<B<< request << "\n" <<RE; //DEBUG
+	response = _config.IsLocation(URI, request.get_type()); // ./website
 
 	if(request.get_type() == "GET")
 	{
@@ -169,7 +188,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	CGI cgi;
 	cgi.execute(request, response, _config);*/ //todo later 
 
-	std::cout <<Y<< response << "\n" <<RE; //DEBUG
+//	std::cout <<Y<< response << "\n" <<RE; //DEBUG
 	
 	response.send(connection);
 

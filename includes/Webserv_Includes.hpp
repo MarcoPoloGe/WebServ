@@ -64,5 +64,6 @@ void			setnonblocking(int sock);
 std::string		ft_get_extension(std::string str);
 std::string		ft_remove_nonprintable(std::string str);
 std::string		ft_generate_html_dir(std::string dir_path);
+std::string		ft_what_location(std::string URI);
 
 #endif
