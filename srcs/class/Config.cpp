@@ -385,3 +385,11 @@ Config::getInLocationValue(std::string PathLocation, std::string key)
 	}
 	return(true);
 }
+
+const std::string &Config::getBinCgi() const {
+	return _binCGI;
+}
+
+void Config::setBinCgi(const std::string &binCgi) {
+	_binCGI = binCgi;
+}

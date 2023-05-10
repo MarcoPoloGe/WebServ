@@ -159,20 +159,24 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		}
 	}
 
-	///////////////TRICK TEST////////////////
+	///////////////TRICK TEST/////////////////
 
-//	std::cout <<B<< request << "\n" <<RE; //DEBUG
-
+	URI = "./website/cgi/cgi.py";//todo
+	if (ft_get_extension(URI) == "py")
+	{
+		response.set_manual_content_type("text/html");
+		response.set_manual_content(cgi.execute(request, response, _config, _port));
+		response.send(connection);
+		return (0);
+	}
 	response = _config.IsLocation(URI, request.get_type()); // ./website
+//	response = _config.IsLocation(URI, request.get_type()); // ./website
+	std::cout <<B<< request << "\n" <<RE; //DEBUG
 
 	if(request.get_type() == "GET")
 	{
-//		if (cgi.check(request))
-//			cgi.execute(request, response, _config);
-//		else
-//		{
-//		}
-		std::cout <<"";
+
+
 	}
 	else if(request.get_type() == "POST")
 	{
@@ -186,7 +190,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 	}
 /*	// if resquest = cgi -- gooooooooo
 	CGI cgi;
-	cgi.execute(request, response, _config);*/ //todo later 
+	cgi.execute(request, response, _config, _port);*/ //todo later
 
 //	std::cout <<Y<< response << "\n" <<RE; //DEBUG
 	

@@ -42,6 +42,9 @@ private:
 	std::string _content;  //what will be put in the body of the response
 	std::string _URIPathClean;
 public:
+	const Config &getConfig() const;
+
+public:
 	void setUriPathClean(const std::string &uriPathClean);
 
 public:

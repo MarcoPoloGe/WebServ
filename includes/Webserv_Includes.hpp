@@ -65,5 +65,8 @@ std::string		ft_get_extension(std::string str);
 std::string		ft_remove_nonprintable(std::string str);
 std::string		ft_generate_html_dir(std::string dir_path);
 std::string		ft_what_location(std::string URI);
-
+std::string 	numberToString(unsigned long n);
+std::string 	IsQuery(const std::string &URIraw);
+std::string 	str_toupper(std::string &str);
+char *const 	*maptoarray(std::map<std::string, std::string> &map);
 #endif

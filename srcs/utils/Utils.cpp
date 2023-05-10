@@ -181,3 +181,38 @@ std::string ft_what_location(std::string URI)
 		return ( URI.substr( 0, (URI.length() - 1) ) );
 	return ( URI.substr( 0, (URI.length() - sec_slash) ) );
 }
+
+std::string numberToString(unsigned long n)
+{
+	std::ostringstream str1;
+	str1 << n;
+	return (str1.str());
+}
+
+std::string IsQuery(const std::string &URIraw) {
+	unsigned long pos;
+	if ((pos = URIraw.find('?')) != std::string::npos) {
+		return (URIraw.substr(pos + 1));
+	}
+	return ("");
+}
+
+std::string str_toupper(std::string &str) {
+	std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+	return str;
+}
+
+char *const *maptoarray(std::map<std::string, std::string> &m)
+{
+	char** arr = new char*[m.size() + 1];
+	std::memset(arr, 0, sizeof(char*) * (m.size() + 1));
+	int i = 0;
+	for (std::map<std::string, std::string>::const_iterator it = m.begin(); it != m.end(); ++it)
+	{
+		std::string s = it->first + "=" + it->second;
+		arr[i] = new char[s.length() + 1];
+		std::strcpy(arr[i], s.c_str());
+		++i;
+	}
+	return arr;
+}
