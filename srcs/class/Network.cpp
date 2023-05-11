@@ -147,18 +147,21 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
 	std::string Folder = _config.getFolderFromURI(URIraw);
 
+	std::cout << Folder << std::endl;
 	// test if Folder is in locations ; return *getSingleMapLocation
 	std::map<std::string, std::string> *singleLocationContent;
 	if ((singleLocationContent = _config.getSingleMapLocation(Folder)) == nullptr){
 		return (SendResponse(404, response, connection));
 	}
 
-
 	if ( ft_get_extension(URIraw) == "" )
 	{
 		std::string location = ft_what_location(URIraw);
+
 		_config.getInLocationValue(location, "autoindex");
 		std::string val_autoindex = _config.getValueTemp();
+		if (val_autoindex.empty())
+			return (SendResponse(404, response, connection));
 
 		std::cout <<R<< "the location is :{" << location << "}\n" <<RE;//DEBUG
 
