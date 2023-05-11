@@ -25,10 +25,16 @@ LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
 	{
 		for (i = 0; i < (*it).getAmountPortServer(); i++)
 		{
-			Network	newNetwork(*it, i);
+			if ( std::find(_used_ports.begin(), _used_ports.end(), (*it).getPortServer()[i])
+				== _used_ports.end() )
+			{
+				_used_ports.push_back( (*it).getPortServer()[i] );
 
-			_vec_network.push_back(newNetwork);
-			_net_amount++;
+				Network	newNetwork(*it, i);
+
+				_vec_network.push_back(newNetwork);
+				_net_amount++;
+			}
 		}
 	}
 	for (i = 0; i < MAX_CLIENTS; i++)

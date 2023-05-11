@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <utility>
 
 
 #include "ClassResponse.hpp"
@@ -69,4 +70,5 @@ std::string 	numberToString(unsigned long n);
 std::string 	IsQuery(const std::string &URIraw);
 std::string 	str_toupper(std::string &str);
 char *const 	*maptoarray(std::map<std::string, std::string> &map);
+std::string		ft_generate_error_html(int error, Config config);
 #endif

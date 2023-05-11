@@ -154,17 +154,6 @@ std::string ft_generate_html_dir(std::string dir_path)
     html << "</body>\n";
     html << "</html>\n";
 
-    // Écriture du code HTML dans un fichier
-/*	std::ofstream output_file("index.html");
-    if (output_file.is_open()) {
-        output_file << html.str();
-        output_file.close();
-		std::cout << "Page d'auto-indexage générée avec succès." << std::endl;
-    } else {
-		std::cerr << "Impossible de créer le fichier de sortie." << std::endl;
-        exit(1);
-    }*/
-
     closedir(dir);
 
 	return ( html.str() );
@@ -215,4 +204,29 @@ char *const *maptoarray(std::map<std::string, std::string> &m)
 		++i;
 	}
 	return arr;
+}
+
+std::string ft_generate_error_html(int error, Config config)
+{
+	std::string	description = config.getDefaultErrorDescription(error);
+	if (description == "")
+		description = "Unknown error code";
+
+    // Création d'une chaîne de caractères contenant le code HTML
+	std::ostringstream html;
+
+    html << "<!DOCTYPE html>\n";
+    html << "<html lang=en>\n";
+    html << "<head>\n";
+    html << "    <meta charset=\"UTF-8\">\n";
+    html << "    <title>" << error << " </title>\n";
+    html << "<head>\n";
+	html << "<body>\n";
+
+	html << "<h2>Error " << error << ": " << description << "</h2>\n";
+
+	html << "</body>\n";
+    html << "</html>\n";
+
+	return ( html.str() );
 }

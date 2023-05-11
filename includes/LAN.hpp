@@ -52,6 +52,7 @@ private:
 	int								_current_sock;
 	struct timeval					_timeout;
 	std::vector<Network>::iterator	_current_net;
+	std::vector<int>				_used_ports;
 
 	fd_set					_read_socks;
 	fd_set					_wr_socks;

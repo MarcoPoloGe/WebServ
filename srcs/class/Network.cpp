@@ -117,8 +117,8 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		return (1);
 	}
 	std::string	URI = request.get_URI();
-	if (URI == "/")
-		URI = "/index.html"; // todo remove and use instead default pages for each folder
+//	if (URI == "/")
+//		URI = "/index.html"; // todo remove and use instead default pages for each folder
 
 	///////////////TRICK TEST/////////////////
 	std::cout <<R<< "the URI is :{" << URI << "}\n" <<RE;//DEBUG
@@ -161,7 +161,7 @@ int	Network::deal_with_data(int connection, fd_set socks)
 
 	///////////////TRICK TEST/////////////////
 
-	URI = "./website/cgi/cgi.py";//todo
+	//URI = "./website/cgi/cgi.py";//todo
 	if (ft_get_extension(URI) == "py")
 	{
 		response.set_manual_content_type("text/html");

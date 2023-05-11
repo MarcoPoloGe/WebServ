@@ -10,7 +10,73 @@
 /***************************                       Con/Destructors	           		           ************************/
 /**********************************************************************************************************************/
 
-Config::Config() { /*std::cout <<W<< "++config" <<RE<< std::endl;*/ }
+Config::Config()
+{
+	/*std::cout <<W<< "++config" <<RE<< std::endl;*/
+	_DefaultErrorMap.insert( std::make_pair(400, "Bad Request") );
+	_DefaultErrorMap.insert( std::make_pair(401,"Unauthorized") );
+    _DefaultErrorMap.insert( std::make_pair(402,"Payment Required") );
+    _DefaultErrorMap.insert( std::make_pair(403,"Forbidden") );
+    _DefaultErrorMap.insert( std::make_pair(404,"Not Found") );
+    _DefaultErrorMap.insert( std::make_pair(405,"Method Not Allowed") );
+    _DefaultErrorMap.insert( std::make_pair(406,"Not Acceptable") );
+    _DefaultErrorMap.insert( std::make_pair(407,"Proxy Authentication Required") );
+    _DefaultErrorMap.insert( std::make_pair(408,"Request Time-out") );
+    _DefaultErrorMap.insert( std::make_pair(409,"Conflict") );
+    _DefaultErrorMap.insert( std::make_pair(410,"Gone") );
+    _DefaultErrorMap.insert( std::make_pair(411,"Length Required") );
+    _DefaultErrorMap.insert( std::make_pair(412,"Precondition Failed") );
+    _DefaultErrorMap.insert( std::make_pair(413,"Request Entity Too Large") );
+    _DefaultErrorMap.insert( std::make_pair(414,"Request-URI Too Long") );
+	_DefaultErrorMap.insert( std::make_pair(415,"Unsupported Media Type") );
+    _DefaultErrorMap.insert( std::make_pair(416,"Requested range unsatisfiable") );
+    _DefaultErrorMap.insert( std::make_pair(417,"Expectation failed") );
+    _DefaultErrorMap.insert( std::make_pair(418,"I’m a teapot") );
+    _DefaultErrorMap.insert( std::make_pair(419,"Page expired") );
+    _DefaultErrorMap.insert( std::make_pair(421,"Bad mapping / Misdirected Request") );
+    _DefaultErrorMap.insert( std::make_pair(422,"Unprocessable entity") );
+    _DefaultErrorMap.insert( std::make_pair(423,"Locked") );
+    _DefaultErrorMap.insert( std::make_pair(424,"Method failure") );
+    _DefaultErrorMap.insert( std::make_pair(425,"Too Early") );
+    _DefaultErrorMap.insert( std::make_pair(426,"Upgrade Required") );
+    _DefaultErrorMap.insert( std::make_pair(428,"Precondition Required") );
+    _DefaultErrorMap.insert( std::make_pair(429,"Too Many Requests") );
+    _DefaultErrorMap.insert( std::make_pair(431,"Request Header Fields Too Large") );
+    _DefaultErrorMap.insert( std::make_pair(449,"Retry With") );
+    _DefaultErrorMap.insert( std::make_pair(450,"Blocked by Windows Parental Controls") );
+    _DefaultErrorMap.insert( std::make_pair(451,"Unavailable For Legal Reasons") );
+    _DefaultErrorMap.insert( std::make_pair(456,"Unrecoverable Error") );
+
+    _DefaultErrorMap.insert( std::make_pair(444,"No Response") );
+    _DefaultErrorMap.insert( std::make_pair(495,"SSL Certificate Error") );
+    _DefaultErrorMap.insert( std::make_pair(496,"SSL Certificate Required") );
+    _DefaultErrorMap.insert( std::make_pair(497,"HTTP Request Sent to HTTPS Port") );
+    _DefaultErrorMap.insert( std::make_pair(498,"Token expired/invalid") );
+    _DefaultErrorMap.insert( std::make_pair(499,"Client Closed Request") );
+
+    _DefaultErrorMap.insert( std::make_pair(500,"Internal Server Error") );
+    _DefaultErrorMap.insert( std::make_pair(501,"Not Implemented") );
+    _DefaultErrorMap.insert( std::make_pair(502,"Bad Gateway ou Proxy Error") );
+    _DefaultErrorMap.insert( std::make_pair(503,"Service Unavailable") );
+    _DefaultErrorMap.insert( std::make_pair(504,"Gateway Time-out") );
+    _DefaultErrorMap.insert( std::make_pair(505,"HTTP Version not supported") );
+    _DefaultErrorMap.insert( std::make_pair(506,"Variant Also Negotiates") );
+    _DefaultErrorMap.insert( std::make_pair(507,"Insufficient storage") );
+    _DefaultErrorMap.insert( std::make_pair(508,"Loop detected") );
+    _DefaultErrorMap.insert( std::make_pair(509,"Bandwidth Limit Exceeded") );
+    _DefaultErrorMap.insert( std::make_pair(510,"Not extended") );
+    _DefaultErrorMap.insert( std::make_pair(511,"Network authentication required") );
+
+    _DefaultErrorMap.insert( std::make_pair(520,"Unknown Error") );
+    _DefaultErrorMap.insert( std::make_pair(521,"Web Server Is Down") );
+    _DefaultErrorMap.insert( std::make_pair(522,"Connection Timed Out") );
+    _DefaultErrorMap.insert( std::make_pair(523,"Origin Is Unreachable") );
+    _DefaultErrorMap.insert( std::make_pair(524,"A Timeout Occurred") );
+    _DefaultErrorMap.insert( std::make_pair(525,"SSL Handshake Failed") );
+    _DefaultErrorMap.insert( std::make_pair(526,"Invalid SSL Certificate") );
+    _DefaultErrorMap.insert( std::make_pair(527,"Railgun Error") );
+}
+
 Config::~Config() 	{ /*std::cout <<W<< "--config" <<RE<< std::endl;*/ }
 
 /**********************************************************************************************************************/
@@ -279,6 +345,15 @@ Config::getPath_of_URI(const std::string& URIraw,
 	}
 	else
 		throw std::invalid_argument ("@fn Config::getPath_of_URI(const std::string& URIraw)\nNo root found in location");
+}
+
+std::string	Config::getDefaultErrorDescription(int error)
+{
+	std::map<int, std::string>::iterator it = _DefaultErrorMap.find(error);
+
+	if (it == _DefaultErrorMap.end() )
+		return ("");
+	return ((*it).second);
 }
 
 

@@ -101,6 +101,8 @@ public:
 
 	Response 													IsLocation(const std::string& URIraw, const std::string &Method);
 
+	std::string													getDefaultErrorDescription(int error);
+
 	/* weirdo getters */
 
 //	s0->getInLocationValue("/methods", "root");
@@ -142,6 +144,8 @@ private:
 	std::string														_key_temp;
 	std::string														_value_temp;
 //	std::map<std::string, std::string>								_loc_temp;
+
+	std::map<int, std::string>										_DefaultErrorMap;
 
 /**********************************************************************************************************************/
 /***************************                       Utils		            		           ************************/
