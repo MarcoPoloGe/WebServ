@@ -157,7 +157,7 @@ void	LAN::handle_new_connection(void)
 
 void	LAN::deal_with_data(int listnum)
 {
-	if ((*_connectlist[listnum].net).deal_with_data(_connectlist[listnum].co, _read_socks))
+	if (!(*_connectlist[listnum].net).RequestToResponse(_connectlist[listnum].co, _read_socks))
 	{
 		std::cout << "@fn LAN::deal_with_data(int listnum)\nConnection lost with FD = " << _connectlist[listnum].co
 				<< " & Slot = " << listnum << std::endl;

@@ -206,6 +206,9 @@ char *const *maptoarray(std::map<std::string, std::string> &m)
 	return arr;
 }
 
+
+
+
 std::string ft_generate_error_html(int error, Config config)
 {
 	std::string	description = config.getDefaultErrorDescription(error);

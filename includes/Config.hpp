@@ -5,18 +5,7 @@
 #ifndef CONFIG_PARSER_PARSER_HPP
 #define CONFIG_PARSER_PARSER_HPP
 
-//COLORS
-//#define	B		"\033[1m\033[30m" 		// Bold Black
-//#define R		"\033[1m\033[31m"		// Bold Red
-//#define G		"\033[1m\033[32m"		// Bold Green
-//#define Y		"\033[1m\033[33m"		// Bold Yellow
-//#define W		"\033[1m\033[37m"		// Bold White
-//#define C		"\033[36m"
-//#define	RE   	"\033[0m"
-
-
 //HOMEMADE
-
 class Types;
 class Response;
 
@@ -109,11 +98,59 @@ public:
 	bool
 	getInLocationValue(std::string key, std::string LocationPath);
 
+	std::map<std::string, std::string> *getLocationFolderContent(const std::string &folder);
+
+
 	std::string
 	getPath_of_URI(const std::string& URIraw,
 				   std::vector<std::map<std::string, std::string> >::iterator &i,
 				   std::map<std::string, std::string>::iterator &im);
 
+
+	std::string
+	getRoot(std::map<std::string,
+			std::string> &singleMapLocation );
+
+	std::string
+	getMethod(std::map<std::string,
+			std::string> &singleMapLocation );
+
+	std::string
+	getDefault(std::map<std::string,
+			std::string> &singleMapLocation );
+
+	std::string
+	getAutoindex(std::map<std::string,
+			std::string> &singleMapLocation );
+
+		std::string
+	getLocation(std::map<std::string,
+			std::string> &singleMapLocation );
+
+	std::map<std::string, std::string> *
+	getSingleMapLocation(const std::string &folderLocation);
+
+	std::string
+	getFolderFromURI(std::string URIraw);
+
+	static std::string
+	getVarLocation(std::map<std::string,
+				   std::string> &singleMapLocation,
+				   const std::string& var );
+
+	std::string
+	getFileFromURI(std::string URIraw);
+
+
+
+	std::string
+	isPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent);
+
+	bool
+	IsMethodAllowed(std::string Method, std::map<std::string, std::string> &singleMapLocation);
+
+	bool
+	isOnlyFolder(const std::string &folder, const std::string &URIraw);
 
 /**********************************************************************************************************************/
 /***************************                       Private Vars		                           ************************/

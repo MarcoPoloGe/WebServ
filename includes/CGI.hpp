@@ -24,7 +24,7 @@ public:
 /**********************************************************************************************************************/
 
 public:
-	std::string 									execute(Request &request, Response &rep, Config &conf, int port);
+	std::string 									execute(Request &request, Response &rep, Config &conf, int port, const std::string& path);
 	std::string 									CGIstore(Response &rep);
 	static std::map<std::string, std::string> 		setUpEnvVariablesCGI(Request &request, Config &conf, int port);
 	bool											check(Request &r);

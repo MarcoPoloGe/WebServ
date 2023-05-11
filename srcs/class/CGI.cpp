@@ -109,7 +109,7 @@ std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, C
 }
 
 //TODO Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
-std::string CGI::execute(Request &request, Response &rep, Config &conf, int port)
+std::string CGI::execute(Request &request, Response &rep, Config &conf, int port, const std::string& p)
 {
 	(void)request;	//to
 	(void)conf;		//remove
@@ -133,7 +133,7 @@ std::string CGI::execute(Request &request, Response &rep, Config &conf, int port
 
 	const std::string& binCGI = conf.getBinCgi();
 //	const std::string& URIPathClean = rep.getUriPathClean();//todo
-	const std::string& URIPathClean = "./website/cgi/cgi.py";
+	const std::string& URIPathClean = p;
 
 	std::vector<char *> path;
 	path.push_back(const_cast<char *>(binCGI.c_str()));

@@ -59,7 +59,7 @@ void Response::set_path(std::string path)
 
 	ext = ft_get_extension(path);
 	if(ext.empty())
-		throw std::invalid_argument("@fn void Response::set_path(std::string path)\npath : "+ path +" has no exception");
+		throw std::invalid_argument("@fn void Response::set_path(std::string path)\npath : "+ path +" has no extension");
 	set_content_body(ft_read_file(path));
 	set_content_extension(ext);
 
@@ -132,23 +132,11 @@ std::string Response::send(int client_socket)
 }
 
 Response &Response::operator=(const Response &rhs)
-		{
-			this->_error_code = rhs._error_code;
-			this->_content_type = rhs._content_type;
-			this->_content = rhs._content;
-			return (*this);
-		}
-
-const std::string &Response::getUriPathClean() const {
-	return _URIPathClean;
-}
-
-void Response::setUriPathClean(const std::string &uriPathClean) {
-	_URIPathClean = uriPathClean; // ./website/cgi/cgi.py / /cgi/cgi.py
-}
-
-const Config &Response::getConfig() const {
-	return _config;
+{
+	this->_error_code = rhs._error_code;
+	this->_content_type = rhs._content_type;
+	this->_content = rhs._content;
+	return (*this);
 }
 
 std::ostream& operator<<(std::ostream& out, Response const& rhs)

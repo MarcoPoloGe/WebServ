@@ -96,15 +96,8 @@ Request receive_request(int connection, fd_set &socks)
 	return (request);
 }
 
-
-int	Network::deal_with_data(int connection, fd_set socks)
+bool Network::CatchRequest(Request &request, int connection, fd_set socks)
 {
-	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
-
-	Request 			request;
-	Response			response(_config);
-	CGI 				cgi;
-
 	try
 	{
 		request = receive_request(connection, socks);
@@ -114,18 +107,56 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		std::cout << R << "Wrong HTTP REQUEST\n" << RE;
 		Response error(404, _config);
 		error.send(connection);
-		return (1);
+		return (false);
 	}
-	std::string	URI = request.get_URI();
-//	if (URI == "/")
-//		URI = "/index.html"; // todo remove and use instead default pages for each folder
+	return (true);
+}
 
-	///////////////TRICK TEST/////////////////
-	std::cout <<R<< "the URI is :{" << URI << "}\n" <<RE;//DEBUG
-	
-	if ( ft_get_extension(URI) == "" )
+int Network::SendResponse(int errorCode, Response &response, int connection)
+{
+	response.set_error_code(errorCode);
+	response.send(connection);
+	return (0);
+}
+
+int Network::SendCGIResponse(int errorCode, Response &response, Request &request, int connection, const std::string& path)
+{
+	CGI cgi;
+	response.set_error_code(errorCode);
+
+	response.set_manual_content_type("text/html");
+	response.set_manual_content(cgi.execute(request, response, _config, _port, path));
+	response.send(connection);
+	return (0);
+}
+
+int	Network::RequestToResponse(int connection, fd_set socks)
+{
+	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
+
+	Request 			request;
+	Response			response(_config);
+	CGI 				cgi;
+
+	//Catch Request, send Response error(404, _config) if Wrong HTTP Request
+	if (!this->CatchRequest(request, connection, socks))
+		return(SendResponse(404, response, connection));
+
+	std::string	URIraw = request.get_URI();
+
+	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
+	std::string Folder = _config.getFolderFromURI(URIraw);
+
+	// test if Folder is in locations ; return *getSingleMapLocation
+	std::map<std::string, std::string> *singleLocationContent;
+	if ((singleLocationContent = _config.getSingleMapLocation(Folder)) == nullptr){
+		return (SendResponse(404, response, connection));
+	}
+
+
+	if ( ft_get_extension(URIraw) == "" )
 	{
-		std::string location = ft_what_location(URI);
+		std::string location = ft_what_location(URIraw);
 		_config.getInLocationValue(location, "autoindex");
 		std::string val_autoindex = _config.getValueTemp();
 
@@ -134,10 +165,10 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		if (val_autoindex == "true")
 		{
 			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
-			
+
 			_config.getInLocationValue("/", "root");
 			std::string site_root = _config.getValueTemp();
-		
+
 			std::cout <<R<< "the siteroot is :{" << site_root << "}\n" <<RE;//DEBUG
 
 			response.set_manual_content_type("text/html");
@@ -149,34 +180,34 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		{
 			std::cout <<Y<< "###AUTOINDEX IS FALSE###\n" <<RE;//DEBUG
 
-			if (URI.rfind("/") != URI.length() - 1 )
-				URI += "/";
+			if (URIraw.rfind("/") != URIraw.length() - 1 )
+				URIraw += "/";
 
 			_config.getInLocationValue(location, "default");
-			URI += _config.getValueTemp();
-		
-			std::cout <<R<< "the modified URI is :{" << URI << "}\n" <<RE;//DEBUG
+			URIraw += _config.getValueTemp();
+
+			std::cout <<R<< "the modified URIraw is :{" << URIraw << "}\n" <<RE;//DEBUG
 		}
 	}
 
-	///////////////TRICK TEST/////////////////
+	std::string PathToFile;
+	// test if the file exist in location ; return path to the file or path to the folder in location
+	PathToFile = _config.isPathToFile(URIraw, *(singleLocationContent));
+	if (PathToFile.empty())
+		return (SendResponse(404, response, connection)); // file doesn't exist in folder from locations
 
-	//URI = "./website/cgi/cgi.py";//todo
-	if (ft_get_extension(URI) == "py")
-	{
-		response.set_manual_content_type("text/html");
-		response.set_manual_content(cgi.execute(request, response, _config, _port));
-		response.send(connection);
-		return (0);
-	}
-	response = _config.IsLocation(URI, request.get_type()); // ./website
-//	response = _config.IsLocation(URI, request.get_type()); // ./website
-	std::cout <<B<< request << "\n" <<RE; //DEBUG
+	// test if Method is allowed in Location ; return bool
+	if (!_config.IsMethodAllowed(request.get_type(), *(singleLocationContent)))
+		return (SendResponse(404, response, connection));
+
+	// test if IsCGI ; send reponse and return 0
+	if (ft_get_extension(URIraw) == "py")
+		return (SendCGIResponse(200, response, request, connection, PathToFile));
 
 	if(request.get_type() == "GET")
 	{
-
-
+		response.set_path(PathToFile);
+		response.send(connection);
 	}
 	else if(request.get_type() == "POST")
 	{
@@ -188,13 +219,6 @@ int	Network::deal_with_data(int connection, fd_set socks)
 		std::cout << R <<"DELETE request not implemented yet" << std::endl;
 		response.set_path("./website/index.html");
 	}
-/*	// if resquest = cgi -- gooooooooo
-	CGI cgi;
-	cgi.execute(request, response, _config, _port);*/ //todo later
-
-//	std::cout <<Y<< response << "\n" <<RE; //DEBUG
-	
-	response.send(connection);
 
 	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
 	return (0);
