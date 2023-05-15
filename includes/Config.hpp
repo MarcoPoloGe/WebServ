@@ -141,10 +141,14 @@ public:
 	std::string
 	getFileFromURI(std::string URIraw);
 
+	std::string
+	getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent);
+
+
 
 
 	std::string
-	isPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent);
+	isPathToFile(const std::string &PathToFile);
 
 	bool
 	IsMethodAllowed(std::string Method, std::map<std::string, std::string> &singleMapLocation);

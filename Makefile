@@ -47,7 +47,7 @@ clean:
 fclean:		clean
 			${RM} ${NAME}
 
-re:			fclean all
+re:			fclean all clean
 
 good:		${NAME} clean
 

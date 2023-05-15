@@ -283,7 +283,10 @@ bool Config::isOnlyFolder(const std::string &folder, const std::string &URIraw)
 	std::string s;
 	s = "/" + folder;
 	if (folder == URIraw || s == URIraw)
+	{
+		std::cout << "oui\n";
 		return true;
+	}
 	return false;
 }
 
@@ -295,15 +298,20 @@ bool Config::IsMethodAllowed(std::string Method, std::map<std::string, std::stri
 	return (false);
 }
 
-std::string Config::isPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent)
+std::string Config::getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent)
 {
-	std::string root = this->getRoot(singleLocationContent);
-	std::string URI = this->getFileFromURI(URIraw);
-	std::string PathToFile = "./website/" + URI;
+	if ( ft_get_extension(URIraw) == "" )
+		return (this->getRoot(singleLocationContent));
+	else
+		return (this->getRoot(singleLocationContent) + this->getFileFromURI(URIraw));
+}
+
+std::string Config::isPathToFile(const std::string &PathToFile)
+{
 	std::ifstream to_open(PathToFile.c_str(), std::ios::in);
 	if ( !to_open.is_open() ){
 //		throw std::invalid_argument ("@fn Config::isPathToFile(std::string URIraw, std::map<std::string, std::string> *singleLocationContent)\nNo file found in location with URI");
-		return (PathToFile);
+		return ("");
 	}
 	else {
 		to_open.close();
@@ -314,19 +322,10 @@ std::string Config::isPathToFile(std::string URIraw, std::map<std::string, std::
 std::string Config::getFileFromURI(std::string URIraw)
 {
 	unsigned long pos;
-	std::string URI;
 
-	if ((pos = URIraw.find('/')) != std::string::npos)
-	{
-		if (URIraw == "/")
-			return (URIraw);
-		URI = URIraw.erase(0, pos);
-		if((pos = URI.find('/')) != std::string::npos)
-		{
-			return ( URI.substr( pos + 1, URIraw.size()) );
-		}
-	}
-	return ("/");
+	if ((pos = URIraw.rfind('/')) != std::string::npos)
+		return (URIraw.substr( pos + 1, URIraw.size()));
+	return ("");
 }
 
 std::string Config::getFolderFromURI(std::string URIraw)
