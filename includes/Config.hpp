@@ -144,6 +144,8 @@ public:
 	std::string
 	getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent);
 
+	std::string
+	getFileInFolderFromURI(std::string URIraw, std::string Folder);
 
 
 

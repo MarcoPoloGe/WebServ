@@ -35,9 +35,15 @@ public:
 	
 	//⬇️⬇️⬇️⬇️ int		deal_with_data(int connection, fd_set socks); ⬇️⬇️⬇️⬇️
 	int			RequestToResponse		(int connection, fd_set socks);
+
 	bool 		CatchRequest			(Request &request, int connection, fd_set socks);
+
 	int 		SendResponse			(int errorCode, Response &response, int connection);
 	int			SendCGIResponse			(int errorCode, Response &response, Request &request, int connection, const std::string& path);
+	int			SendResponseDefault		(int errorCode, Response &response, int connection, std::string dir_path);
+
+	Request		receive_request			(int connection, fd_set &socks);
+
 
 private:
 	//Nope nope nope

@@ -6,8 +6,8 @@ std::string ft_read_file(std::string file_name)
 	std::string content;
 	std::string line;
 	unsigned long pos;
-    while ((pos = file_name.find("//")) != std::string::npos)
-        file_name.erase(pos, 1);
+	while ((pos = file_name.find("//")) != std::string::npos)
+		file_name.erase(pos, 1);
 
 	html_file.open(file_name.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 	if(html_file.is_open())
@@ -107,7 +107,7 @@ std::string ft_generate_html_dir(std::string dir_path)
 	unsigned long pos;
     while ((pos = dir_path.find("//")) != std::string::npos)
         dir_path.erase(pos, 1);
-	
+
 	std::string directory = dir_path; // Répertoire à indexer
     DIR* dir = opendir(directory.c_str());
     if (dir == NULL) {
@@ -172,9 +172,7 @@ std::string ft_what_location(std::string URI)
 
 	if (sec_slash == std::string::npos) //only one slash
 		return ( URI ); //a tester
-	if (sec_slash == URI.length() - 1) //final slash is cropped
-		return ( URI.substr( 0, (URI.length() - 1) ) );
-	return ( URI.substr( 0, (URI.length() - sec_slash) ) );
+	return ( URI.substr( first_slash,  sec_slash) );
 }
 
 std::string numberToString(unsigned long n)

@@ -169,8 +169,8 @@ std::map<int, std::string>							&Config::getErrorPagesMap(void)			{ return(_err
 std::map<int, std::string>							&Config::getErrorNamesMap(void)			{ return(_error_names); }
 const std::string 									&Config::getBinCgi() const 				{ return (_binCGI); }
 
-std::string &Config::getKeyTemp(void) 				{return (_key_temp); }
-std::string &Config::getValueTemp(void) 			{return (_value_temp); }
+std::string 										&Config::getKeyTemp(void) 				{ return (_key_temp); }
+std::string 										&Config::getValueTemp(void)				{ return (_value_temp); }
 
 std::string
 Config::getType(const std::string& format) {
@@ -301,7 +301,10 @@ bool Config::IsMethodAllowed(std::string Method, std::map<std::string, std::stri
 std::string Config::getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent)
 {
 	if ( ft_get_extension(URIraw) == "" )
+	{
+
 		return (this->getRoot(singleLocationContent));
+	}
 	else
 		return (this->getRoot(singleLocationContent) + this->getFileFromURI(URIraw));
 }
@@ -319,26 +322,39 @@ std::string Config::isPathToFile(const std::string &PathToFile)
 	}
 }
 
+std::string Config::getFileInFolderFromURI(std::string URIraw, std::string Folder)
+{
+	unsigned long pos;
+	if (URIraw == Folder)
+		return("");
+	if ((pos = URIraw.find(Folder)) != std::string::npos)
+	{
+		std::cout << pos + Folder.size() << std::endl;
+		return (URIraw.substr( pos + Folder.size()));
+	}
+	return ("");
+}
+
 std::string Config::getFileFromURI(std::string URIraw)
 {
 	unsigned long pos;
 
 	if ((pos = URIraw.rfind('/')) != std::string::npos)
-		return (URIraw.substr( pos + 1, URIraw.size()));
+	{
+		return (URIraw.substr( pos, URIraw.size()));
+	}
 	return ("");
 }
 
-std::string Config::getFolderFromURI(std::string URIraw)
+std::string Config::getFolderFromURI(std::string URI)
 {
-	unsigned long pos;
 
-	if ((pos = URIraw.find('/')) != std::string::npos)
-	{
-		pos += 1;
-		if((pos = URIraw.find('/', pos)) != std::string::npos)
-			return ( URIraw.substr( 0, pos) ); // return " /img "
-	}
-	return ("/"); // return "/" if URIraw == " / " || URIraw == " /index.html "
+	std::size_t	first_slash = URI.find("/");
+	std::size_t	sec_slash = URI.find("/", first_slash + 1);
+
+	if (sec_slash == std::string::npos) //only one slash
+		return ( URI ); //a tester
+	return ( URI.substr( first_slash,  sec_slash) );
 }
 
 Response
