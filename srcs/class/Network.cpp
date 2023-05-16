@@ -119,11 +119,11 @@ int Network::SendResponse(int errorCode, Response &response, int connection)
 	return (0);
 }
 
-int Network::SendResponseDefault(int errorCode, Response &response, int connection, std::string dir_path)
+int Network::SendResponseDefault(int errorCode, Response &response, int connection, std::string path)
 {
 	response.set_error_code(errorCode);
 	response.set_manual_content_type("text/html");
-	response.set_manual_content( ft_generate_html_dir( dir_path ) );
+	response.set_manual_content( ft_generate_html_dir( path) );
 	response.send(connection);
 	return (0);
 }
@@ -152,16 +152,23 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		return(SendResponse(404, response, connection));
 
 	std::string	URIraw = request.get_URI();
+	std::cout <<Y<< "URIraw: {" << URIraw << "}" <<RE<< std::endl;
+
+
+	std::string PathToFile;
+
 	if (URIraw.find("//") != std::string::npos)
 		return(SendResponse(404, response, connection));
 	std::cout << B << "######## URI IS : " << URIraw << " #########\n"<<RE;
 
-	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
-	std::string Folder = _config.getFolderFromURI(URIraw);
 
+
+	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
+	std::string Folder = _config.getFolderLocationFromURI(URIraw);
 //	std::string location = ft_what_location(URIraw);
 	std::cout <<B<< "Folder : " << Folder <<RE<< std::endl;
 //	std::cout <<B<< "Loc what: " << location <<RE<< std::endl;
+
 
 	// test if Folder is in locations ; return *getSingleMapLocation
 	std::map<std::string, std::string> *singleLocationContent;
@@ -169,16 +176,19 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		return (SendResponse(404, response, connection));
 	}
 
-//	std::string PathToFile = _config.getPathToFile(URIraw, *singleLocationContent);
-	std::string PathToFile = _config.getRoot(*singleLocationContent) + "/" +_config.getFileInFolderFromURI(URIraw, Folder);
-	std::cout <<B<<"PathToFile: " << PathToFile <<RE<< std::endl;
+	_config.setPathToFile(URIraw, singleLocationContent);
+
+	PathToFile = _config.getPath();
+	std::cout <<B<< "PathToFile : " << PathToFile <<RE<< std::endl;
+
 
 	// test if the file exist in location ; return path to the file or path to the folder in location
 	PathToFile = _config.isPathToFile(PathToFile);
 	if (PathToFile.empty())
 		return (SendResponse(404, response, connection)); // file doesn't exist in folder from locations
+
 //	std::cout <<B<< PathToFile <<RE<< std::endl;
-	if ( ft_get_extension(URIraw) == "" )
+	if ( ft_get_extension(PathToFile) == "" )
 	{
 		std::string autoindexValue = _config.getAutoindex(*singleLocationContent);
 		std::string location = _config.getLocation(*singleLocationContent);
@@ -186,8 +196,9 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 
 		if (autoindexValue == "true")
 		{
-//			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
-			SendResponseDefault(200, response, connection, (PathToFile));
+			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
+			SendResponseDefault(200, response, connection, PathToFile);
+
 			return (0);
 		}
 		else
@@ -202,8 +213,6 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 //			SendResponseDefault(200, response, connection, (PathToFile + "index.html"));
 		}
 	}
-
-
 
 	// test if Method is allowed in Location ; return bool
 	if (!_config.IsMethodAllowed(request.get_type(), *(singleLocationContent)))

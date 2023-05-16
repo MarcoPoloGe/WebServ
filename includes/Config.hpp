@@ -20,6 +20,9 @@ class Response;
 #include <map>
 #include "Response.hpp"
 
+#define AUTOINDEX_TRUE 1
+#define AUTOINDEX_FALSE 2
+
 
 // Single Server config
 class Config {
@@ -57,9 +60,15 @@ public:
 	void
 	setErrorNamesMap(std::map<int,std::string>							error_names);
 
+
+
+
 /* weirdo setters */
 	void
 	setRawfile(std::vector<std::string>::iterator first_bracket, std::vector<std::string>::iterator last_bracket);
+
+	void
+	setPathToFile (std::string &URIraw, std::map<std::string, std::string> *singleLocationContent);
 
 
 /**********************************************************************************************************************/
@@ -76,7 +85,7 @@ public:
 	std::map<int,std::string>									&getErrorPagesMap();
 	std::map<int,std::string>									&getErrorNamesMap();
 
-
+	const std::string 											&getPath() const;
 
 	std::string 												&getKeyTemp();
 	std::string 												&getValueTemp();
@@ -86,6 +95,8 @@ public:
 	std::string 												getContentType(const std::string& format);
 	std::string													getErrorPages(int error_pages);
 	std::string													getErrorNames(int error_names);
+
+
 
 
 	Response 													IsLocation(const std::string& URIraw, const std::string &Method);
@@ -98,7 +109,8 @@ public:
 	bool
 	getInLocationValue(std::string key, std::string LocationPath);
 
-	std::map<std::string, std::string> *getLocationFolderContent(const std::string &folder);
+	std::map<std::string, std::string> *
+	getLocationFolderContent(const std::string &folder);
 
 
 	std::string
@@ -131,7 +143,7 @@ public:
 	getSingleMapLocation(const std::string &folderLocation);
 
 	std::string
-	getFolderFromURI(std::string URIraw);
+	getFolderLocationFromURI(std::string URIraw);
 
 	static std::string
 	getVarLocation(std::map<std::string,
@@ -141,8 +153,8 @@ public:
 	std::string
 	getFileFromURI(std::string URIraw);
 
-	std::string
-	getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent);
+//	std::string
+//	getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent);
 
 	std::string
 	getFileInFolderFromURI(std::string URIraw, std::string Folder);
@@ -155,8 +167,8 @@ public:
 	bool
 	IsMethodAllowed(std::string Method, std::map<std::string, std::string> &singleMapLocation);
 
-	bool
-	isOnlyFolder(const std::string &folder, const std::string &URIraw);
+//	bool
+//	isOnlyFolder(const std::string &folder, const std::string &URIraw);
 
 /**********************************************************************************************************************/
 /***************************                       Private Vars		                           ************************/
@@ -182,11 +194,13 @@ private:
 	std::map<int, std::string>										_error_pages;
 	std::map<int, std::string>										_error_names;
 
+	std::string 													_path_to_file;
+
 	std::string														_root;
 
 	std::string														_key_temp;
 	std::string														_value_temp;
-//	std::map<std::string, std::string>								_loc_temp;
+
 
 	std::map<int, std::string>										_DefaultErrorMap;
 
@@ -202,6 +216,14 @@ public:
 //	s0->printAllLocation();
 	void
 	printAllLocation();
+
+	bool
+	checkAutoIndex(std::map<std::string, std::string> *singleLocationContent);
+
+	std::string
+	eraseFolderLocationAndSlashFromURI(std::string URIraw, std::map<std::string, std::string> &singleMapLocation);
+
+
 
 };
 

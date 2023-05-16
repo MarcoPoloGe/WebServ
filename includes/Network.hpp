@@ -40,7 +40,7 @@ public:
 
 	int 		SendResponse			(int errorCode, Response &response, int connection);
 	int			SendCGIResponse			(int errorCode, Response &response, Request &request, int connection, const std::string& path);
-	int			SendResponseDefault		(int errorCode, Response &response, int connection, std::string dir_path);
+	int			SendResponseDefault		(int errorCode, Response &response, int connection, std::string path);
 
 	Request		receive_request			(int connection, fd_set &socks);
 
