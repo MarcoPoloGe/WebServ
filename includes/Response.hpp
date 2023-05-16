@@ -32,6 +32,7 @@ public:
 	////TRICK TEST/////
 
 	std::string send(int client_socket);
+	std::string send(int client_socket, fd_set socks);
 
 	Response &operator=(Response const &rhs);
 

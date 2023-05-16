@@ -106,7 +106,7 @@ bool Network::CatchRequest(Request &request, int connection, fd_set socks)
 	{
 		std::cout << R << "Wrong HTTP REQUEST\n" << RE;
 		Response error(404, _config);
-		error.send(connection);
+		error.send(connection, socks);
 		return (false);
 	}
 	return (true);
@@ -143,6 +143,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		return(SendResponse(404, response, connection));
 
 	std::string	URIraw = request.get_URI();
+	std::cout << B << "######## URI IS : " << URIraw << " #########\n"<<RE;
 
 	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
 	std::string Folder = _config.getFolderFromURI(URIraw);
@@ -162,25 +163,25 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		if (val_autoindex.empty())
 			return (SendResponse(404, response, connection));
 
-		std::cout <<R<< "the location is :{" << location << "}\n" <<RE;//DEBUG
+//		std::cout <<R<< "the location is :{" << location << "}\n" <<RE;//DEBUG
 
 		if (val_autoindex == "true")
 		{
-			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
+//			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
 
 			_config.getInLocationValue("/", "root");
 			std::string site_root = _config.getValueTemp();
 
-			std::cout <<R<< "the siteroot is :{" << site_root << "}\n" <<RE;//DEBUG
+//			std::cout <<R<< "the siteroot is :{" << site_root << "}\n" <<RE;//DEBUG
 
 			response.set_manual_content_type("text/html");
 			response.set_manual_content( ft_generate_html_dir( site_root + location ) );
-			response.send(connection);
+			response.send(connection, socks);
 			return (0);
 		}
 		else
 		{
-			std::cout <<Y<< "###AUTOINDEX IS FALSE###\n" <<RE;//DEBUG
+//			std::cout <<Y<< "###AUTOINDEX IS FALSE###\n" <<RE;//DEBUG
 
 			if (URIraw.rfind("/") != URIraw.length() - 1 )
 				URIraw += "/";
@@ -210,7 +211,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	if(request.get_type() == "GET")
 	{
 		response.set_path(PathToFile);
-		response.send(connection);
+		response.send(connection, socks);
 	}
 	else if(request.get_type() == "POST")
 	{

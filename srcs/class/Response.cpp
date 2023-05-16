@@ -106,6 +106,33 @@ std::string Response::ft_error_page(int error_code)
 	return (page_name);
 }
 
+bool	verify_socket(int socket)
+{
+	fd_set writeSet;
+	FD_ZERO(&writeSet);
+	FD_SET(socket, &writeSet);
+
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
+
+	int selectResult = select(socket + 1, NULL, &writeSet, NULL, &timeout);
+
+	if (selectResult == -1) {
+		std::cout <<R;
+		perror(strerror(errno));
+		std::cout<<RE;
+		Ft_error	error("select");
+    } else if (selectResult == 0) {
+		return (false);
+    }
+	else {
+		std::cout <<G<< "SEND ACCEPTED\n"<<RE;
+		return (true);
+	}
+	return (false);
+}
+
 std::string Response::send(int client_socket)
 {
 	std::stringstream message;
@@ -125,6 +152,47 @@ std::string Response::send(int client_socket)
 	message << "Content-Type:" << get_content_type() << std::endl;
 	message << std::endl;
 	message << get_content_body();
+
+	::send(client_socket, message.str().c_str(), message.str().length(),0);
+	//returns the message for debug purposes.
+	return (message.str());
+}
+
+std::string Response::send(int client_socket, fd_set socks)
+{
+	std::stringstream message;
+
+	if((get_content_body().empty() || get_content_type().empty()) && get_error_code() == 200)
+	{
+		std::cout << B << "@fn Response::send()\nNothing was send : response was empty\n" << RE; // DEBUG
+		return ("");
+	}
+	//building the message to send;
+	message << HTTP_VERSION << " "
+	<< this->get_error_code() << " "
+	<< ft_error_name(this->get_error_code()) << std::endl;
+	if(_error_code != 200)
+		set_path(ft_error_page(this->_error_code));
+	message << "Content-Length:" << get_content_body().length() << std::endl;
+	message << "Content-Type:" << get_content_type() << std::endl;
+	message << std::endl;
+	message << get_content_body();
+
+/*	if ( !verify_socket(client_socket) )
+	{
+		std::cout <<R<< "######NOTHING SEND SOCKET CLOSED !!!######\n"<<RE;
+		return("");
+	}*/
+
+	if ( !FD_ISSET(client_socket, &socks) )
+	{
+		std::cout <<R<< "##### CONNECTION NOT IN SET !!! #####\n"<<RE;
+		return ("");
+	}
+
+	if (this->_content_type == "text/html")
+		std::cout <<G<< this->_content << std::endl<<RE;
+	//DEBUG
 
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.

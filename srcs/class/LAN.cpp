@@ -11,10 +11,19 @@ Network	LAN::getServer(int servNo)
 	return (_vec_network[servNo]);
 }
 
+void	sigpipekiller(int signal)
+{
+	(void)signal;
+	std::cout <<R<< "###############################\n"<<RE;
+	std::cout <<R<< "### SIGPIPE SIGNAL SEND !!! ###\n"<<RE;
+	std::cout <<R<< "###############################\n"<<RE;
+}
+
 LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
 {
 	//std::cout << "Parametric constructor called\n";
-	
+
+	signal(SIGPIPE, sigpipekiller);
 	_net_amount = 0;
 	_timeout.tv_sec = 1;
 	_timeout.tv_usec = 0;

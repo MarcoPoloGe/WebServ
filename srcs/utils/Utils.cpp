@@ -5,6 +5,9 @@ std::string ft_read_file(std::string file_name)
 	std::ifstream html_file;
 	std::string content;
 	std::string line;
+	unsigned long pos;
+    while ((pos = file_name.find("//")) != std::string::npos)
+        file_name.erase(pos, 1);
 
 	html_file.open(file_name.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 	if(html_file.is_open())
@@ -101,8 +104,11 @@ std::string ft_remove_nonprintable(std::string str)
 
 std::string ft_generate_html_dir(std::string dir_path)
 {
+	unsigned long pos;
+    while ((pos = dir_path.find("//")) != std::string::npos)
+        dir_path.erase(pos, 1);
+	
 	std::string directory = dir_path; // Répertoire à indexer
-
     DIR* dir = opendir(directory.c_str());
     if (dir == NULL) {
 		std::cerr << "Impossible d'ouvrir le répertoire " << directory << std::endl;
