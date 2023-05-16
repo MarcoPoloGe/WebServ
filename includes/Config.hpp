@@ -18,7 +18,7 @@ class Response;
 // Containers
 #include <vector>
 #include <map>
-#include "ClassResponse.hpp"
+#include "Response.hpp"
 
 
 // Single Server config
