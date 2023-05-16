@@ -93,6 +93,7 @@ void Config::setMimeMap			(std::map<std::string,std::string> mime_type)			{ this
 void Config::setErrorPagesMap	(std::map<int, std::string> error_pages)				{ this->_error_pages = error_pages; }
 void Config::setErrorNamesMap	(std::map<int, std::string> error_names)				{ this->_error_names = error_names; }
 void Config::setBinCgi			(const std::string &binCgi) 							{ this->_binCGI = binCgi; }
+
 /* weirdo setters */
 void
 Config::setRawfile	(
@@ -153,6 +154,42 @@ Config::setPortServer(
 	}
 }
 
+//std::string Config::getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent)
+//{
+//	if ( ft_get_extension(URIraw) == "" )
+//	{
+//
+//		return (this->getRoot(singleLocationContent));
+//	}
+//	else
+//		return (this->getRoot(singleLocationContent) + this->getFileFromURI(URIraw));
+//}
+
+bool
+Config::checkAutoIndex(std::map<std::string, std::string> *singleLocationContent)
+{
+	if(this->getAutoindex(*singleLocationContent) == "true")
+		return (true);
+	return false;
+}
+
+
+void
+Config::setPathToFile (std::string &URIraw, std::map<std::string, std::string> *singleLocationContent)
+{
+
+	std::string minusfolder = this->eraseFolderLocationAndSlashFromURI(URIraw, *singleLocationContent);
+	// erase from URI :
+	// "/" return ""
+	// "/img" return ""
+	// "/img/" return ""
+	// "/index.html return "index.html"
+	// "uploads/uploaded_files/downloaded.txt" return "uploaded_files/downloaded.txt"
+//	_path_to_file = this->getRoot(*singleLocationContent) + this->getDefault(*singleLocationContent);
+	_path_to_file = this->getRoot(*singleLocationContent) + minusfolder;
+
+}
+
 
 /**********************************************************************************************************************/
 /***************************                       Getters	            		               ************************/
@@ -168,6 +205,7 @@ std::map<std::string,std::string>					&Config::getMimeMap(void)				{ return(_mim
 std::map<int, std::string>							&Config::getErrorPagesMap(void)			{ return(_error_pages); }
 std::map<int, std::string>							&Config::getErrorNamesMap(void)			{ return(_error_names); }
 const std::string 									&Config::getBinCgi() const 				{ return (_binCGI); }
+const std::string 									&Config::getPath() const 				{ return (_path_to_file); }
 
 std::string 										&Config::getKeyTemp(void) 				{ return (_key_temp); }
 std::string 										&Config::getValueTemp(void)				{ return (_value_temp); }
@@ -238,6 +276,7 @@ Config::getErrorNames(int error_names) {
 /***************************                       Utils		            		           ************************/
 /**********************************************************************************************************************/
 
+
 std::string Config::getVarLocation(std::map<std::string, std::string> &singleMapLocation, const std::string& var )
 {
 	std::map<std::string, std::string>::iterator im = singleMapLocation.begin();
@@ -278,35 +317,12 @@ std::map<std::string, std::string> *Config::getSingleMapLocation(const std::stri
 	return(nullptr);
 }
 
-bool Config::isOnlyFolder(const std::string &folder, const std::string &URIraw)
-{
-	std::string s;
-	s = "/" + folder;
-	if (folder == URIraw || s == URIraw)
-	{
-		std::cout << "oui\n";
-		return true;
-	}
-	return false;
-}
-
 bool Config::IsMethodAllowed(std::string Method, std::map<std::string, std::string> &singleMapLocation)
 {
 	std::string MethodAllowed = this->getMethod(singleMapLocation);
 	if (MethodAllowed.find(Method) != std::string::npos)
 		return(true);
 	return (false);
-}
-
-std::string Config::getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent)
-{
-	if ( ft_get_extension(URIraw) == "" )
-	{
-
-		return (this->getRoot(singleLocationContent));
-	}
-	else
-		return (this->getRoot(singleLocationContent) + this->getFileFromURI(URIraw));
 }
 
 std::string Config::isPathToFile(const std::string &PathToFile)
@@ -346,15 +362,44 @@ std::string Config::getFileFromURI(std::string URIraw)
 	return ("");
 }
 
-std::string Config::getFolderFromURI(std::string URI)
+std::string Config::getFolderLocationFromURI(std::string URIraw)
 {
 
-	std::size_t	first_slash = URI.find("/");
-	std::size_t	sec_slash = URI.find("/", first_slash + 1);
+	// /img || /img/kpoj || /img/   ||   /img  || /index.html
+	if (URIraw == "/")
+		return (URIraw);
 
-	if (sec_slash == std::string::npos) //only one slash
-		return ( URI ); //a tester
-	return ( URI.substr( first_slash,  sec_slash) );
+	std::size_t	first_slash = URIraw.find('/');
+	std::size_t	sec_slash = URIraw.find('/', first_slash + 1);
+
+	if (sec_slash == std::string::npos)
+	{
+		std::string ext = ft_get_extension(URIraw);
+		if (ext.empty())
+			return (URIraw);
+		return ("/");
+	}
+	return ( URIraw.substr( first_slash,  sec_slash) ); // return /img
+}
+
+std::string Config::eraseFolderLocationAndSlashFromURI(std::string URIraw, std::map<std::string, std::string> &singleMapLocation)
+// /img/ || /img || /img/kittycat.jpg || /index.html || /uploads/uploaded_files/
+{
+	if (URIraw == "/")
+		return ("");
+	if (URIraw.find(getLocation(singleMapLocation)) != std::string::npos)
+	{
+		std::size_t	first_slash = URIraw.find('/');
+		std::size_t	sec_slash = URIraw.find('/', first_slash + 1);
+
+		if (sec_slash == std::string::npos)
+			return (URIraw.erase(0, getLocation(singleMapLocation).size() ));
+		else
+			return (URIraw.erase(0, getLocation(singleMapLocation).size() + 1)); //kittycat.jpg
+
+	}
+	throw std::invalid_argument("Config::eraseFolderLocationAndSlashFromURI(std::string URIraw, std::map<std::string,"
+								" std::string> &singleMapLocation): Something went wrong with the path");
 }
 
 Response
