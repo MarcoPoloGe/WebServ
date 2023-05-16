@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Galerie d'images</title>
+  <meta charset="utf-8">
+  <style>
+    .galerie {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .galerie img {
+      margin: 5px;
+      max-width: 200px;
+      max-height: 200px;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      var dossier = './';
+
+      $.ajax({
+        url: dossier,
+        success: function(data) {
+          var listeFichiers = $(data).find('a').filter(function() {
+            return this.href.match(/\.(jpe?g|png|gif)$/i);
+          });
+
+          listeFichiers.each(function() {
+            var imgSrc = $(this).attr('href');
+            var imgLink = $('<a>').attr('href', imgSrc);
+            var imgElement = $('<img>').attr('src', dossier + '/' + $(this).attr('href'));
+            imgLink.append(imgElement);
+            $('.galerie').append(imgLink);
+          });
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="galerie"></div>
+  <h2> Zebiii </h2>
+</body>
+</html>
