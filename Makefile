@@ -1,9 +1,9 @@
 SRCS		= srcs/main.cpp\
 			  srcs/utils/Ft_error.cpp\
 			  srcs/utils/Utils.cpp\
-			  srcs/class/ClassRequest.cpp\
+			  srcs/class/Request.cpp\
 			  srcs/class/Network.cpp\
-			  srcs/class/ClassResponse.cpp\
+			  srcs/class/Response.cpp\
               srcs/class/Config.cpp\
 			  srcs/main_parsing.cpp\
 			  srcs/class/CGI.cpp\
@@ -47,7 +47,7 @@ clean:
 fclean:		clean
 			${RM} ${NAME}
 
-re:			fclean all
+re:			fclean all clean
 
 good:		${NAME} clean
 

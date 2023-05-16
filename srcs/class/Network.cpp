@@ -147,7 +147,6 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
 	std::string Folder = _config.getFolderFromURI(URIraw);
 
-	std::cout << Folder << std::endl;
 	// test if Folder is in locations ; return *getSingleMapLocation
 	std::map<std::string, std::string> *singleLocationContent;
 	if ((singleLocationContent = _config.getSingleMapLocation(Folder)) == nullptr){
@@ -193,9 +192,10 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		}
 	}
 
-	std::string PathToFile;
+	std::string PathToFile = _config.getPathToFile(URIraw, *singleLocationContent);
+
 	// test if the file exist in location ; return path to the file or path to the folder in location
-	PathToFile = _config.isPathToFile(URIraw, *(singleLocationContent));
+	PathToFile = _config.isPathToFile(PathToFile);
 	if (PathToFile.empty())
 		return (SendResponse(404, response, connection)); // file doesn't exist in folder from locations
 
