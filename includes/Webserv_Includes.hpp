@@ -64,7 +64,7 @@ unsigned int	ft_htonl(unsigned int l);
 void			setnonblocking(int sock);
 std::string		ft_get_extension(std::string str);
 std::string		ft_remove_nonprintable(std::string str);
-std::string		ft_generate_html_dir(std::string dir_path);
+std::string		ft_generate_html_dir(std::string dir_path, int final_slash);
 std::string		ft_what_location(std::string URI);
 std::string 	numberToString(unsigned long n);
 std::string 	IsQuery(const std::string &URIraw);

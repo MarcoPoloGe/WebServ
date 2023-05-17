@@ -102,12 +102,15 @@ std::string ft_remove_nonprintable(std::string str)
 	return (ret);
 }
 
-std::string ft_generate_html_dir(std::string dir_path)
+std::string ft_generate_html_dir(std::string dir_path, int final_slash)
 {
-	unsigned long pos;
+	unsigned long	pos;
     while ((pos = dir_path.find("//")) != std::string::npos)
         dir_path.erase(pos, 1);
 
+//	if (dir_path[dir_path.length() - 1] != '/')
+//		dir_path += "/";
+	
 	std::string directory = dir_path; // Répertoire à indexer
 //    DIR* dir = opendir(directory.c_str());
 //    if (dir == NULL) {
@@ -116,6 +119,12 @@ std::string ft_generate_html_dir(std::string dir_path)
 //    }
 
 	dir_path.erase(dir_path.begin(), dir_path.begin() + 10); //veux int taille prepath
+
+/*	if ( std::count(dir_path.begin(), dir_path.end(), '/') >= 2 && !final_slash)
+	{
+		pos = dir_path.find("/");
+		dir_path = dir_path.substr(pos);
+	}*/
 
     // Création d'une chaîne de caractères contenant le code HTML
 	std::ostringstream html;
@@ -158,8 +167,18 @@ std::string ft_generate_html_dir(std::string dir_path)
 
         // Génération du code HTML pour chaque ligne du tableau
         html << "\t\t<tr>\n";
-        html << "\t\t\t<td><a href=\"" << /*dir_path + "/" + */entry->d_name
-			<< "\">" << /*dir_path + "/" + */entry->d_name << "</a></td>\n";
+
+		if (final_slash)
+		{
+        	html << "\t\t\t<td><a href=\"" << /*dir_path + "/" + */entry->d_name
+				<< "\">" << /*dir_path + "/" + */entry->d_name << "</a></td>\n";
+		}
+		else
+		{
+			html << "\t\t\t<td><a href=\"" << dir_path  + entry->d_name
+				<< "\">" << dir_path + entry->d_name << "</a></td>\n";
+		}
+
         html << "\t\t\t<td>" << ctime(&mod_time) << "</td>\n";
         html << "\t\t\t<td>" << size << " bytes</td>\n";
         html << "\t\t</tr>\n";

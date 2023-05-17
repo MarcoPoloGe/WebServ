@@ -70,6 +70,25 @@ void Network::setnonblocking(int sock)
 	return;
 }
 
+bool no_final_slash(std::string URI)
+{
+	if (URI[URI.length() - 1] != '/')
+		return (true);
+	return (false);
+}
+
+int	add_slash(std::string URI, int connection, int port)
+{
+	std::string	URL = "http://localhost:" + std::to_string(port) + URI + "/";
+   	std::string response =
+		"HTTP/1.1 302 Found\r\n"
+        "Location: " + URL + "\r\n"
+        "\r\n";
+
+		send(connection, response.c_str(), response.length(), 0);
+		return (0);
+}
+
 Request Network::receive_request(int connection, fd_set &socks)
 {
 	char				buffer[BUFFER_SIZE + 1];
@@ -119,11 +138,16 @@ int Network::SendResponse(int errorCode, Response &response, int connection)
 	return (0);
 }
 
-int Network::SendResponseDefault(int errorCode, Response &response, int connection, std::string path)
+int Network::SendResponseDefault(int errorCode, Response &response, int connection, std::string path, std::string URIraw)
 {
+	int final_slash = 0;
+	if (URIraw[URIraw.length() - 1] == '/')
+		final_slash = 1;
+
 	response.set_error_code(errorCode);
 	response.set_manual_content_type("text/html");
-	response.set_manual_content( ft_generate_html_dir( path) );
+
+	response.set_manual_content( ft_generate_html_dir(path, final_slash) );
 	response.send(connection);
 	return (0);
 }
@@ -153,8 +177,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		return(SendResponse(404, response, connection));
 
 	std::string	URIraw = request.get_URI();
-	std::cout <<Y<< "URIraw: {" << URIraw << "}" <<RE<< std::endl;
-
+//	std::cout <<Y<< "URIraw: {" << URIraw << "}" <<RE<< std::endl;
 
 	std::string PathToFile;
 
@@ -167,7 +190,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
 	std::string Folder = _config.getFolderLocationFromURI(URIraw);
 //	std::string location = ft_what_location(URIraw);
-	std::cout <<B<< "Folder : " << Folder <<RE<< std::endl;
+//	std::cout <<B<< "Folder : " << Folder <<RE<< std::endl;
 //	std::cout <<B<< "Loc what: " << location <<RE<< std::endl;
 
 
@@ -180,7 +203,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	_config.setPathToFile(URIraw, singleLocationContent);
 
 	PathToFile = _config.getPath();
-	std::cout <<B<< "PathToFile : " << PathToFile <<RE<< std::endl;
+//	std::cout <<B<< "PathToFile : " << PathToFile <<RE<< std::endl;
 
 	// test if IsCGI ; send reponse and return 0
 	if (ft_get_extension(URIraw) == "py" ||( URIraw.find(".py?") != std::string::npos))
@@ -198,13 +221,14 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	{
 		std::string autoindexValue = _config.getAutoindex(*singleLocationContent);
 		std::string location = _config.getLocation(*singleLocationContent);
-		std::cout <<R<< "the location is :{" << location << "}\n" <<RE;//DEBUG
+//		std::cout <<R<< "the location is :{" << location << "}\n" <<RE;//DEBUG
 
 		if (autoindexValue == "true")
 		{
-			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
-//			PathToFile = PathToFile + "/";
-			SendResponseDefault(200, response, connection, PathToFile);
+//			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
+			if ( no_final_slash(URIraw) )
+				return ( add_slash(URIraw, connection, _port) );
+			SendResponseDefault(200, response, connection, PathToFile, URIraw);
 
 			return (0);
 		}

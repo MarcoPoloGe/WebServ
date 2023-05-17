@@ -17,7 +17,7 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
-      var dossier = '/uploaded_files';
+      var dossier = './uploaded_files';
 
       $.ajax({
         url: dossier,
@@ -28,7 +28,7 @@
 
           listeFichiers.each(function() {
             var imgSrc = $(this).attr('href');
-            var imgLink = $('<a>').attr('href', imgSrc);
+            var imgLink = $('<a>').attr('href', dossier + '/' + imgSrc);
             var imgElement = $('<img>').attr('src', dossier + '/' + $(this).attr('href'));
             imgLink.append(imgElement);
             $('.galerie').append(imgLink);

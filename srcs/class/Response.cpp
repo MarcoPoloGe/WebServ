@@ -37,8 +37,6 @@ std::string Response::get_content_type() const
 	return (this->_content_type);
 }
 
-/////////////////TRICK TEST //////////////////////
-
 void Response::set_manual_content_type(std::string content_type)
 {
 	this->_content_type = content_type;
@@ -48,7 +46,6 @@ void Response::set_manual_content(std::string content)
 {
 	this->_content = content;
 }
-/////////////////TRICK TEST //////////////////////
 
 void Response::set_path(std::string path)
 {
@@ -106,33 +103,6 @@ std::string Response::ft_error_page(int error_code)
 	return (page_name);
 }
 
-bool	verify_socket(int socket)
-{
-	fd_set writeSet;
-	FD_ZERO(&writeSet);
-	FD_SET(socket, &writeSet);
-
-    struct timeval timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 0;
-
-	int selectResult = select(socket + 1, NULL, &writeSet, NULL, &timeout);
-
-	if (selectResult == -1) {
-		std::cout <<R;
-		perror(strerror(errno));
-		std::cout<<RE;
-		Ft_error	error("select");
-    } else if (selectResult == 0) {
-		return (false);
-    }
-	else {
-		std::cout <<G<< "SEND ACCEPTED\n"<<RE;
-		return (true);
-	}
-	return (false);
-}
-
 std::string Response::send(int client_socket)
 {
 	std::stringstream message;
@@ -178,12 +148,6 @@ std::string Response::send(int client_socket, fd_set socks)
 	message << std::endl;
 	message << get_content_body();
 
-/*	if ( !verify_socket(client_socket) )
-	{
-		std::cout <<R<< "######NOTHING SEND SOCKET CLOSED !!!######\n"<<RE;
-		return("");
-	}*/
-
 	if ( !FD_ISSET(client_socket, &socks) )
 	{
 		std::cout <<R<< "##### CONNECTION NOT IN SET !!! #####\n"<<RE;
@@ -191,8 +155,7 @@ std::string Response::send(int client_socket, fd_set socks)
 	}
 
 	if (this->_content_type == "text/html")
-		std::cout <<G<< this->_content << std::endl<<RE;
-	//DEBUG
+		std::cout <<G<< this->_content << std::endl<<RE;//DEBUG
 
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.
