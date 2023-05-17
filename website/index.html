@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Miaou</title>
+    <title>Homepage</title>
     <style>
         body {
             background-image: url("https://media.tenor.com/-uMIofTxVWIAAAAd/cat-vibing-vibing-cat.gif"); /* Replace with the URL of your cat GIF */
@@ -36,18 +36,56 @@
             }
         }
 
-        /* Adjust the animation delay for each image */
+		/*Delai d'animation des transparent-frame*/
         .image-container img:nth-child(1) {
             animation-delay: 0s;
+        }
+		.image-container img:nth-child(2) {
+            animation-delay: 1s;
+        }
+		.image-container img:nth-child(3) {
+            animation-delay: 2s;
         }
         /* Add more nth-child styles as needed */
 
         .text-frame {
             display: inline-block;
-            padding: 10px;
-            border: 2px solid #FFC107;
+            padding: 30px;
+            border: 3px solid #FFC107;
             border-radius: 5px;
             background-color: #FFFFE0; /* Replace with your desired background color */
+		}
+		.transparent-frame {
+            display: inline-block;
+            padding: 30px;
+            border: 3px solid #000000;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+			animation-name: moveLeftToRight;
+			animation-duration: 5s;
+			animation-timing-function: linear;
+			animation-iteration-count: infinite;
+			width: 200px;
+		}
+		
+		@keyframes moveLeftToRight {
+			0% {
+			transform: translateX(-300%);
+			}
+			100% {
+				transform: translateX(300%);
+			}
+		}
+
+		 .big-frame {
+            display: inline-block;
+            padding: 30px;
+            border: 10px solid #FFC107;
+            border-radius: 10px;
+            background-image: url("https://media3.giphy.com/media/sthmCnCpfr8M8jtTQy/giphy.gif");
+			background-size: cover;
+			width: 500px;
+			overflow: hidden;
         }
         .button-test1 {
             font-size: 24px;
@@ -67,13 +105,27 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+		.transparent-frame.delay-animation-1 {
+            animation-delay: 0s;
+        }
+        .transparent-frame.delay-animation-2 {
+            animation-delay: 0.5s;
+        }
+        .transparent-frame.delay-animation-3 {
+            animation-delay: 1s;
+        }
     </style>
 </head>
 <body>
 
-<h2><span class="text-frame">Je suis un chat.</span></h2>
+<div class="big-frame">
+<h2><span class="transparent-frame delay-animation-1">I'm a cat !</span></h2>
 
-<h4><span class="text-frame">Je suis un chien.</span></h4>
+<h2><span class="transparent-frame delay-animation-2">Meow !</span></h2>
+
+<h2><span class="transparent-frame delay-animation-3">Check meow't !</span></h2>
+</div>
 
 <div class="image-container">
     <img alt="text displayed if img not" src="https://ih1.redbubble.net/image.2344721684.7666/st,small,507x507-pad,600x600,f8f8f8.u2.jpg">
@@ -90,42 +142,65 @@
 <h6>
     <button onclick="window.location.href = 'test1.html';" class="button-test1">Marco ?</button>
     <button onclick="window.location.href='/uploads/test_upload.html';" class="button-test-upload">DONNEZ-MOI DES FICHIERS À MANGER</button>
-
 </h6>
 
-<h2><span class="text-frame">Folder Content</span></h2>
+<h2>
 
-<h1>
+<div class="text-frame">
+<h2>Folder Content</h2>
+
     <button onclick="window.location.href = '/img/';">Img</button>
     <button onclick="window.location.href = '/uploads';">Uploads</button>
     <button onclick="window.location.href = '/cgi';">cgi</button>
-</h1>
+</div>
 
 
-<h2><span class="text-frame">Redirection</span></h2>
+<div class="text-frame">
+<h2>Magic gate</span></h2>
 
-<h1>
     <button onclick="window.location.href = 'https://www.omfgdogs.com/#';">Clique ici</button>
     <button onclick="window.location.href = 'https://www.youtube.com/watch?v=NUYvbT6vTPs';">Ou ici</button>
+</div>
 
-</h1>
+</h2>
 
-<h2><span class="text-frame">Custom Default page</span></h2>
+<h2>
 
-<h1>
+<div class="text-frame">
+<h2>Custom Default page</span></h2>
+
     <button onclick="window.location.href = '/img/test_var.html';">Galerie img</button>
     <button onclick="window.location.href = 'uploads/uploaded_viewer.html';">Galerie img from download img</button>
     <button onclick="window.location.href = 'uploads/file_listing.html';">List from download files</button>
+</div>
 
-</h1>
+<div class="text-frame">
+<h2>Configuration File</span></h2>
 
-<h2><span class="text-frame">Configuration File</span></h2>
-
-<h1>
     <button onclick="window.location.href = 'config.txt';">Example</button>
     <button onclick="window.location.href = '../config/config.conf';">REAL SHIT</button>
+</div>
 
-</h1>
+</h2>
+
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    var transparentFrames = document.querySelectorAll('.transparent-frame');
+    transparentFrames.forEach(function(frame, index) {
+        frame.classList.add('delay-animation'); // Ajouter la classe pour démarrer l'animation
+    });
+});
+</script>
+
+<audio id="ima_cat" loop autoplay>
+        <source src="ima_cat.mp3" type="audio/mpeg">
+    </audio>
+    <script type="text/javascript">
+        window.addEventListener('DOMContentLoaded', (event) => {
+            var audio = document.getElementById("ima_cat");
+            audio.play();
+        });
+    </script>
 
 </body>
 </html>
