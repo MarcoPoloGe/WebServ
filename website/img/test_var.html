@@ -29,7 +29,7 @@
           listeFichiers.each(function() {
             var imgSrc = $(this).attr('href');
             var imgLink = $('<a>').attr('href', imgSrc);
-            var imgElement = $('<img>').attr('src', dossier + '/' + $(this).attr('href'));
+            var imgElement = $('<img>').attr('src', dossier + $(this).attr('href')); //dossier + '/'
             imgLink.append(imgElement);
             $('.galerie').append(imgLink);
           });
