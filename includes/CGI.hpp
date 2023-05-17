@@ -24,15 +24,11 @@ public:
 /**********************************************************************************************************************/
 
 public:
-	std::string 									execute(Request &request, Response &rep, Config &conf, int port, const std::string& path);
-	std::string 									CGIstore(Response &rep);
+	static std::string execute(Request &request, Config &conf, int port, const std::string &p);
+	static std::string CGIstore(const std::string &p);
 	static std::map<std::string, std::string> 		setUpEnvVariablesCGI(Request &request, Config &conf, int port);
-	bool											check(Request &r);
 
 };
-
-//	if (cgi.check(request))
-//		cgi.execute(request, response, _config, _port);
 
 
 #endif //R5_WEBSERV_CGI_HPP
