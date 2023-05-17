@@ -131,10 +131,11 @@ int Network::SendResponseDefault(int errorCode, Response &response, int connecti
 int Network::SendCGIResponse(int errorCode, Response &response, Request &request, int connection, const std::string& path)
 {
 	CGI cgi;
+	std::cout <<G<< "CGI Goooooooo" <<RE<< std::endl;
 	response.set_error_code(errorCode);
 
 	response.set_manual_content_type("text/html");
-	response.set_manual_content(cgi.execute(request, response, _config, _port, path));
+	response.set_manual_content(cgi.execute(request, _config, _port, path));
 	response.send(connection);
 	return (0);
 }
@@ -181,11 +182,16 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	PathToFile = _config.getPath();
 	std::cout <<B<< "PathToFile : " << PathToFile <<RE<< std::endl;
 
+	// test if IsCGI ; send reponse and return 0
+	if (ft_get_extension(URIraw) == "py" ||( URIraw.find(".py?") != std::string::npos))
+		return (SendCGIResponse(200, response, request, connection, PathToFile));
+
 
 	// test if the file exist in location ; return path to the file or path to the folder in location
 	PathToFile = _config.isPathToFile(PathToFile);
 	if (PathToFile.empty())
 		return (SendResponse(404, response, connection)); // file doesn't exist in folder from locations
+
 
 //	std::cout <<B<< PathToFile <<RE<< std::endl;
 	if ( ft_get_extension(PathToFile) == "" )
@@ -197,6 +203,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		if (autoindexValue == "true")
 		{
 			std::cout <<Y<< "###AUTOINDEX IS TRUE###\n" <<RE;//DEBUG
+//			PathToFile = PathToFile + "/";
 			SendResponseDefault(200, response, connection, PathToFile);
 
 			return (0);
@@ -218,9 +225,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	if (!_config.IsMethodAllowed(request.get_type(), *(singleLocationContent)))
 		return (SendResponse(404, response, connection));
 
-	// test if IsCGI ; send reponse and return 0
-	if (ft_get_extension(URIraw) == "py")
-		return (SendCGIResponse(200, response, request, connection, PathToFile));
+
 
 	if(request.get_type() == "GET")
 	{

@@ -109,11 +109,11 @@ std::string ft_generate_html_dir(std::string dir_path)
         dir_path.erase(pos, 1);
 
 	std::string directory = dir_path; // Répertoire à indexer
-    DIR* dir = opendir(directory.c_str());
-    if (dir == NULL) {
-		std::cerr << "Impossible d'ouvrir le répertoire " << directory << std::endl;
-        exit(1);
-    }
+//    DIR* dir = opendir(directory.c_str());
+//    if (dir == NULL) {
+//		std::cerr << "Impossible d'ouvrir le répertoire " << directory << std::endl;
+//        exit(1);
+//    }
 
 	dir_path.erase(dir_path.begin(), dir_path.begin() + 10); //veux int taille prepath
 
@@ -135,13 +135,22 @@ std::string ft_generate_html_dir(std::string dir_path)
     html << "\t\t</tr>\n";
 
     struct dirent* entry;
+
+	DIR* dir = opendir(directory.c_str());
+	if (dir == NULL) {
+		std::cerr << "Impossible d'ouvrir le répertoire " << directory << std::endl;
+		exit(1);
+	}
     while ((entry = readdir(dir)) != NULL) {
-        if (entry->d_name[0] == '.') {
+        if (entry->d_name[0] == '.')
+		{
             continue; // Ignorer les fichiers cachés
         }
 
         // Récupération des métadonnées du fichier
-		std::string path = directory + "/" + entry->d_name;
+//		std::string path = directory + "/" + entry->d_name;
+		std::cout << "direct= " << directory << std::endl;
+		std::string path = directory + entry->d_name;
         struct stat file_info;
         stat(path.c_str(), &file_info);
         time_t mod_time = file_info.st_mtime;

@@ -3,32 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <title>Miaou</title>
+    <style>
+        body {
+            background-image: url("https://media.tenor.com/-uMIofTxVWIAAAAd/cat-vibing-vibing-cat.gif"); /* Replace with the URL of your cat GIF */
+            background-repeat: repeat;
+            text-align: center;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-container img {
+            max-width: 700px;
+            height: auto;
+            animation-name: mosaic-animation;
+            animation-duration: 1s;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        /* Animation for mosaic images */
+        @keyframes mosaic-animation {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Adjust the animation delay for each image */
+        .image-container img:nth-child(1) {
+            animation-delay: 0s;
+        }
+        /* Add more nth-child styles as needed */
+
+        .text-frame {
+            display: inline-block;
+            padding: 10px;
+            border: 2px solid #FFC107;
+            border-radius: 5px;
+            background-color: #FFFFE0; /* Replace with your desired background color */
+        }
+        .button-test1 {
+            font-size: 24px;
+            padding: 10px 20px;
+            background-color: #FFC107;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button-test-upload {
+            font-size: 24px;
+            padding: 10px 20px;
+            background-color: #FFFF00; /* Yellow color */
+            color: #000000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<link rel="shortcut icon" href="/favicon.ico">
 <body>
 
-<h2>I am a Cat.</h2>
+<h2><span class="text-frame">Je suis un chat.</span></h2>
 
-<h3><button onclick="window.location.href = 'https://www.omfgdogs.com/#';">Azy clique</button></h3>
-<h4>I am a dog.</h4>
-	
-<h5>Je suis une image</h5>
-<img alt="text displayed if img not" src="https://cdn.discordapp.com/attachments/699371045613993998/699383576243994715/8.jpg">
+<h4><span class="text-frame">Je suis un chien.</span></h4>
 
-<h6><button onclick="window.location.href = 'test1.html';">Test1</button></h6>
+<div class="image-container">
+    <img alt="text displayed if img not" src="https://ih1.redbubble.net/image.2344721684.7666/st,small,507x507-pad,600x600,f8f8f8.u2.jpg">
+</div>
 
 <p>
-<font size="10" face="arial" color="red">
-JESUS IS WATCHING U !!!
-</font>
-<img alt="text displayed if img not" src="https://ih1.redbubble.net/image.2344721684.7666/st,small,507x507-pad,600x600,f8f8f8.u2.jpg">
-<p>
+    <span class="text-frame">
+        <font size="10" face="arial" color="red">
+            JESUS TE REGARDE !!!
+        </font>
+    </span>
+</p>
 
-<h7><a href="http://localhost:8080/page_vide.html">page_vide.html</a></h7>
+<h6>
+    <button onclick="window.location.href = 'test1.html';" class="button-test1">Marco ?</button>
+    <button onclick="window.location.href='/uploads/test_upload.html';" class="button-test-upload">DONNEZ-MOI DES FICHIERS À MANGER</button>
+</h6>
 
-<h8><button type="submit" onclick="window.location.href='test1.html'">Test1</button></h8>
-
-<h9><button type="submit" onclick="window.location.href='/uploads/test_upload.html'">Test_upload</button></h9>
+<h1><button onclick="window.location.href = 'https://www.omfgdogs.com/#';">Clique ici</button></h1>
+<h1><button onclick="window.location.href = 'https://www.youtube.com/watch?v=NUYvbT6vTPs';">Ou ici</button></h1>
 
 </body>
 </html>

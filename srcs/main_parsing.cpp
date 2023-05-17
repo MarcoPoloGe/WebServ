@@ -77,7 +77,7 @@ save_error(
 			insert_error(*first_bracket, error);
 		first_bracket++;
 	}
-	std::cout <<G<< "error_* successfully saved " <<RE<< std::endl;
+//	std::cout <<G<< "error_* successfully saved " <<RE<< std::endl;
 }
 
 // In .conf vector, take first - server '{' - and launch parsing until the next corresponding '}'
@@ -363,6 +363,6 @@ std::map<std::string, std::string> save_mime_type(
 			insert_mime_type(*first_bracket, mime_types);
 		first_bracket++;
 	}
-	std::cout <<G<< "mime_types successfully saved " <<RE<< std::endl;
+//	std::cout <<G<< "mime_types successfully saved " <<RE<< std::endl;
 	return (mime_types);
 }

@@ -45,10 +45,10 @@ public:
 	setIpServer(std::string												ip);
 	void
 	setPortServer(std::string&											port);
-	void
-	setServerConfig(std::vector<std::string> 							config);
-	void
-	setAllLocation(std::vector<std::map<std::string, std::string> > 	locs);
+//	void
+//	setServerConfig(std::vector<std::string> 							config);
+//	void
+//	setAllLocation(std::vector<std::map<std::string, std::string> > 	locs);
 	void
 	setKeyTemp(std::string 												key_temp);
 	void
@@ -75,42 +75,42 @@ public:
 /***************************                       Getters	            		               ************************/
 /**********************************************************************************************************************/
 
-	std::string 												&getNameServer();
+//	std::string 												&getNameServer();
 	std::string 												&getIpServer();
 	std::vector<int> 											&getPortServer();
 	int			 												&getAmountPortServer();
-	std::vector<std::string> 									&getAllServerConfig ();
+//	std::vector<std::string> 									&getAllServerConfig ();
 	std::vector<std::map<std::string, std::string> >			&getAllLocations();
-	std::map<std::string,std::string>							&getMimeMap();
-	std::map<int,std::string>									&getErrorPagesMap();
-	std::map<int,std::string>									&getErrorNamesMap();
+//	std::map<std::string,std::string>							&getMimeMap();
+//	std::map<int,std::string>									&getErrorPagesMap();
+//	std::map<int,std::string>									&getErrorNamesMap();
 
 	const std::string 											&getPath() const;
 
-	std::string 												&getKeyTemp();
-	std::string 												&getValueTemp();
+//	std::string 												&getKeyTemp();
+//	std::string 												&getValueTemp();
 
 
 	std::string													getType(const std::string& format);
-	std::string 												getContentType(const std::string& format);
+//	std::string 												getContentType(const std::string& format);
 	std::string													getErrorPages(int error_pages);
 	std::string													getErrorNames(int error_names);
 
 
 
 
-	Response 													IsLocation(const std::string& URIraw, const std::string &Method);
+//	Response 													IsLocation(const std::string& URIraw, const std::string &Method);
 
 	std::string													getDefaultErrorDescription(int error);
 
 	/* weirdo getters */
 
 //	s0->getInLocationValue("/methods", "root");
-	bool
-	getInLocationValue(std::string key, std::string LocationPath);
-
-	std::map<std::string, std::string> *
-	getLocationFolderContent(const std::string &folder);
+//	bool
+//	getInLocationValue(std::string key, std::string LocationPath);
+//
+//	std::map<std::string, std::string> *
+//	getLocationFolderContent(const std::string &folder);
 
 
 	std::string
@@ -150,14 +150,14 @@ public:
 				   std::string> &singleMapLocation,
 				   const std::string& var );
 
-	std::string
-	getFileFromURI(std::string URIraw);
+//	std::string
+//	getFileFromURI(std::string URIraw);
 
 //	std::string
 //	getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent);
-
-	std::string
-	getFileInFolderFromURI(std::string URIraw, std::string Folder);
+//
+//	std::string
+//	getFileInFolderFromURI(std::string URIraw, std::string Folder);
 
 
 
@@ -210,15 +210,15 @@ private:
 
 public:
 //	s0->printAllContentsLocation("/methods");
-	bool
-	printAllContentsLocation(std::string pathLocation);
+//	bool
+//	printAllContentsLocation(std::string pathLocation);
 
 //	s0->printAllLocation();
-	void
-	printAllLocation();
+//	void
+//	printAllLocation();
 
-	bool
-	checkAutoIndex(std::map<std::string, std::string> *singleLocationContent);
+//	bool
+//	checkAutoIndex(std::map<std::string, std::string> *singleLocationContent);
 
 	std::string
 	eraseFolderLocationAndSlashFromURI(std::string URIraw, std::map<std::string, std::string> &singleMapLocation);
@@ -282,8 +282,8 @@ grabLocation (
 std::string
 AfterEqual (std::string &input);
 
-void
-printVector(std::vector<std::string> &x );
+//void
+//printVector(std::vector<std::string> &x );
 
 void
 getOnlyChar(std::string &s);
@@ -298,16 +298,16 @@ save_mime_type(
 		std::vector<std::string>::iterator 	last_bracket);
 
 
-void
-insert_error(
-		std::string input,
-		std::map<std::string, std::string> &error);
+//void
+//insert_error(
+//		std::string input,
+//		std::map<std::string, std::string> &error);
 
-void
-save_error(
-		std::vector<std::string>::iterator 	first_bracket,
-		std::vector<std::string>::iterator 	last_bracket,
-		std::map<std::string, std::string> &error);
+//void
+//save_error(
+//		std::vector<std::string>::iterator 	first_bracket,
+//		std::vector<std::string>::iterator 	last_bracket,
+//		std::map<std::string, std::string> &error);
 
 
 #endif //CONFIG_PARSER_PARSER_HPP

@@ -18,29 +18,10 @@ CGI::~CGI() { /*std::cout << "--CGI" << std::endl;*/ }
 /**********************************************************************************************************************/
 
 
-bool CGI::check(Request &r)
+std::string CGI::CGIstore(const std::string &p)
 {
-	if (r.get_URI().find('?') != std::string::npos)
-		return true;
-	return false;
-}
-//
-//bool CGI::check(Request &r)
-//{
-//	if (r.get_URI().find('?') != std::string::npos)
-//		return true;
-//	return false;
-//}
-
-std::string CGI::CGIstore(Response &rep){
-	//TODO fileName = Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
-//	const std::string& fileName = rep.getUriPathClean();
-
-	(void)rep;
-	const std::string& fileName = "./website/cgi/cgi.py"; //todo
+	const std::string& fileName = p;
 	std::vector<std::string> rawfile;
-//	std::cout <<W<< "@fn CGI::CGIstore() \n"
-//	<<B<< "Store: UriPathClean{" << rep.getUriPathClean() << "}" <<RE<< std::endl;
 	std::string rawcontent;
 	std::string line;
 	std::ifstream file;
@@ -62,7 +43,7 @@ std::string CGI::CGIstore(Response &rep){
 std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, Config &conf, int port)
 {
 	std::map<std::string, std::string> envmap;
-	std::string binpath = "/usr/bin/python3";
+	std::string binpath = conf.getBinCgi();
 //	std::string binpath = conf.getBinCgi();
 
 	std::string URI = request.get_URI();
@@ -88,6 +69,8 @@ std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, C
 	envmap["REQUEST_METHOD"] = request.get_type();
 	envmap["SCRIPT_FILENAME"] = nameScript;
 	envmap["SCRIPT_NAME"] = nameScript;
+
+	std::cout << "IsQuery = " << IsQuery(request.get_URI())<<std::endl;
 	envmap["QUERY_STRING"] = IsQuery(request.get_URI());
 
 	envmap["REDIRECT_STATUS"] = "CGI";
@@ -108,20 +91,14 @@ std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, C
 	return (envmap);
 }
 
-//TODO Catch scriptPath like ("website/cgi/cgi.py") and link to Request object
-std::string CGI::execute(Request &request, Response &rep, Config &conf, int port, const std::string& p)
+std::string CGI::execute(Request &request, Config &conf, int port, const std::string &p)
 {
-	(void)request;	//to
-	(void)conf;		//remove
 
 	int p_out[2];
 	int p_in[2];
 	int ret;
 	char buffer[4096];
-	std::string result = "";
-
-	// test with path found by getPath_of_URI in @deal_with_data
-	std::string rawcontent = CGIstore(rep);
+	std::string result;
 
 	pipe(p_out);
 	pipe(p_in);
@@ -132,8 +109,16 @@ std::string CGI::execute(Request &request, Response &rep, Config &conf, int port
 	fcntl(p_in[1], F_SETFL, O_NONBLOCK);
 
 	const std::string& binCGI = conf.getBinCgi();
-//	const std::string& URIPathClean = rep.getUriPathClean();//todo
-	const std::string& URIPathClean = p;
+
+	std::string URIPathClean = p;
+	unsigned long pos;
+	if ((pos = p.find('?')) != std::string::npos)
+		URIPathClean = p.substr(0, pos);
+	std::string rawcontent = CGIstore(URIPathClean);
+
+	/* print */
+//	std::cout <<R<< "path to CGI file: "<<URIPathClean <<RE << std::endl;
+//	std::cout <<R<< "binCGI: " << binCGI <<RE << std::endl;
 
 	std::vector<char *> path;
 	path.push_back(const_cast<char *>(binCGI.c_str()));
@@ -141,10 +126,11 @@ std::string CGI::execute(Request &request, Response &rep, Config &conf, int port
 
 	std::map<std::string, std::string> envmap = setUpEnvVariablesCGI(request, conf, port);
 
+
 	if (!envmap["QUERY_STRING"].empty()) {
 		path.push_back(const_cast<char *>(envmap["QUERY_STRING"].c_str()));
 	}
-	path.push_back(NULL);
+	path.push_back(nullptr);
 
 	pid_t pid = fork();
 
