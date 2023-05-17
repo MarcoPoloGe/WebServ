@@ -1,0 +1,109 @@
+
+<!--/uploads/-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Folder Content</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .folder-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .file-link {
+            display: block;
+            background-color: #ffffff;
+            color: #333333;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            padding: 10px 20px;
+            margin: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            color: #333333;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function getRandomBackgroundImage() {
+            var images = [
+                '../img/black_smile.jpeg',
+                '../img/jesus.jpeg',
+                '../img/kittycat.jpg',
+            ];
+            return images[Math.floor(Math.random() * images.length)];
+        }
+
+        $(document).ready(function() {
+            var folder = '/uploads/';
+
+            $.ajax({
+                url: folder,
+                success: function(data) {
+                    var fileList = $(data).find('a').filter(function() {
+                        return !this.href.endsWith('/');
+                    });
+
+                    fileList.each(function() {
+                        var fileName = $(this).attr('href');
+                        var filePath = folder + fileName;
+                        var fileLink = $('<a>')
+                            .attr('href', filePath)
+                            .addClass('file-link')
+                            .text(fileName);
+
+                        // Set a random background color for each file link
+                        fileLink.css('background-color', getRandomColor());
+
+                        $('.folder-content').append(fileLink);
+                    });
+
+                    // Set a random background image
+                    $('body').css('background-image', 'url(' + getRandomBackgroundImage() + ')');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>All Files in the Folder</h1>
+    <div class="folder-content"></div>
+</div>
+</body>
+</html>

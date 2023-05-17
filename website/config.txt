@@ -1,3 +1,9 @@
+
+----    Config file example        ----
+----    Please respect parsing     ----
+
+
+
 server
 {
     name=webserv0
@@ -14,61 +20,14 @@ server
         default=index.html
         cgi_extension=py
     }
-    location=/img
+    location=/newfolder
     {
          method=GET
          autoindex=true
-         root=./website/img/
-		 default=hello_there.gif
-    }
-    location=/cgi
-    {
-         method=GET
-         autoindex=true
-         root=./website/cgi/
-		 default=cgi.py
-    }
-    location=/uploads
-    {
-        method=POST,DELETE,GET
-        autoindex=true
-        root=./website/uploads/
-		default=test_upload.html
+         root=./website/newfolder/
+         default=newfilefromfolder.html
     }
 }
-
-server
-{
-    name=webserv1
-    ip=127.0.0.1
-    port=9090
-    cgibin=/usr/bin/python3
-    location=/
-    {
-        method=GET,POST
-        autoindex=true
-        root=./website-2/
-        index=index.html
-        cgi_extension=py
-        cgi_path=./usr/bin/python3
-    }
-    location=/img
-    {
-         method=GET
-         autoindex=true
-         root=./website/img/
-		 default=hello_there.gif
-    }
-    location=/uploads
-    {
-        method=POST,DELETE,GET
-        autoindex=true
-        root=./website/uploads/
-		default=test_upload.html
-        autoindex=true
-    }
-}
-
 
 mime_types
 {
@@ -78,7 +37,7 @@ mime_types
     image/gif=.gif
     image/jpeg=.jpeg.jpg
     text/javascript=.js
-    text/plain=.txt.conf
+    text/plain=.txt
     text/x-component=.htc
     text/mathml=.mml
     image/png=.png
