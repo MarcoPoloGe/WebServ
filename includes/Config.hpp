@@ -234,6 +234,9 @@ public:
 void
 main_parsing(char **av, std::vector<Config> &all_config);
 
+void
+main_parsing(std::string fileName, std::vector<Config> &all_config);
+
 
 /**********************************************************************************************************************/
 /***************************            Server Config: parsing all config file          	   ************************/

@@ -31,6 +31,33 @@ main_parsing(
 	serverConfig(rawfile, rawfile.begin(), all_config);
 }
 
+void
+main_parsing(
+		std::string			fileName,
+		std::vector<Config> &all_config)
+{
+
+	std::vector<std::string> rawfile;
+	std::cout <<W<< "Parsing config file" <<RE<< std::endl;
+
+	std::string line;
+	std::ifstream file;
+
+	// Try open file
+	file.open(fileName.c_str());
+	if (!file.is_open() || file.bad())
+		throw std::bad_exception();
+
+	// Read line by line and stock in rawfile
+	while (std::getline(file, line))
+		rawfile.push_back(line);
+	file.close();
+
+	// Set up Servers from config.conf file in all_Config
+	serverConfig(rawfile, rawfile.begin(), all_config);
+}
+
+
 
 /**********************************************************************************************************************/
 /***************************            Server Config: parsing all config file          	   ************************/
