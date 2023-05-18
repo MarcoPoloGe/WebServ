@@ -124,6 +124,10 @@ public:
 			std::string> &singleMapLocation );
 
 	std::string
+	getReturn(std::map<std::string,
+			std::string> &singleMapLocation );
+
+	std::string
 	getMethod(std::map<std::string,
 			std::string> &singleMapLocation );
 

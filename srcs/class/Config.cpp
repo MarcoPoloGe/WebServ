@@ -289,6 +289,9 @@ std::string Config::getRoot(std::map<std::string, std::string> &singleMapLocatio
 	return (getVarLocation(singleMapLocation, "root"));
 }
 
+std::string Config::getReturn(std::map<std::string, std::string> &singleMapLocation ) {
+	return (getVarLocation(singleMapLocation, "return"));
+}
 std::string Config::getDefault(std::map<std::string, std::string> &singleMapLocation ) {
 	return (getVarLocation(singleMapLocation, "default"));
 }

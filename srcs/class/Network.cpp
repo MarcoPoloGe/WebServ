@@ -85,8 +85,8 @@ int	add_slash(std::string URI, int connection, int port)
         "Location: " + URL + "\r\n"
         "\r\n";
 
-		send(connection, response.c_str(), response.length(), 0);
-		return (0);
+	send(connection, response.c_str(), response.length(), 0);
+	return (0);
 }
 
 Request Network::receive_request(int connection, fd_set &socks)
@@ -164,6 +164,20 @@ int Network::SendCGIResponse(int errorCode, Response &response, Request &request
 	return (0);
 }
 
+int Network::Redirection(int connection, std::string redirect_URL)
+{
+	std::string	code = redirect_URL.substr(0, 3);
+	std::string URL = redirect_URL.substr(4);
+	std::string description = _config.getDefaultErrorDescription( std::atoi(code.c_str()) );
+   	std::string response =
+		"HTTP/1.1 " + code + " " + description  + "\r\n"
+        "Location: " + URL + "\r\n"
+        "\r\n";
+
+	send(connection, response.c_str(), response.length(), 0);
+	return (0);
+}
+
 int	Network::RequestToResponse(int connection, fd_set socks)
 {
 	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
@@ -179,26 +193,45 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	std::string	URIraw = request.get_URI();
 //	std::cout <<Y<< "URIraw: {" << URIraw << "}" <<RE<< std::endl;
 
+	std::cout <<R<< "REQUEST TYPE IIIIIIS : " << request.get_type() << "\n"<<RE;//DEBUG
+
 	std::string PathToFile;
 
 	if (URIraw.find("//") != std::string::npos)
 		return(SendResponse(404, response, connection));
 	std::cout << B << "######## URI IS : " << URIraw << " #########\n"<<RE;
 
-
-
 	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
 	std::string Folder = _config.getFolderLocationFromURI(URIraw);
 //	std::string location = ft_what_location(URIraw);
-//	std::cout <<B<< "Folder : " << Folder <<RE<< std::endl;
+	std::cout <<Y<< "Folder : " << Folder <<RE<< std::endl;
 //	std::cout <<B<< "Loc what: " << location <<RE<< std::endl;
-
 
 	// test if Folder is in locations ; return *getSingleMapLocation
 	std::map<std::string, std::string> *singleLocationContent;
 	if ((singleLocationContent = _config.getSingleMapLocation(Folder)) == nullptr){
 		return (SendResponse(404, response, connection));
 	}
+
+
+	//////////////////////////////////////////////////////////////////////////////
+	/////////////////////A IMPLEMENTER POUR LA REDI //////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+	
+	//if (Folder == "/Ronoo" || Folder == "/Samsaa" || Folder == "/Marcoo")
+
+	std::string redi = _config.getReturn(*singleLocationContent); //A VERIFIER
+	if (!redi.empty())
+	{
+		//std::string redi = "301,https://github.com/8L312";
+
+		return ( Redirection(connection, redi) );
+	}
+	
+
+	////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 
 	_config.setPathToFile(URIraw, singleLocationContent);
 

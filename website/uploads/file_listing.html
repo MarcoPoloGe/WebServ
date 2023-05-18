@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Folder Content</title>
+    <title>Uploaded files</title>
     <meta charset="utf-8">
     <style>
         body {
@@ -16,26 +16,34 @@
         }
 
         .content-box {
+			display: flex;
+			flex-direction : column;
+			justify-content : center;
+			align-items:center;
             background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
+            border-radius: 50px;
             padding: 20px;
             margin-bottom: 20px;
         }
 
         .folder-content {
             display: flex;
+			flex-direction : column;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .file-link {
-            display: block;
-            background-color: #ffffff;
-            color: #333333;
+            display: flex;
+			/*flex-direction : column;*/
+			justify-content : center;
+			width : 100px;
+			height : 50px;
+			align-items : center;
             border: 1px solid #cccccc;
-            border-radius: 4px;
-            padding: 10px 20px;
-            margin: 10px;
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-top: 20px;
             text-decoration: none;
             transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -45,6 +53,40 @@
             transform: translateY(-5px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        .delete-button {
+            background-color: #ff0000;
+            color: #ffffff;
+			display: flex;
+			/*flex-direction : column;*/
+			justify-content : center;
+			width : 164px;
+			height : 82px;
+			align-items : center;
+            border: 1px solid #cccccc;
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-top: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .delete-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+		.file-wrapper {
+            display: flex;
+            margin-top: 20px;
+        }
+
+		.button-ret{
+			display: flex;
+			align-items : center;
+			justify-content : center;
+		}
 
         h1 {
             text-align: center;
@@ -72,7 +114,23 @@
             return images[Math.floor(Math.random() * images.length)];
         }
 
-        $(document).ready(function() {
+        function deleteFile(filePath) {
+            $.ajax({
+                url: filePath,
+                type: 'DELETE',
+                success: function() {
+                    // La suppression du fichier a réussi
+                    console.log('Fichier supprimé avec succès.');
+                    // Actualiser la liste des fichiers
+                    refreshFileList();
+                },
+                error: function() {
+                    console.log('Erreur lors de la suppression du fichier.');
+                }
+            });
+        }
+
+        function refreshFileList() {
             var folder = '/uploads/uploaded_files/';
 
             $.ajax({
@@ -81,6 +139,8 @@
                     var fileList = $(data).find('a').filter(function() {
                         return !this.href.endsWith('/');
                     });
+
+                    $('.folder-content').empty(); // Effacer le contenu actuel
 
                     fileList.each(function() {
                         var fileName = $(this).attr('href');
@@ -93,23 +153,43 @@
                         // Set a random background color for each file link
                         fileLink.css('background-color', getRandomColor());
 
-                        $('.folder-content').append(fileLink);
+                        var deleteButton = $('<button>')
+                            .addClass('delete-button')
+                            .text('Supprimer')
+                            .click(function() {
+                                deleteFile(filePath);
+                            });
+
+                        var fileWrapper = $('<div>').addClass('file-wrapper');
+                        fileWrapper.append(fileLink);
+                        fileWrapper.append(deleteButton);
+
+                        $('.folder-content').append(fileWrapper);
                     });
 
                     // Set a random background image
                     $('body').css('background-image', 'url(' + getRandomBackgroundImage() + ')');
                 }
             });
+        }
+
+        $(document).ready(function() {
+            refreshFileList();
         });
     </script>
 </head>
 <body>
 <div class="container">
     <div class="content-box">
-        <h1>There are your uploaded files my dear</h1>
-    <div class="folder-content"></div>
-	</div>
+        <h1>Voici vos fichiers téléchargés</h1>
+        <div class="folder-content"></div>
+    </div>
 </div>
+
+<h1>
+<button onclick="window.location.href = 'index.html';" class="button-ret">Retour</button>
+</h1>
+
 </body>
 </html>
 

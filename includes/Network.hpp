@@ -44,6 +44,7 @@ public:
 
 	Request		receive_request			(int connection, fd_set &socks);
 
+	int			Redirection				(int connection, std::string redirect_URL);
 
 private:
 	//Nope nope nope
