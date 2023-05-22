@@ -71,4 +71,6 @@ std::string 	IsQuery(const std::string &URIraw);
 std::string 	str_toupper(std::string &str);
 char *const 	*maptoarray(std::map<std::string, std::string> &map);
 std::string		ft_generate_error_html(int error, Config config);
+std::string		ft_generate_success_delete(Request request);
+
 #endif
