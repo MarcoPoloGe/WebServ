@@ -233,6 +233,9 @@ setUpServer(
 			s.setIpServer(AfterEqual(*first_bracket));
 		if (((*first_bracket).find("cgibin="))!= std::string::npos)
 			s.setBinCgi(AfterEqual(*first_bracket));
+		if (((*first_bracket).find("client_max_body_size="))!= std::string::npos)
+			s.setBodyLength(AfterEqual(*first_bracket));
+
 		if (((*first_bracket).find("port="))!= std::string::npos){
 
 			std::string raw_ports = AfterEqual(*first_bracket);
