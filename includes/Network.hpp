@@ -45,6 +45,7 @@ public:
 	Request		receive_request			(int connection, fd_set &socks);
 
 	int			Redirection				(int connection, std::string redirect_URL);
+	int			delete_file				(Request request, Response response, int connection);
 
 private:
 	//Nope nope nope
@@ -59,6 +60,7 @@ private:
 
 	//Variables
 	
+	int					_max_body_size;
 	int					_sock;
 	Config				_config;
 	int					_port;

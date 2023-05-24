@@ -154,8 +154,8 @@ std::string Response::send(int client_socket, fd_set socks)
 		return ("");
 	}
 
-	if (this->_content_type == "text/html")
-		std::cout <<G<< this->_content << std::endl<<RE;//DEBUG
+//	if (this->_content_type == "text/html")
+//		std::cout <<G<< this->_content << std::endl<<RE;//DEBUG
 
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.

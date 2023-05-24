@@ -7,7 +7,7 @@
     <style>
         body {
             background-color: rgb(255, 255, 255);
-            transition: background-color 0.2s ease-in-out;
+            transition: background-color 0.05s ease-in-out; /*0.2*/
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -33,7 +33,7 @@
             background-color: transparent;
             cursor: pointer;
             transition: transform 0.2s;
-            animation: dvdLogoAnimation 5s infinite;
+            animation: dvdLogoAnimation 0.25s infinite; /*2s*/
         }
 
         .cat-button:before {
@@ -109,12 +109,13 @@
             body.style.backgroundColor = nextColor;
         }
 
-        setInterval(changeBackgroundColor, 1000);
+        setInterval(changeBackgroundColor, 100);//1000
     </script>
 
 </head>
 <body>
     <h2>POLO !!!</h2>
+	<h3>Catch me if u can</h3>
     <h3><button class="cat-button" onclick="window.location.href = '/';"><span>Retour</span></button></h3>
     <h4><img src="/img/kittycat.jpg"></h4>
 </body>

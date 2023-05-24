@@ -115,19 +115,60 @@
         }
 
         function deleteFile(filePath) {
-            $.ajax({
-                url: filePath,
-                type: 'DELETE',
-                success: function() {
-                    // La suppression du fichier a réussi
-                    console.log('Fichier supprimé avec succès.');
-                    // Actualiser la liste des fichiers
-                    refreshFileList();
-                },
-                error: function() {
-                    console.log('Erreur lors de la suppression du fichier.');
-                }
+
+		fetch(filePath, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Fichier supprimé avec succès.');
+                return response.text();
+            } else {
+                throw new Error('Erreur lors de la suppression du fichier.');
+            }
+        })
+        .then(data => {
+            var newElement = document.createElement('div');
+            newElement.innerHTML = data;
+
+            var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
+            styleElements.forEach(element => {
+                element.remove();
             });
+
+            document.body.innerHTML = '';
+
+            document.body.appendChild(newElement);
+        })
+        .catch(error => {
+            console.log('Erreur:', error.message);
+
+            var errorPage = '<html>\n' +
+                '<head>\n' +
+                '<title>Error 500</title>\n' +
+                '</head>\n' +
+                '<body>\n' +
+                '<h1>Error 500 - Internal server error</h1>\n' +
+				'<h4>Could not DELETE the file</h4>'
+                '</body>\n' +
+                '</html>';
+
+            var response = new Response(errorPage, { status: 500 });
+            return response.text().then(text => {
+                var newElement = document.createElement('div');
+                newElement.innerHTML = text;
+
+                var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
+                styleElements.forEach(element => {
+                    element.remove();
+                });
+
+                document.body.innerHTML = '';
+
+                document.body.appendChild(newElement);
+            });
+        });
+
         }
 
         function refreshFileList() {
@@ -187,7 +228,7 @@
 </div>
 
 <h1>
-<button onclick="window.location.href = 'index.html';" class="button-ret">Retour</button>
+<button onclick="window.location.href = '/';" class="button-ret">Retour a l'index</button>
 </h1>
 
 </body>

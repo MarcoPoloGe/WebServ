@@ -23,7 +23,7 @@ std::string ft_read_file(std::string file_name)
 	}
 	return (content);
 }
-
+/*
 unsigned short	ft_bswap16(unsigned short x)
 {
 	x = x >> 8 | x << 8;
@@ -53,7 +53,7 @@ unsigned int	ft_htonl(unsigned int l)
 	else if (BYTE_ORDER == LITTLE_ENDIAN)
 		return (ft_bswap32(l));
 	return (0);
-}
+}*/
 
 void	setnonblocking(int sock)
 {
@@ -107,24 +107,9 @@ std::string ft_generate_html_dir(std::string dir_path, int final_slash)
 	unsigned long	pos;
     while ((pos = dir_path.find("//")) != std::string::npos)
         dir_path.erase(pos, 1);
-
-//	if (dir_path[dir_path.length() - 1] != '/')
-//		dir_path += "/";
 	
-	std::string directory = dir_path; // Répertoire à indexer
-//    DIR* dir = opendir(directory.c_str());
-//    if (dir == NULL) {
-//		std::cerr << "Impossible d'ouvrir le répertoire " << directory << std::endl;
-//        exit(1);
-//    }
-
+	std::string directory = dir_path;
 	dir_path.erase(dir_path.begin(), dir_path.begin() + 10); //veux int taille prepath
-
-/*	if ( std::count(dir_path.begin(), dir_path.end(), '/') >= 2 && !final_slash)
-	{
-		pos = dir_path.find("/");
-		dir_path = dir_path.substr(pos);
-	}*/
 
     // Création d'une chaîne de caractères contenant le code HTML
 	std::ostringstream html;
@@ -157,7 +142,6 @@ std::string ft_generate_html_dir(std::string dir_path, int final_slash)
         }
 
         // Récupération des métadonnées du fichier
-//		std::string path = directory + "/" + entry->d_name;
 		std::cout << "direct= " << directory << std::endl;
 		std::string path = directory + entry->d_name;
         struct stat file_info;
@@ -262,6 +246,57 @@ std::string ft_generate_error_html(int error, Config config)
 
 	html << "</body>\n";
     html << "</html>\n";
+
+	return ( html.str() );
+}
+
+std::string	ft_generate_success_delete(Request request)
+{
+	std::ostringstream	html;
+	std::string			referer = request.get_header("Referer");
+
+	std::string			filename = request.get_URI();
+	std::size_t			last_slash = filename.rfind("/");
+	
+	filename = filename.substr(last_slash + 1);
+
+	html << "<html>\n";
+	html << "<head>\n";
+	html << "<meta http-equiv=\"refresh\" content=\"4; URL=" << referer << "\">\n";
+	html << "<style>\n";
+	html << "body {\n";
+	html << "    background-color: #f4f4f4;\n";
+	html << "    display: flex;\n";
+	html << "    justify-content: center;\n";
+	html << "    align-items: center;\n";
+	html << "    height: 100vh;\n";
+	html << "}\n";
+	html << ".container {\n";
+	html << "    background-color: #ffffff;\n";
+	html << "    border-radius: 10px;\n";
+	html << "    padding: 10px;\n";
+	html << "    display: flex;\n";
+	html << "    flex-direction: column;\n";
+	html << "    align-items: center;\n";
+	html << "}\n";
+	html << ".container p {\n";
+	html << "    font-size: 30px;\n";
+	html << "    color: red;\n";
+	html << "    text-align: center;\n";
+	html << "}\n";
+	html << ".container img {\n";
+	html << "    margin: 1px auto;\n";
+	html << "}\n";
+	html << "</style>\n";
+	html << "</head>\n";
+	html << "<body>\n";
+	html << "<div class=\"container\">\n";
+	html << "<p style=\"text-align: center;\">Your file has been deleted successfully</p>\n";
+	html << "<h4 style=\"text-align: center; margin-bottom: 1px;\">"<< filename << " be like :</h4>";
+	html << "<h4 style=\"text-align: center;\"><img src=\"https://media.tenor.com/GwZEshiH6jUAAAAM/disappearing.gif\"></h4>\n";
+	html << "</div>\n";
+	html << "</body>\n";
+	html << "</html>\n";
 
 	return ( html.str() );
 }

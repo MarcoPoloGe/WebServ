@@ -35,14 +35,8 @@
 
 #define BACKLOG 2
 #define MAX_CLIENTS 5
-#define BUFFER_SIZE 100
+//#define BUFFER_SIZE 100
 #define HTTP_VERSION "HTTP/1.1"
-
-// Bytes for endian conversion
-# define BYTE_0 0xff000000
-# define BYTE_1 0x00ff0000
-# define BYTE_2 0x0000ff00
-# define BYTE_3 0x000000ff
 
 //COLOR OUTPUT//
 #define	B		"\033[1m\033[34m" 		// Bold Blue
@@ -57,10 +51,10 @@
 
 //NoClass Functions prototypes//
 std::string		ft_read_file(std::string file_name);
-unsigned short	ft_bswap16(unsigned short x);
-unsigned short	ft_htons(unsigned short s);
-unsigned int	ft_bswap32(unsigned int x);
-unsigned int	ft_htonl(unsigned int l);
+//unsigned short	ft_bswap16(unsigned short x);
+//unsigned short	ft_htons(unsigned short s);
+//unsigned int	ft_bswap32(unsigned int x);
+//unsigned int	ft_htonl(unsigned int l);
 void			setnonblocking(int sock);
 std::string		ft_get_extension(std::string str);
 std::string		ft_remove_nonprintable(std::string str);
@@ -71,4 +65,6 @@ std::string 	IsQuery(const std::string &URIraw);
 std::string 	str_toupper(std::string &str);
 char *const 	*maptoarray(std::map<std::string, std::string> &map);
 std::string		ft_generate_error_html(int error, Config config);
+std::string		ft_generate_success_delete(Request request);
+
 #endif

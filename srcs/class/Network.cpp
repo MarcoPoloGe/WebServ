@@ -6,6 +6,8 @@ Network::Network(Config config, int portNo): _config(config)
 {
 	//std::cout << "Parametric constructor called\n";
 
+	//_max_body_size = _config.getClientMaxBodySize();//TO DO IN CONFIG
+	_max_body_size = 4096;
 	_port = _config.getPortServer()[portNo];
 	_reuse_addr = 1;
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -47,6 +49,8 @@ Network	&Network::operator=(Network const &rhs)
 	this->_port = rhs._port;
 	this->_server_address = rhs._server_address;
 	this->_reuse_addr = rhs._reuse_addr;
+	this->_max_body_size = rhs._max_body_size;
+	
 
 	//std::cout << "Copy assignment operator called\n";
 	return (*this);
@@ -91,24 +95,26 @@ int	add_slash(std::string URI, int connection, int port)
 
 Request Network::receive_request(int connection, fd_set &socks)
 {
-	char				buffer[BUFFER_SIZE + 1];
+	char 				*buffer = new char[sizeof(char) *_max_body_size + 1];
 	int					bytes_read = 1;
 	std::string 		request_string;
 	Request				request;
 
 	while (bytes_read > 0)
 	{
-		for (int i = 0; i < BUFFER_SIZE; i++)
+		for (int i = 0; i < _max_body_size; i++)
 			buffer[i] = 0;
-		bytes_read = recv(connection, buffer, BUFFER_SIZE - 1, 0);
+		bytes_read = recv(connection, buffer, _max_body_size - 1, 0);
 		if (bytes_read < 0)
 		{
 			if (FD_ISSET(connection, &socks))
 				break ;
 			throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrecv connection error");
+			delete[] buffer;
 		}
 		request_string += std::string(buffer);
 	}
+	delete[] buffer;
 	if (request_string.empty())
 		throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrequest is empty");
 	request.fill(request_string);
@@ -134,6 +140,8 @@ bool Network::CatchRequest(Request &request, int connection, fd_set socks)
 int Network::SendResponse(int errorCode, Response &response, int connection)
 {
 	response.set_error_code(errorCode);
+
+//	std::cout << "my errcode iiiiiiiiiiiiis : " << errorCode << "\n" << RE;//DEBUG
 	response.send(connection);
 	return (0);
 }
@@ -193,19 +201,17 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	std::string	URIraw = request.get_URI();
 //	std::cout <<Y<< "URIraw: {" << URIraw << "}" <<RE<< std::endl;
 
-	std::cout <<R<< "REQUEST TYPE IIIIIIS : " << request.get_type() << "\n"<<RE;//DEBUG
-
 	std::string PathToFile;
 
 	if (URIraw.find("//") != std::string::npos)
 		return(SendResponse(404, response, connection));
-	std::cout << B << "######## URI IS : " << URIraw << " #########\n"<<RE;
+	//std::cout << B << "######## URI IS : " << URIraw << " #########\n"<<RE;//DEBUG
 
 	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
 	std::string Folder = _config.getFolderLocationFromURI(URIraw);
-//	std::string location = ft_what_location(URIraw);
-	std::cout <<Y<< "Folder : " << Folder <<RE<< std::endl;
-//	std::cout <<B<< "Loc what: " << location <<RE<< std::endl;
+//	std::string location = ft_what_location(URIraw); // old? 
+//	std::cout <<Y<< "Folder : " << Folder <<RE<< std::endl; //DEBUG
+//	std::cout <<B<< "Loc what: " << location <<RE<< std::endl; //DEBUG
 
 	// test if Folder is in locations ; return *getSingleMapLocation
 	std::map<std::string, std::string> *singleLocationContent;
@@ -213,25 +219,18 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		return (SendResponse(404, response, connection));
 	}
 
-
-	//////////////////////////////////////////////////////////////////////////////
-	/////////////////////A IMPLEMENTER POUR LA REDI //////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
-	
-	//if (Folder == "/Ronoo" || Folder == "/Samsaa" || Folder == "/Marcoo")
-
-	std::string redi = _config.getReturn(*singleLocationContent); //A VERIFIER
-	if (!redi.empty())
+	// Traitement de requetes DELETE avance car sinon catch d'autre erreur qui	//
+	// 404 en cas d'echec alors que DELETE 500 en cas d'echec					//	
+	if(request.get_type() == "DELETE")
 	{
-		//std::string redi = "301,https://github.com/8L312";
-
-		return ( Redirection(connection, redi) );
+		if (_config.getMethod(*singleLocationContent).find("DELETE") == std::string::npos)
+			return (SendResponse(405, response, connection));
+		return ( delete_file(request, response, connection) );
 	}
 	
-
-	////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////
+	std::string redi = _config.getReturn(*singleLocationContent);
+	if (!redi.empty())
+		return ( Redirection(connection, redi) );
 
 	_config.setPathToFile(URIraw, singleLocationContent);
 
@@ -245,12 +244,12 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 
 	// test if the file exist in location ; return path to the file or path to the folder in location
 	PathToFile = _config.isPathToFile(PathToFile);
-	if (PathToFile.empty())
+	if (PathToFile.empty() && request.get_type() != "DELETE")
 		return (SendResponse(404, response, connection)); // file doesn't exist in folder from locations
 
 
 //	std::cout <<B<< PathToFile <<RE<< std::endl;
-	if ( ft_get_extension(PathToFile) == "" )
+	if ( ft_get_extension(PathToFile) == "" && request.get_type() != "DELETE")
 	{
 		std::string autoindexValue = _config.getAutoindex(*singleLocationContent);
 		std::string location = _config.getLocation(*singleLocationContent);
@@ -280,7 +279,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 
 	// test if Method is allowed in Location ; return bool
 	if (!_config.IsMethodAllowed(request.get_type(), *(singleLocationContent)))
-		return (SendResponse(404, response, connection));
+		return (SendResponse(405, response, connection));
 
 
 
@@ -294,12 +293,30 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		std::cout << R << "POST request not implemented yet" << std::endl;
 		response.set_path("./website/index.html");
 	}
-	else if(request.get_type() == "DELETE")
-	{
-		std::cout << R <<"DELETE request not implemented yet" << std::endl;
-		response.set_path("./website/index.html");
-	}
+	//DELETE traite plus haut dans fonction//
 
 	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
 	return (0);
+}
+
+int	Network::delete_file(Request request, Response response, int connection)
+{
+	std::string	file_path = request.get_URI();
+	std::map<std::string, std::string> *ptr = _config.getSingleMapLocation("/");
+	std::string root = _config.getRoot(*ptr);
+
+	root.erase(root.end() - 1);
+	file_path = root + file_path;
+	bool		file_delete = std::remove( file_path.c_str() ) == 0;
+
+	if ( file_delete )
+	{
+//		std::cout <<R<< "DELETE ISOK\n"<<RE; //DEBUG
+		response.set_manual_content_type("text/html");
+		response.set_manual_content( ft_generate_success_delete(request) );
+		response.send(connection);
+		return (0);
+	}
+	else
+		return (SendResponse(500, response, connection));
 }
