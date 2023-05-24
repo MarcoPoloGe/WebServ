@@ -154,6 +154,18 @@ Config::setPortServer(
 	}
 }
 
+void
+Config::setBodyLength(std::string &input)
+{
+	_bodylength = std::atoi(input.c_str());
+}
+
+std::string &getBodyLength()
+{
+	return (this->_bodylength);
+}
+
+
 //std::string Config::getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent)
 //{
 //	if ( ft_get_extension(URIraw) == "" )
