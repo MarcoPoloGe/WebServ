@@ -23,7 +23,7 @@ std::string ft_read_file(std::string file_name)
 	}
 	return (content);
 }
-
+/*
 unsigned short	ft_bswap16(unsigned short x)
 {
 	x = x >> 8 | x << 8;
@@ -53,7 +53,7 @@ unsigned int	ft_htonl(unsigned int l)
 	else if (BYTE_ORDER == LITTLE_ENDIAN)
 		return (ft_bswap32(l));
 	return (0);
-}
+}*/
 
 void	setnonblocking(int sock)
 {

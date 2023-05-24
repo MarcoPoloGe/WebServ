@@ -6,6 +6,8 @@ Network::Network(Config config, int portNo): _config(config)
 {
 	//std::cout << "Parametric constructor called\n";
 
+	//_max_body_size = _config.getClientMaxBodySize();//TO DO IN CONFIG
+	_max_body_size = 4096;
 	_port = _config.getPortServer()[portNo];
 	_reuse_addr = 1;
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -47,6 +49,8 @@ Network	&Network::operator=(Network const &rhs)
 	this->_port = rhs._port;
 	this->_server_address = rhs._server_address;
 	this->_reuse_addr = rhs._reuse_addr;
+	this->_max_body_size = rhs._max_body_size;
+	
 
 	//std::cout << "Copy assignment operator called\n";
 	return (*this);
@@ -91,24 +95,26 @@ int	add_slash(std::string URI, int connection, int port)
 
 Request Network::receive_request(int connection, fd_set &socks)
 {
-	char				buffer[BUFFER_SIZE + 1];
+	char 				*buffer = new char[sizeof(char) *_max_body_size + 1];
 	int					bytes_read = 1;
 	std::string 		request_string;
 	Request				request;
 
 	while (bytes_read > 0)
 	{
-		for (int i = 0; i < BUFFER_SIZE; i++)
+		for (int i = 0; i < _max_body_size; i++)
 			buffer[i] = 0;
-		bytes_read = recv(connection, buffer, BUFFER_SIZE - 1, 0);
+		bytes_read = recv(connection, buffer, _max_body_size - 1, 0);
 		if (bytes_read < 0)
 		{
 			if (FD_ISSET(connection, &socks))
 				break ;
 			throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrecv connection error");
+			delete[] buffer;
 		}
 		request_string += std::string(buffer);
 	}
+	delete[] buffer;
 	if (request_string.empty())
 		throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrequest is empty");
 	request.fill(request_string);
@@ -135,7 +141,7 @@ int Network::SendResponse(int errorCode, Response &response, int connection)
 {
 	response.set_error_code(errorCode);
 
-	std::cout << "my errcode iiiiiiiiiiiiis : " << errorCode << "\n" << RE;//DEBUG
+//	std::cout << "my errcode iiiiiiiiiiiiis : " << errorCode << "\n" << RE;//DEBUG
 	response.send(connection);
 	return (0);
 }
@@ -203,9 +209,9 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 
 	// get Folder from URIraw ("/img/kittycat.jpg" = ret(img) || "/index.html" = "/" || "/" = "/")
 	std::string Folder = _config.getFolderLocationFromURI(URIraw);
-//	std::string location = ft_what_location(URIraw);
-	std::cout <<Y<< "Folder : " << Folder <<RE<< std::endl;
-//	std::cout <<B<< "Loc what: " << location <<RE<< std::endl;
+//	std::string location = ft_what_location(URIraw); // old? 
+//	std::cout <<Y<< "Folder : " << Folder <<RE<< std::endl; //DEBUG
+//	std::cout <<B<< "Loc what: " << location <<RE<< std::endl; //DEBUG
 
 	// test if Folder is in locations ; return *getSingleMapLocation
 	std::map<std::string, std::string> *singleLocationContent;
@@ -305,7 +311,7 @@ int	Network::delete_file(Request request, Response response, int connection)
 
 	if ( file_delete )
 	{
-		std::cout <<R<< "DELETE ISOK\n"<<RE;
+//		std::cout <<R<< "DELETE ISOK\n"<<RE; //DEBUG
 		response.set_manual_content_type("text/html");
 		response.set_manual_content( ft_generate_success_delete(request) );
 		response.send(connection);

@@ -60,6 +60,7 @@ private:
 
 	//Variables
 	
+	int					_max_body_size;
 	int					_sock;
 	Config				_config;
 	int					_port;
