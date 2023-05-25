@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MARCO ???</title>
+
+    <style>
+        body {
+            background-color: rgb(255, 255, 255);
+            transition: background-color 0.05s ease-in-out; /*0.2*/
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Empêche le débordement horizontal */
+        }
+
+		h2, h3, h4 {
+            margin: 60px;
+        }
+
+        .cat-button {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            padding: 0;
+            width: 160px; /* Largeur du bouton */
+            height: 110px; /* Hauteur du bouton */
+            background-color: transparent;
+            cursor: pointer;
+            transition: transform 0.2s;
+            animation: dvdLogoAnimation 0.25s infinite; /*2s*/
+        }
+
+        .cat-button:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://static.vecteezy.com/system/resources/previews/009/665/304/original/cute-kitty-cat-head-cartoon-element-free-png.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            opacity: 0.7;
+            z-index: -1; /* Place l'image derrière le contenu */
+        }
+
+        .cat-button span {
+            position: relative;
+            z-index: 1; /* Place le texte devant l'image */
+        }
+
+        .cat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .cat-button:hover:before {
+            opacity: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @keyframes dvdLogoAnimation {
+            0% {
+                transform: translate(-100%, -100%);
+            }
+            25% {
+                transform: translate(100%, -100%);
+            }
+            50% {
+                transform: translate(100%, 100%);
+            }
+            75% {
+                transform: translate(-100%, 100%);
+            }
+            100% {
+                transform: translate(-100%, -100%);
+            }
+        }
+    </style>
+
+    <script>
+        var colors = [
+            'rgb(255, 0, 0)',     // Rouge
+            'rgb(255, 165, 0)',   // Orange
+            'rgb(255, 255, 0)',   // Jaune
+            'rgb(0, 128, 0)',     // Vert
+            'rgb(0, 0, 255)',     // Bleu
+            'rgb(75, 0, 130)',    // Indigo
+            'rgb(238, 130, 238)'  // Violet
+        ];
+
+        function changeBackgroundColor() {
+            var body = document.querySelector('body');
+            var computedStyle = getComputedStyle(body);
+            var currentColor = computedStyle.backgroundColor;
+            var currentIndex = colors.indexOf(currentColor);
+            var nextIndex = (currentIndex + 1) % colors.length;
+            var nextColor = colors[nextIndex];
+            body.style.backgroundColor = nextColor;
+        }
+
+        setInterval(changeBackgroundColor, 100);//1000
+    </script>
+
+</head>
+<body>
+    <h2>POLO !!!</h2>
+	<h3>Catch me if u can</h3>
+    <h3><button class="cat-button" onclick="window.location.href = '/';"><span>Retour</span></button></h3>
+    <h4><img src="/img/kittycat.jpg"></h4>
+</body>
+</html>

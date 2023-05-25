@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wanna upload something ?</title>
+
+<style>
+
+.custom-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: grey;
+  cursor: pointer;
+  outline: none;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.button-content {
+  text-align: center;
+}
+
+.button-image {
+  max-width: 200px;
+  height: auto;
+}
+
+.button-text {
+  margin-top: 10px;
+}
+
+
+</style>
+
+</head>
+
+<body>
+<h2>Here ya go</h2>
+<h3>
+
+<form method="post" enctype="multipart/form-data">
+  <label for="file">File</label>
+  <input id="file" name="file" type="file" />
+  <button>Upload a file</button>
+</form>
+
+</h3>
+
+<h4>This will be uploaded in ./website/uploaded_files</h4>
+
+<h3>
+<button onclick="window.location.href = 'file_listing.html';" class="custom-button">
+	<img src="https://assets.bigcartel.com/product_images/321968793/koneko_sfw_preview.png?auto=format&fit=max&h=1200&w=1200"
+	alt="Rias"
+	class="button-image">
+	<h4>Show me the uploaded files senpai</h4>
+</button>
+</h3>
+
+
+</body>
+</html>
