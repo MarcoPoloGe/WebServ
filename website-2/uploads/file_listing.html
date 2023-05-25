@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Uploaded files</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .content-box {
+			display: flex;
+			flex-direction : column;
+			justify-content : center;
+			align-items:center;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .folder-content {
+            display: flex;
+			flex-direction : column;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .file-link {
+            display: flex;
+			/*flex-direction : column;*/
+			justify-content : center;
+			width : 100px;
+			height : 50px;
+			align-items : center;
+            border: 1px solid #cccccc;
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-top: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .delete-button {
+            background-color: #ff0000;
+            color: #ffffff;
+			display: flex;
+			/*flex-direction : column;*/
+			justify-content : center;
+			width : 164px;
+			height : 82px;
+			align-items : center;
+            border: 1px solid #cccccc;
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-top: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .delete-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+		.file-wrapper {
+            display: flex;
+            margin-top: 20px;
+        }
+
+		.button-ret{
+			display: flex;
+			align-items : center;
+			justify-content : center;
+		}
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            color: #333333;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function getRandomBackgroundImage() {
+            var images = [
+                '../img/host.png',
+                '../img/internet.png',
+                '../img/kittycat.jpg',
+            ];
+            return images[Math.floor(Math.random() * images.length)];
+        }
+
+        function deleteFile(filePath) {
+
+		fetch(filePath, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Fichier supprimé avec succès.');
+                return response.text();
+            } else {
+                throw new Error('Erreur lors de la suppression du fichier.');
+            }
+        })
+        .then(data => {
+            var newElement = document.createElement('div');
+            newElement.innerHTML = data;
+
+            var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
+            styleElements.forEach(element => {
+                element.remove();
+            });
+
+            document.body.innerHTML = '';
+
+            document.body.appendChild(newElement);
+        })
+        .catch(error => {
+            console.log('Erreur:', error.message);
+
+            var errorPage = '<html>\n' +
+                '<head>\n' +
+                '<title>Error 500</title>\n' +
+                '</head>\n' +
+                '<body>\n' +
+                '<h1>Error 500 - Internal server error</h1>\n' +
+				'<h4>Could not DELETE the file</h4>'
+                '</body>\n' +
+                '</html>';
+
+            var response = new Response(errorPage, { status: 500 });
+            return response.text().then(text => {
+                var newElement = document.createElement('div');
+                newElement.innerHTML = text;
+
+                var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
+                styleElements.forEach(element => {
+                    element.remove();
+                });
+
+                document.body.innerHTML = '';
+
+                document.body.appendChild(newElement);
+            });
+        });
+
+        }
+
+        function refreshFileList() {
+            var folder = '/uploads/uploaded_files/';
+
+            $.ajax({
+                url: folder,
+                success: function(data) {
+                    var fileList = $(data).find('a').filter(function() {
+                        return !this.href.endsWith('/');
+                    });
+
+                    $('.folder-content').empty(); // Effacer le contenu actuel
+
+                    fileList.each(function() {
+                        var fileName = $(this).attr('href');
+                        var filePath = folder + fileName;
+                        var fileLink = $('<a>')
+                            .attr('href', filePath)
+                            .addClass('file-link')
+                            .text(fileName);
+
+                        // Set a random background color for each file link
+                        fileLink.css('background-color', getRandomColor());
+
+                        var deleteButton = $('<button>')
+                            .addClass('delete-button')
+                            .text('Supprimer')
+                            .click(function() {
+                                deleteFile(filePath);
+                            });
+
+                        var fileWrapper = $('<div>').addClass('file-wrapper');
+                        fileWrapper.append(fileLink);
+                        fileWrapper.append(deleteButton);
+
+                        $('.folder-content').append(fileWrapper);
+                    });
+
+                    // Set a random background image
+                    $('body').css('background-image', 'url(' + getRandomBackgroundImage() + ')');
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            refreshFileList();
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="content-box">
+        <h1>Voici vos fichiers téléchargés</h1>
+        <div class="folder-content"></div>
+    </div>
+</div>
+
+<h1>
+<button onclick="window.location.href = '/';" class="button-ret">Retour a l'index</button>
+</h1>
+
+</body>
+</html>
+

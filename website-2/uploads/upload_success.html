@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File uploaded on webserv</title>
+
+<style>
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.custom-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: grey;
+  cursor: pointer;
+  outline: none;
+  border-radius: 10px;
+  padding: 10px;
+  transition: transform 1s ease;
+}
+
+.custom-button.rotating {
+  animation-name: rotate;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.button-content {
+  text-align: center;
+}
+
+.button-image {
+  max-width: 200px;
+  height: auto;
+}
+
+.button-text {
+  margin-top: 20px;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
+
+</head>
+
+<body>
+<h1>Your file has been successfully uploaded on the webserv !</h1>
+
+<h3>
+<button onmouseover="startRotation(this)" onmouseout="stopRotation(this)" onclick="window.location.href = 'file_listing.html';" class="custom-button">
+	<img src="https://assets.bigcartel.com/product_images/321968793/koneko_sfw_preview.png?auto=format&fit=max&h=1200&w=1200"
+	alt="koneko"
+	class="button-image">
+	<h4>Show me the uploaded files senpai</h4>
+</button>
+</h3>
+
+<h3>
+<button onmouseover="startRotation(this)" onmouseout="stopRotation(this)" onclick="window.location.href = 'uploader.html';" class="custom-button">
+	<img src="https://i.pinimg.com/originals/45/99/49/4599492a2528a6a3c838ba3ed837aaa1.jpg"
+	alt="akeno"
+	class="button-image">
+	<h4>Wanna upload something else ?</h4>
+</button>
+</h3>
+
+<script>
+  function startRotation(button) {
+    button.classList.add('rotating');
+  }
+  
+  function stopRotation(button) {
+    button.classList.remove('rotating');
+  }
+</script>
+
+</body>
+</html>
+

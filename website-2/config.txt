@@ -1,3 +1,9 @@
+
+----    Config file example        ----
+----    Please respect parsing     ----
+
+
+
 server
 {
     name=webserv0
@@ -5,7 +11,7 @@ server
     client_max_body_size=4096
     port=8080,8081
     cgibin=/usr/bin/python3
-	client_max_body_size=4000
+
     location=/
     {
         method=POST,GET
@@ -14,90 +20,13 @@ server
         default=index.html
         cgi_extension=py
     }
-    location=/img
+    location=/newfolder
     {
          method=GET
          autoindex=true
-         root=./website/img/
-		 default=hello_there.gif
+         root=./website/newfolder/
+         default=newfilefromfolder.html
     }
-    location=/cgi
-    {
-         method=GET
-         autoindex=true
-         root=./website/cgi/
-		 default=cgi.py
-    }
-    location=/uploads
-    {
-        method=POST,DELETE,GET
-        autoindex=true
-        root=./website/uploads/
-		default=test_upload.html
-    }
-	location=/ronooo
-    {
-        return=301,https://github.com/8L312
-    }
-	location=/samsaaa
-	{
-        return=301,https://github.com/0xlowell
-	}
-	location=/marcooo
-	{
-        return=301,https://github.com/MarcoPoloGe
-	}
-
-}
-
-server
-{
-    name=webserv_alt
-    ip=127.0.0.1
-    client_max_body_size=1024
-    port=443
-    cgibin=/usr/bin/python3
-    location=/
-    {
-        method=POST,GET
-        root=./website-2/
-        autoindex=false
-        default=index.html
-        cgi_extension=py
-    }
-    location=/img
-    {
-         method=GET
-         autoindex=true
-         root=./website/img/
-		 default=hello_there.gif
-    }
-    location=/cgi
-    {
-         method=GET
-         autoindex=true
-         root=./website/cgi/
-		 default=cgi.py
-    }
-    location=/uploads
-    {
-        method=POST,DELETE,GET
-        autoindex=true
-        root=./website/uploads/
-		default=test_upload.html
-    }
-	location=/ronooo
-    {
-        return=301,https://www.linkedin.com/in/renaud-monney/
-    }
-	location=/samsaaa
-	{
-        return=301,https://www.linkedin.com/in/lowell-zima/
-	}
-	location=/marcooo
-	{
-        return=301,https://www.linkedin.com/in/marco-belarbi-856777250/
-	}
 }
 
 mime_types
@@ -108,7 +37,7 @@ mime_types
     image/gif=.gif
     image/jpeg=.jpeg.jpg
     text/javascript=.js
-    text/plain=.txt.conf
+    text/plain=.txt
     text/x-component=.htc
     text/mathml=.mml
     image/png=.png
@@ -134,7 +63,7 @@ mime_types
     application/x-xpinstall=.xpi
     application/zip=.zip
     application/octet-stream=.deb.bin.exe.dll.dmg
-    audio/mpeg=.mp3.m4a
+    audio/mpeg=.mp3
     audio/x-realaudio=.ra
     video/mpeg=.mpeg.mpg
     video/quicktime=.mov
@@ -149,7 +78,6 @@ error_pages
 {
     404=./website/error_pages/error-404.html
 	405=./website/error_pages/error-405.html
-	500=./website/error_pages/error-500.html
 }
 
 error_names
