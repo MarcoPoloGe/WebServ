@@ -7,78 +7,43 @@ Request::Request()
 Request::Request(std::string request)
 {
 	this->fill(request);
-
 }
 
-bool Request::fill(std::string request)
+void Request::fill(std::string request)
 {
 	request.erase(std::remove(request.begin(), request.end(), 6), request.end());
+	request.erase(std::remove(request.begin(), request.end(), '\r'), request.end());
 	std::istringstream file(request);
 	std::string temp;
 	std::string first;
 	std::string second;
 	
-	try {
-
-		if(std::getline(file, temp, ' '))
-		{
-			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
-			if(!temp.empty() && (temp == "GET" || temp == "POST" || temp == "DELETE"))
-				type = temp;
-			else
-				throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request type : " + temp);
-		}
-		if(std::getline(file, temp, ' '))
-		{
-			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
-			if(!temp.empty())
-				URI = temp;
-			else
-				throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request URI");
-		}
-		if(std::getline(file, temp))
-		{
-			temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
-			if(!temp.empty() && temp == HTTP_VERSION)
-				HTTP_version = temp;
-			else
-				throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request HTTP version : " + temp);
-		}
-		while (std::getline(file, temp))
-		{
-			temp.erase(std::remove(temp.begin(), temp.end(), '\r'), temp.end());
-			temp.erase(std::remove(temp.begin(), temp.end(), '\n'), temp.end());
-			if (temp.empty())
-				break;
-			std::istringstream stemp(temp);
-			if(std::getline(stemp, first, ':'))
-			{
-				if(std::getline(stemp >> std::ws, second)) // >> std:ws skips white spaces before reading
-				{
-					if(first.empty() || second.empty())
-						throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request header");
-					headers_map.insert(std::make_pair(first, second));
-				}
-			}
-		}
-		if(this->type == "POST")
-		{
-			file >> std::ws;
-			if(getline(file, temp, '\0'))// read everything left in the request;
-			{
-				if(!temp.empty())
-					this->body = temp;
-				else
-					throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request body");
-			}
-		}
-	}
-	catch(std::invalid_argument &e)
+	if(std::getline(file >> std::ws, temp, ' '))
 	{
-		std::cout << e.what() << std::endl;
-		return (false);
+		temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+		if(!temp.empty() && (temp == "GET" || temp == "POST" || temp == "DELETE"))
+			type = temp;
+		else
+			throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request type : " + temp);
 	}
-	return (true);
+	if(std::getline(file >> std::ws, temp, ' '))
+	{
+		temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+		if(!temp.empty())
+			URI = temp;
+		else
+			throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request URI");
+	}
+	if(std::getline(file >> std::ws, temp))
+	{
+		temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+		if(!temp.empty() && temp == HTTP_VERSION)
+			HTTP_version = temp;
+		else
+			throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request HTTP version : " + temp);
+	}
+	this->headers_map = process_headers(file);
+	this->content_list = process_contents(file, this->headers_map);
 }
 
 std::string Request::get_type() const
@@ -99,11 +64,6 @@ std::map<std::string, std::string> Request::get_headers_map() const
 	return (this->headers_map);
 }
 
-std::string Request::get_body() const
-{
-	return (this->body);
-}
-
 std::string Request::get_header(std::string header_name) const
 {
 	std::map<std::string,std::string>::const_iterator temp;
@@ -114,13 +74,27 @@ std::string Request::get_header(std::string header_name) const
 		return (temp->second);
 }
 
+std::string Request::get_body() const
+{
+	if(!this->content_list.empty())
+	{
+		return (content_list.at(0).get_body());
+	}
+	return (std::string());
+}
+
+std::vector<RequestContent> Request::get_content_list() const
+{
+	return (this->content_list);
+}
+
 Request &Request::operator=(Request const &rhs)
 {
 	this->type = rhs.type;
 	this->URI = rhs.URI;
 	this->HTTP_version = rhs.HTTP_version;
 	this->headers_map = rhs.headers_map;
-	this->body = rhs.body;
+	this->content_list = rhs.content_list;
 	return (*this);
 }
 
@@ -140,31 +114,29 @@ void Request::setHeadersMap(const std::map<std::string, std::string> &headersMap
 	headers_map = headersMap;
 }
 
-void Request::setBody(const std::string &body) {
-	Request::body = body;
-}
-
 std::ostream& operator<<(std::ostream& out, Request const& rhs)
 {
 	std::map<std::string,std::string> headers = rhs.get_headers_map();
+	std::vector<RequestContent> content = rhs.get_content_list();
 	std::string short_body;
 
 	out << "--Request_start--" << std::endl;
 
-	out << "type : " << rhs.get_type() << std::endl;
-	out << "URI : " << rhs.get_URI() << std::endl;
-	out << "HTTP_version : " << rhs.get_HTTP_version() << std::endl;
+	out << "type: " << rhs.get_type() << std::endl;
+	out << "URI: " << rhs.get_URI() << std::endl;
+	out << "HTTP_version: " << rhs.get_HTTP_version() << std::endl;
 	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 	{
 		out << it->first << ": " << it->second <<  std::endl;
 	}
 	out << std::endl;
-	short_body = rhs.get_body().substr(0,1000);
-	out << short_body;
-	if(rhs.get_body().length() > 1000)
-		out << std::endl << "...";
+	for (std::vector<RequestContent>::iterator it = content.begin(); it != content.end(); it++)
+	{
+		out << "-content_start- nb "<< it - content.begin() << ":" << std::endl;
+		out << *it;
+		out << "-content_end- "<< it - content.begin() << ";" << std::endl;
+	}
 	out << std::endl;
-
 	out << "--Request_end--" << std::endl;
 	return (out);
 }
