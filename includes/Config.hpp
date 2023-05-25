@@ -46,7 +46,7 @@ public:
 	void
 	setPortServer(std::string&											port);
 	void
-	setBodyLength(std::string&											bodylength;
+	setBodyLength(std::string											bodylength);
 //	void
 //	setServerConfig(std::vector<std::string> 							config);
 //	void
@@ -184,16 +184,15 @@ private:
 	std::string														_name;
 	std::string														_ip;
 	std::string														_binCGI;
-	std::string														_bodylength;
+	int																_bodylength;
 public:
 	
 	void setBinCgi(const std::string &binCgi);
 
 	const std::string &getBinCgi() const;
 	
-	void setBodyLength(std::string &input);
 
-	const std::string &getBodyLength() const;
+	int getBodyLength() const;
 
 private:
 	std::vector<int>												_ports;

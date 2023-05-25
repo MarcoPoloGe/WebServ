@@ -155,14 +155,14 @@ Config::setPortServer(
 }
 
 void
-Config::setBodyLength(std::string &input)
+Config::setBodyLength(std::string input)
 {
 	_bodylength = std::atoi(input.c_str());
 }
 
-std::string &getBodyLength()
+int Config::getBodyLength() const
 {
-	return (this->_bodylength);
+	return (_bodylength);
 }
 
 
