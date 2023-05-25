@@ -6,8 +6,8 @@ Network::Network(Config config, int portNo): _config(config)
 {
 	//std::cout << "Parametric constructor called\n";
 
-	//_max_body_size = _config.getClientMaxBodySize();//TO DO IN CONFIG
-	_max_body_size = 4096;
+	_max_body_size = _config.getBodyLength();//TO DO IN CONFIG
+	//_max_body_size = 4096;
 	_port = _config.getPortServer()[portNo];
 	_reuse_addr = 1;
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
