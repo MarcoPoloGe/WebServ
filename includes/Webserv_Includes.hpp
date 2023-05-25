@@ -27,6 +27,7 @@
 
 #include "Response.hpp"
 #include "Request.hpp"
+#include "RequestContent.hpp"
 #include "Ft_error.hpp"
 #include "Config.hpp"
 #include "Network.hpp"
@@ -67,4 +68,8 @@ char *const 	*maptoarray(std::map<std::string, std::string> &map);
 std::string		ft_generate_error_html(int error, Config config);
 std::string		ft_generate_success_delete(Request request);
 
+//RequestUtils//
+void process_multipart_header(std::string &raw_header, std::string header_name, std::map<std::string,std::string> &headers_map);
+std::map<std::string,std::string> process_headers(std::istringstream &file);
+std::vector<RequestContent> process_contents(std::istringstream &file, std::map<std::string,std::string> &headers_map);
 #endif
