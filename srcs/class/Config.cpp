@@ -165,6 +165,16 @@ int Config::getBodyLength() const
 	return (_bodylength);
 }
 
+void
+Config::setUploadFolder(std::string input)
+{
+	_uploadfolder = input.c_str();
+}
+
+std::string Config::getUploadFolder() const
+{
+	return (_uploadfolder);
+}
 
 //std::string Config::getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent)
 //{

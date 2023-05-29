@@ -74,12 +74,31 @@ std::string Request::get_header(std::string header_name) const
 		return (temp->second);
 }
 
-std::string Request::get_body() const
+std::string Request::get_content_header(std::string header_name) const
 {
 	if(!this->content_list.empty())
-	{
+		return (content_list.at(0).get_header(header_name));
+	return (std::string());
+}
+
+std::string Request::get_content_header(size_t content_nb, std::string header_name) const
+{
+	if(this->content_list.size() > content_nb)
+		return (content_list.at(content_nb).get_header(header_name));
+	return (std::string());
+}
+
+std::string Request::get_content_body() const
+{
+	if(!this->content_list.empty())
 		return (content_list.at(0).get_body());
-	}
+	return (std::string());
+}
+
+std::string Request::get_content_body(size_t  content_nb) const
+{
+	if(this->content_list.size() > content_nb)
+		return (content_list.at(content_nb).get_body());
 	return (std::string());
 }
 

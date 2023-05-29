@@ -69,7 +69,10 @@ std::vector<RequestContent> process_contents(std::istringstream &file, std::map<
 			}
 		}
 		else
-			raw_content += line + '\n';
+		{
+			if(!file.eof())
+				raw_content += line + '\n';
+		}
 	}
 	if(!raw_content.empty())
 		content_list.push_back(RequestContent(raw_content));

@@ -55,7 +55,7 @@ std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, C
 
 	envmap["AUTH_TYPE"] = "null";
 	envmap["CONTENT_TYPE"] = request.get_header("Content-Type");
-	envmap["CONTENT_LENGTH"] = numberToString(request.get_body().size());
+	envmap["CONTENT_LENGTH"] = numberToString(request.get_content_body().size());
 
 	envmap["GATEWAY_INTERFACE"] = "CGI/1.1";
 	envmap["PATH_INFO"] = binpath;

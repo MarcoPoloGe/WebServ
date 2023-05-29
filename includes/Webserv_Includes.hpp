@@ -67,6 +67,7 @@ std::string 	str_toupper(std::string &str);
 char *const 	*maptoarray(std::map<std::string, std::string> &map);
 std::string		ft_generate_error_html(int error, Config config);
 std::string		ft_generate_success_delete(Request request);
+std::string		ft_generate_success_upload(Request request);
 
 //RequestUtils//
 void process_multipart_header(std::string &raw_header, std::string header_name, std::map<std::string,std::string> &headers_map);

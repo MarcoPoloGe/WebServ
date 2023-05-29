@@ -47,6 +47,8 @@ public:
 	setPortServer(std::string&											port);
 	void
 	setBodyLength(std::string											bodylength);
+	void
+	setUploadFolder(std::string											input);
 //	void
 //	setServerConfig(std::vector<std::string> 							config);
 //	void
@@ -185,6 +187,7 @@ private:
 	std::string														_ip;
 	std::string														_binCGI;
 	int																_bodylength;
+	std::string														_uploadfolder;
 public:
 	
 	void setBinCgi(const std::string &binCgi);
@@ -193,6 +196,7 @@ public:
 	
 
 	int getBodyLength() const;
+	std::string getUploadFolder() const;
 
 private:
 	std::vector<int>												_ports;

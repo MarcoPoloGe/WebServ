@@ -300,3 +300,54 @@ std::string	ft_generate_success_delete(Request request)
 
 	return ( html.str() );
 }
+
+std::string	ft_generate_success_upload(Request request)
+{
+	std::ostringstream	html;
+	std::string			referer = request.get_header("Referer");
+
+	std::string			filename = request.get_URI();
+	std::size_t			last_slash = filename.rfind("/");
+
+	filename = filename.substr(last_slash + 1);
+
+	html << "<html>\n";
+	html << "<head>\n";
+	html << "<meta http-equiv=\"refresh\" content=\"4; URL=" << referer << "\">\n";
+	html << "<style>\n";
+	html << "body {\n";
+	html << "    background-color: #f4f4f4;\n";
+	html << "    display: flex;\n";
+	html << "    justify-content: center;\n";
+	html << "    align-items: center;\n";
+	html << "    height: 100vh;\n";
+	html << "}\n";
+	html << ".container {\n";
+	html << "    background-color: #ffffff;\n";
+	html << "    border-radius: 10px;\n";
+	html << "    padding: 10px;\n";
+	html << "    display: flex;\n";
+	html << "    flex-direction: column;\n";
+	html << "    align-items: center;\n";
+	html << "}\n";
+	html << ".container p {\n";
+	html << "    font-size: 30px;\n";
+	html << "    color: red;\n";
+	html << "    text-align: center;\n";
+	html << "}\n";
+	html << ".container img {\n";
+	html << "    margin: 1px auto;\n";
+	html << "}\n";
+	html << "</style>\n";
+	html << "</head>\n";
+	html << "<body>\n";
+	html << "<div class=\"container\">\n";
+	html << "<p style=\"text-align: center;\">Your file has been uploaded successfully</p>\n";
+	html << "<h4 style=\"text-align: center; margin-bottom: 1px;\">"<< filename << " be like :</h4>";
+	html << "<h4 style=\"text-align: center;\"><img src=\"https://media.tenor.com/GwZEshiH6jUAAAAM/disappearing.gif\"></h4>\n";
+	html << "</div>\n";
+	html << "</body>\n";
+	html << "</html>\n";
+
+	return ( html.str() );
+}

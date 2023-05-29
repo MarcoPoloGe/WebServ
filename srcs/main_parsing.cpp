@@ -235,6 +235,8 @@ setUpServer(
 			s.setBinCgi(AfterEqual(*first_bracket));
 		if (((*first_bracket).find("client_max_body_size="))!= std::string::npos)
 			s.setBodyLength(AfterEqual(*first_bracket));
+		if (((*first_bracket).find("upload_folder="))!= std::string::npos)
+			s.setUploadFolder(AfterEqual(*first_bracket));
 
 		if (((*first_bracket).find("port="))!= std::string::npos){
 

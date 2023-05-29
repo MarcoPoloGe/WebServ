@@ -21,11 +21,16 @@ public:
 	std::string get_type() const;
 	std::string get_URI() const;
 	std::string get_HTTP_version() const;
+	std::string get_header(std::string header_name) const;
+	std::map<std::string, std::string> get_headers_map() const;
 
 	//gets information on the first content only;
-		std::string get_header(std::string header_name) const;
-		std::map<std::string, std::string> get_headers_map() const;
-		std::string get_body() const;
+		std::string get_content_header(std::string header_name) const;
+		std::string get_content_body() const;
+
+	//gets information on the specified content;
+		std::string get_content_header(size_t  content_nb, std::string header_name) const;
+		std::string get_content_body(size_t  content_nb) const;
 
 	std::vector<RequestContent> get_content_list() const;
 

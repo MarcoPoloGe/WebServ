@@ -46,6 +46,7 @@ public:
 
 	int			Redirection				(int connection, std::string redirect_URL);
 	int			delete_file				(Request request, Response response, int connection);
+	int			upload_file				(Request request, Response response, int connection);
 
 private:
 	//Nope nope nope
