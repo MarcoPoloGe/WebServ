@@ -93,17 +93,29 @@ int	add_slash(std::string URI, int connection, int port)
 	return (0);
 }
 
+int	go_default(std::string URI, int connection, int port)
+{
+	std::string	URL = "http://localhost:" + std::to_string(port) + URI;
+   	std::string response =
+		"HTTP/1.1 302 Found\r\n"
+        "Location: " + URL + "\r\n"
+        "\r\n";
+
+	send(connection, response.c_str(), response.length(), 0);
+	return (0);
+}
+
 Request Network::receive_request(int connection, fd_set &socks)
 {
 	char 				*buffer = new char[sizeof(char) *_max_body_size + 1];
 	int					bytes_read = 1;
+	long int			total_bytes = 0;
 	std::string 		request_string;
 	Request				request;
 
 	while (bytes_read > 0)
 	{
-		for (int i = 0; i < _max_body_size; i++)
-			buffer[i] = 0;
+		bzero(buffer, _max_body_size + 1);
 		bytes_read = recv(connection, buffer, _max_body_size - 1, 0);
 		if (bytes_read < 0)
 		{
@@ -112,8 +124,33 @@ Request Network::receive_request(int connection, fd_set &socks)
 			throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrecv connection error");
 			delete[] buffer;
 		}
-		request_string += std::string(buffer);
+		total_bytes += bytes_read;
+		request_string += std::string(buffer, bytes_read);
 	}
+
+	//DEBUG////////////////
+	
+	if ( request_string.substr(0, 6).find("POST") != std::string::npos)
+	{
+		std::cout <<Y<< "ITS POST AND I READ [" << total_bytes << "] bytes\n"<< RE;
+		int j = -1;
+		while (request_string.c_str()[++j] != '\0')
+		{
+			if (request_string.c_str()[j] == 6)
+			{
+				std::cout << R << "ATTENTION YA ACK >< \n" << RE;
+				break;
+			}
+		}
+		std::cout<<G<<"### REQUEST = ###\n"<<RE<<request_string/*.substr(0, 3000).c_str()*/
+			<<G<< "\n\n### END OF REQUEST ####\n" <<RE;
+
+		std::cout << "size of request_string = [" << request_string.length() << "]\n";
+
+		request.upload_file(request_string); //TEST////////////////
+	}
+	//DEBUG/////////////////
+
 	delete[] buffer;
 	if (request_string.empty())
 		throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrequest is empty");
@@ -140,8 +177,6 @@ bool Network::CatchRequest(Request &request, int connection, fd_set socks)
 int Network::SendResponse(int errorCode, Response &response, int connection)
 {
 	response.set_error_code(errorCode);
-
-//	std::cout << "my errcode iiiiiiiiiiiiis : " << errorCode << "\n" << RE;//DEBUG
 	response.send(connection);
 	return (0);
 }
@@ -197,7 +232,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	//Catch Request, send Response error(404, _config) if Wrong HTTP Request
 	this->CatchRequest(request, connection, socks);
 
-	std::cout << R << request << std::endl;
+//	std::cout << R << request << std::endl; //DEBUG
 
 	std::string	URIraw = request.get_URI();
 	std::string PathToFile;
@@ -222,8 +257,19 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		PathToFile = _config.getPath();
 
 		// test if IsCGI ; send reponse and return 0
+
+		std::cout <<R<< request << RE;
 		if (ft_get_extension(URIraw) == "py" ||( URIraw.find(".py?") != std::string::npos))
+		{
+			try{
 			return (SendCGIResponse(200, response, request, connection, PathToFile));
+			}
+			catch(...)
+			{
+				std::cout <<R<<"FFFFFFFFFFFFFFFFFFFFFFUCK"<<RE;
+				std::invalid_argument("FUUUUUUUUUUUUUUUUUCK");
+			}
+		}
 
 
 		// test if the file exist in location ; return path to the file or path to the folder in location
@@ -233,6 +279,25 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 
 		if ( ft_get_extension(PathToFile) == "")
 		{
+			// ET SI ON A UN FICHIER QUI EXISTE MAIS EST SANS EXTENSION ?? //
+		//	std::cout <<R<< "MY PATH TO FILE = " << PathToFile << "\n" RE;
+
+			bool doss;
+			DIR	*dir = opendir( PathToFile.c_str() );
+			if (dir == NULL)
+				doss = false;
+			else
+				doss = true;
+			if (isFile(PathToFile) && doss == false)
+			{
+				response.set_manual_content_type("application/octet-stream");
+				response.set_manual_content( ft_read_file(PathToFile) );
+				response.send(connection);
+				return (0);
+			}
+
+			//////////////////////////////////////// C FAIT /////////////////////
+
 			std::string autoindexValue = _config.getAutoindex(*singleLocationContent);
 			std::string location = _config.getLocation(*singleLocationContent);
 
@@ -246,8 +311,18 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 			}
 			else
 			{
-				std::cout <<B<< PathToFile <<RE<< std::endl;
-				PathToFile = PathToFile + _config.getDefault(*singleLocationContent);
+				//std::cout <<B<< PathToFile <<RE<< std::endl; //faux, il faut root de la loc
+				if ( request.get_URI() == request.get_content_header("Referer") )
+					;
+				PathToFile = PathToFile
+					+ _config.getDefault(*singleLocationContent);
+				
+				std::map<std::string, std::string> *rootmap
+					=_config.getSingleMapLocation("/");
+
+				PathToFile = PathToFile.substr( _config.getRoot(*rootmap).size() - 1 );
+				std::cout <<R<< "MY PATH TO FILE = " << PathToFile << "\n" RE;
+				return (go_default(PathToFile, connection, _port));
 			}
 		}
 
@@ -309,15 +384,20 @@ int	Network::upload_file(Request request, Response response, int connection)
 {
 	std::string	file_path;
 	file_path = _config.getUploadFolder();
-	file_path += request.get_content_header("Content-Disposition-filename");
+	//file_path += request.get_content_header("Content-Disposition-filename");
+	file_path += request.get_filename_post();
 
 	// Create and open a text file
+//	std::cout <<R<< "filepath usi " << file_path << "\n"<<RE;
 	std::ofstream file(file_path);
 	if (!file)
 		return (SendResponse(500, response, connection));
 
 	// Write to the file
-	file << request.get_content_body();
+	//file << request.get_content_body();
+	file << request.get_file_post();
+
+//	std::cout <<G<< "file = :\n" << request.get_content_body().substr(0, 400) << "\n" <<RE;//DEBUG
 
 	// Close the file
 	file.close();

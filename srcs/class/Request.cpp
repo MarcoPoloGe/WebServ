@@ -114,6 +114,8 @@ Request &Request::operator=(Request const &rhs)
 	this->HTTP_version = rhs.HTTP_version;
 	this->headers_map = rhs.headers_map;
 	this->content_list = rhs.content_list;
+	this->_upload_file = rhs._upload_file;
+	this->_filename = rhs._filename;
 	return (*this);
 }
 
@@ -131,6 +133,48 @@ void Request::setHttpVersion(const std::string &httpVersion) {
 
 void Request::setHeadersMap(const std::map<std::string, std::string> &headersMap) {
 	headers_map = headersMap;
+}
+
+std::string Request::get_file_post(void) const
+{
+	return (_upload_file);
+}
+
+std::string Request::get_filename_post(void) const
+{
+	return (_filename);
+}
+
+void Request::upload_file(std::string full_request)
+{
+	std::string boundary;
+	std::string file_content;
+	std::string filename;
+
+	int bound_begin = full_request.find("boundary=");
+	int bound_end = full_request.find("\r\n", bound_begin);
+
+	boundary = full_request.substr(bound_begin + 9, bound_end - bound_begin - 9);
+
+//	std::cout <<R<< "&&&&&BOUNDAAAAARY = [" << boundary << "]\n" <<RE;
+
+	int start_file = full_request.find( "\r\n\r\n", full_request.find("--"+boundary) );
+	int end_file = full_request.find("--"+boundary+"--");
+
+	file_content = full_request.substr(start_file + 4, end_file - (start_file + 4) - 1);
+
+	//std::cout <<R<< "FIIIIIIIIIIILE is {\n" << file_content << "\n}\n"<<RE;
+
+	int filename_begin = full_request.find("filename=\"", full_request.find("--"+boundary) );
+	int	filename_end = full_request.find("\"\r\n", filename_begin);
+
+	filename = full_request.substr(filename_begin + 10, filename_end - filename_begin - 10);
+
+	//std::cout <<R<< "FIIIILENAAAAME is {\n" << filename << "\n}\n"<<RE;
+
+	_upload_file = file_content;
+	_filename = filename;
+
 }
 
 std::ostream& operator<<(std::ostream& out, Request const& rhs)

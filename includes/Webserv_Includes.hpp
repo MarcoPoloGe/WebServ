@@ -23,11 +23,11 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <utility>
+#include <unistd.h>
 
 
 #include "Response.hpp"
 #include "Request.hpp"
-#include "RequestContent.hpp"
 #include "Ft_error.hpp"
 #include "Config.hpp"
 #include "Network.hpp"
@@ -52,13 +52,9 @@
 
 //NoClass Functions prototypes//
 std::string		ft_read_file(std::string file_name);
-//unsigned short	ft_bswap16(unsigned short x);
-//unsigned short	ft_htons(unsigned short s);
-//unsigned int	ft_bswap32(unsigned int x);
-//unsigned int	ft_htonl(unsigned int l);
 void			setnonblocking(int sock);
 std::string		ft_get_extension(std::string str);
-std::string		ft_remove_nonprintable(std::string str);
+std::string		ft_remove_ack(std::string str);
 std::string		ft_generate_html_dir(std::string dir_path, int final_slash);
 std::string		ft_what_location(std::string URI);
 std::string 	numberToString(unsigned long n);
@@ -68,6 +64,8 @@ char *const 	*maptoarray(std::map<std::string, std::string> &map);
 std::string		ft_generate_error_html(int error, Config config);
 std::string		ft_generate_success_delete(Request request);
 std::string		ft_generate_success_upload(Request request);
+bool			isFile(const std::string &path);
+bool			isDirectory(const std::string &path);
 
 //RequestUtils//
 void process_multipart_header(std::string &raw_header, std::string header_name, std::map<std::string,std::string> &headers_map);

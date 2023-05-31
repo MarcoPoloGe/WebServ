@@ -51,6 +51,17 @@ void Response::set_path(std::string path)
 {
 	if(path.empty())
 		throw std::invalid_argument("@fn void Response::set_path(std::string path)\npath is empty");
+	if (path.find("@//GENERATE:") != std::string::npos)
+	{
+//		std::cout << R<< "GENERATE : " << path << " into : "
+//			<< std::atoi( path.substr(12, 3).c_str() ) << "\n"<<RE;			//DEBUG
+		
+		int	error_code = std::atoi( path.substr(12, 3).c_str() );
+		set_content_body(ft_generate_error_html(error_code, _config));
+		set_content_extension("html");
+		return ;
+	}
+
 	set_error_code(200);
 	std::string ext;
 
@@ -96,9 +107,10 @@ std::string Response::ft_error_page(int error_code)
 	page_name = _config.getErrorPages(error_code);
 	if(page_name.empty())
 	{
-		std::stringstream message;
+		return ("@//GENERATE:"+std::to_string(error_code) );
+		/*std::stringstream message;
 		message << "@fn std::string Response::ft_error_page(int error_code)\nerror_page cannot be found :" << error_code << " please add it in config file." <<std::endl;
-		throw std::invalid_argument(message.str());
+		throw std::invalid_argument(message.str());*/
 	}
 	return (page_name);
 }

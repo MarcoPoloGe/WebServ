@@ -23,37 +23,6 @@ std::string ft_read_file(std::string file_name)
 	}
 	return (content);
 }
-/*
-unsigned short	ft_bswap16(unsigned short x)
-{
-	x = x >> 8 | x << 8;
-	return (x);
-}
-
-unsigned int	ft_bswap32(unsigned int x)
-{
-	x = (x & BYTE_0) >> 24 | (x & BYTE_3) << 24 |
-		(x & BYTE_1) >> 8  | (x & BYTE_2) << 8;
-	return (x);
-}
-
-unsigned short	ft_htons(unsigned short s)
-{
-	if (BYTE_ORDER == BIG_ENDIAN)
-		return (s);
-	else if (BYTE_ORDER == LITTLE_ENDIAN)
-		return (ft_bswap16(s));
-	return (0);
-}
-
-unsigned int	ft_htonl(unsigned int l)
-{
-	if (BYTE_ORDER == BIG_ENDIAN)
-		return (l);
-	else if (BYTE_ORDER == LITTLE_ENDIAN)
-		return (ft_bswap32(l));
-	return (0);
-}*/
 
 void	setnonblocking(int sock)
 {
@@ -81,7 +50,7 @@ std::string	ft_get_extension(std::string str)
 	}
 }
 
-std::string ft_remove_nonprintable(std::string str)
+std::string ft_remove_ack(std::string str)
 {
 	std::string ret;
 	int i = 0;
@@ -89,13 +58,13 @@ std::string ft_remove_nonprintable(std::string str)
 
 	for (int j = 0; str[j] != 0; j++)
 	{
-		if (31 < str[j] && str[j] < 127)
+		if (str[j] != 6) 
 			size++;
 	}
 	ret.resize(size);
 	for (int it = 0; str[it] != 0; it++)
 	{
-		if (31 < str[it] && str[it] < 127)
+		if (str[it] != 6)
 			ret[i++] = str[it];
 	}
 	ret[i] = 0;
@@ -306,7 +275,8 @@ std::string	ft_generate_success_upload(Request request)
 	std::ostringstream	html;
 	std::string			referer = request.get_header("Referer");
 
-	std::string			filename = request.get_URI();
+	//std::string			filename = request.get_URI();
+	std::string			filename = request.get_content_header(0, "Content-Disposition-filename");
 	std::size_t			last_slash = filename.rfind("/");
 
 	filename = filename.substr(last_slash + 1);
@@ -344,10 +314,22 @@ std::string	ft_generate_success_upload(Request request)
 	html << "<div class=\"container\">\n";
 	html << "<p style=\"text-align: center;\">Your file has been uploaded successfully</p>\n";
 	html << "<h4 style=\"text-align: center; margin-bottom: 1px;\">"<< filename << " be like :</h4>";
-	html << "<h4 style=\"text-align: center;\"><img src=\"https://media.tenor.com/GwZEshiH6jUAAAAM/disappearing.gif\"></h4>\n";
+	html << "<h4 style=\"text-align: center;\"><img src=\"https://media.tenor.com/ByflbjcyUG4AAAAd/oh-no-oh-no-oh-yeh.gif\"></h4>\n";
 	html << "</div>\n";
 	html << "</body>\n";
 	html << "</html>\n";
 
 	return ( html.str() );
+}
+
+bool isFile(const std::string& path)
+{
+    std::ifstream file(path.c_str());
+    return file.good();
+}
+
+bool isDirectory(const std::string& path)
+{
+    std::ifstream dir(path.c_str());
+    return dir.good();
 }

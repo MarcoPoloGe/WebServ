@@ -31,6 +31,9 @@ public:
 	//gets information on the specified content;
 		std::string get_content_header(size_t  content_nb, std::string header_name) const;
 		std::string get_content_body(size_t  content_nb) const;
+	//getter form test Reno
+		std::string get_file_post(void) const;
+		std::string get_filename_post(void) const;
 
 	std::vector<RequestContent> get_content_list() const;
 
@@ -46,12 +49,21 @@ public:
 
 	void setBody(const std::string &body);
 
+	void	upload_file(std::string full_request);
+
 private:
 	std::string type;
 	std::string URI;
 	std::string HTTP_version;
 	std::map<std::string,std::string> headers_map;
 	std::vector<RequestContent> content_list;
+
+	////////////TEST/////////////
+	
+	std::string _upload_file;
+	std::string _filename;
+//	std::string _content_type;
+
 };
 
 std::ostream& operator<<(std::ostream& out, const Request& rhs);

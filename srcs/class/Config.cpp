@@ -242,7 +242,7 @@ Config::getType(const std::string& format) {
 	else
 	{
 		std::cerr<<R<< "@fn Config::getType(const std::string& format)\nError: getType: "<< format << " not found." <<RE<< std::endl;
-		return (std::string());
+		return ("application/octet-stream"); // "default" type of MIME : just somes bytes
 	}
 }
 

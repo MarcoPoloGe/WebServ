@@ -23,7 +23,7 @@ class TestWebserver(unittest.TestCase):
     def test_get3(self):
         response = requests.get(f'{self.BASE_URL}{get_cgi}')
         self.assertEqual(response.status_code, 200)
-    #
+    
     # def test_post(self):
     #     data = {"name": "eduardo"}
     #     response = requests.post(f'{self.BASE_URL}{post_endpoint}', json=data)
@@ -32,10 +32,10 @@ class TestWebserver(unittest.TestCase):
     # def test_delete(self):
     #     response = requests.delete(f'{self.BASE_URL}/upload/test.txt')
     #     self.assertEqual(response.status_code, 202)
-    #
-    # def test_bad_delete(self):
-    #     response = requests.delete(f'{self.BASE_URL}/upload/dontexist.txt')
-    #     self.assertEqual(response.status_code, 404)
+   # 
+   #  def test_bad_delete(self):
+   #      response = requests.delete(f'{self.BASE_URL}/upload/dontexist.txt')
+   #      self.assertEqual(response.status_code, 404)
 
 
 if __name__ == '__main__':
