@@ -4,6 +4,7 @@
 
 #include "../../includes/CGI.hpp"
 
+pid_t CGI_pid;
 
 /**********************************************************************************************************************/
 /***************************                       Con/Destructors	           		           ************************/
@@ -91,9 +92,19 @@ std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, C
 	return (envmap);
 }
 
+void	timeout_CGI(int sig)
+{
+	if (sig == SIGALRM)
+	{
+		std::cout <<R<< "The CGI application timed out\n" <<RE;
+		kill(CGI_pid, SIGKILL);
+	}
+}
+
 std::string CGI::execute(Request &request, Config &conf, int port, const std::string &p)
 {
 
+	int timeout = 2;
 	int p_out[2];
 	int p_in[2];
 	int ret;
@@ -148,15 +159,23 @@ std::string CGI::execute(Request &request, Config &conf, int port, const std::st
 	}
 	else
 	{
+		CGI_pid = pid;
+
 		close(p_in[0]);
 		close(p_out[1]);
 		write(p_in[1], rawcontent.c_str(), rawcontent.size());
 		close(p_in[1]);
+
+		signal(SIGALRM, timeout_CGI);
+		alarm(timeout);
+		
 		if (waitpid(pid, &ret, 0) == -1)
-			throw(std::exception());
-		if (ret != 0) {
-			result.append("@fn CGI::execute()\nStatus: 502 Error in CGI application\r\n");
-		}
+			throw std::invalid_argument("@fn CGI::execute()\nError with waipid()");
+		if (WIFSIGNALED(ret))
+			result.append( ft_generate_error_html(508, conf, "Timeout in CGI Application") );
+		else if (ret != 0)
+			result.append( ft_generate_error_html(502, conf, "Error in CGI application") );
+		alarm(0);
 
 		do
 		{

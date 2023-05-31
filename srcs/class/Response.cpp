@@ -135,6 +135,8 @@ std::string Response::send(int client_socket)
 	message << std::endl;
 	message << get_content_body();
 
+	std::cout <<G<< message.str().substr(0, 500) << "\n"<<RE;
+
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.
 	return (message.str());
@@ -166,9 +168,8 @@ std::string Response::send(int client_socket, fd_set socks)
 		return ("");
 	}
 
-//	if (this->_content_type == "text/html")
-//		std::cout <<G<< this->_content << std::endl<<RE;//DEBUG
-
+	std::cout <<G<< message.str().substr(0, 500) << "\n"<<RE;
+	
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.
 	return (message.str());

@@ -18,9 +18,9 @@ std::string ft_read_file(std::string file_name)
 		std::cout <<W<< "@fn ft_read_file(std::string file_name)\n"<<G<<"🔘️ ERROR  : " << file_name << "\n" <<RE;
 	}
 	while (std::getline(html_file, line))
-	{
 		content += line + '\n';
-	}
+	std::cout <<B<< "The file " << file_name << " was about " << content.size()
+		<< " bytes long\n" <<RE;
 	return (content);
 }
 
@@ -111,7 +111,8 @@ std::string ft_generate_html_dir(std::string dir_path, int final_slash)
         }
 
         // Récupération des métadonnées du fichier
-		std::cout << "direct= " << directory << std::endl;
+
+//		std::cout << "direct= " << directory << std::endl; //DEBUG
 		std::string path = directory + entry->d_name;
         struct stat file_info;
         stat(path.c_str(), &file_info);
@@ -191,8 +192,32 @@ char *const *maptoarray(std::map<std::string, std::string> &m)
 	return arr;
 }
 
+std::string ft_generate_error_html(int error, Config config, std::string more)
+{
+	std::string	description = config.getDefaultErrorDescription(error);
+	if (description == "")
+		description = "Unknown error code";
 
+    // Création d'une chaîne de caractères contenant le code HTML
+	std::ostringstream html;
 
+    html << "<!DOCTYPE html>\n";
+    html << "<html lang=en>\n";
+    html << "<head>\n";
+    html << "    <meta charset=\"UTF-8\">\n";
+    html << "    <title>" << error << " </title>\n";
+    html << "<head>\n";
+	html << "<body>\n";
+
+	html << "<h2>Error " << error << ": " << description << "</h2>\n";
+
+	html << "<h3> " << more << "</h3>\n";
+
+	html << "</body>\n";
+    html << "</html>\n";
+
+	return ( html.str() );
+}
 
 std::string ft_generate_error_html(int error, Config config)
 {

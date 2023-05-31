@@ -22,7 +22,10 @@
 #include <cstdio>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #include <utility>
+#include <signal.h>
 #include <unistd.h>
 
 
@@ -62,6 +65,7 @@ std::string 	IsQuery(const std::string &URIraw);
 std::string 	str_toupper(std::string &str);
 char *const 	*maptoarray(std::map<std::string, std::string> &map);
 std::string		ft_generate_error_html(int error, Config config);
+std::string		ft_generate_error_html(int error, Config config, std::string more);
 std::string		ft_generate_success_delete(Request request);
 std::string		ft_generate_success_upload(Request request);
 bool			isFile(const std::string &path);

@@ -232,7 +232,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	//Catch Request, send Response error(404, _config) if Wrong HTTP Request
 	this->CatchRequest(request, connection, socks);
 
-//	std::cout << R << request << std::endl; //DEBUG
+	std::cout << R << request << std::endl; //DEBUG
 
 	std::string	URIraw = request.get_URI();
 	std::string PathToFile;
@@ -258,7 +258,6 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 
 		// test if IsCGI ; send reponse and return 0
 
-		std::cout <<R<< request << RE;
 		if (ft_get_extension(URIraw) == "py" ||( URIraw.find(".py?") != std::string::npos))
 		{
 			try {
@@ -310,18 +309,31 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 			}
 			else
 			{
-				//std::cout <<B<< PathToFile <<RE<< std::endl; //faux, il faut root de la loc
-				if ( request.get_URI() == request.get_content_header("Referer") )
-					;
-				PathToFile = PathToFile
-					+ _config.getDefault(*singleLocationContent);
-				
 				std::map<std::string, std::string> *rootmap
 					=_config.getSingleMapLocation("/");
 
-				PathToFile = PathToFile.substr( _config.getRoot(*rootmap).size() - 1 );
-				std::cout <<R<< "MY PATH TO FILE = " << PathToFile << "\n" RE;
-				return (go_default(PathToFile, connection, _port));
+				std::cout <<B<< "MY REFERER IS ["
+					<< request.get_header("Referer") << "]\n" << RE; //DEBUG
+
+				if ( request.get_header("Referer").find(URIraw) != std::string::npos
+						&& URIraw != "/")
+				{
+					if ( no_final_slash(URIraw) )
+					return ( add_slash(URIraw, connection, _port) );
+					SendResponseDefault(200, response, connection, PathToFile, URIraw);
+
+					return (0);
+				}
+				else
+				{
+					PathToFile = PathToFile
+						+ _config.getDefault(*singleLocationContent);	
+					PathToFile = PathToFile.substr( _config.getRoot(*rootmap).size() - 1 );
+					
+					std::cout <<R<< "MY PATH TO FILE = " << PathToFile << "\n" RE;//DEBUG
+
+					return (go_default(PathToFile, connection, _port));
+				}
 			}
 		}
 
