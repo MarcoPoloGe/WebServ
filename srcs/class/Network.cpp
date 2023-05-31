@@ -261,13 +261,12 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		std::cout <<R<< request << RE;
 		if (ft_get_extension(URIraw) == "py" ||( URIraw.find(".py?") != std::string::npos))
 		{
-			try{
+			try {
 			return (SendCGIResponse(200, response, request, connection, PathToFile));
 			}
 			catch(...)
 			{
-				std::cout <<R<<"FFFFFFFFFFFFFFFFFFFFFFUCK"<<RE;
-				std::invalid_argument("FUUUUUUUUUUUUUUUUUCK");
+				std::invalid_argument("Python script not found");
 			}
 		}
 
