@@ -20,7 +20,7 @@ public:
 	
 	//Public functions//
 	
-	void	runAll(void);	//todo
+	void	runAll(void);
 
 	
 	//Setters & Getters//

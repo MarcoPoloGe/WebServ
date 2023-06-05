@@ -217,7 +217,7 @@ Config::setPathToFile (std::string &URIraw, std::map<std::string, std::string> *
 /***************************                       Getters	            		               ************************/
 /**********************************************************************************************************************/
 
-//std::string 										&Config::getNameServer(void) 			{ return(this->_name); }
+std::string 										&Config::getNameServer(void) 			{ return(this->_name); }
 std::string 										&Config::getIpServer(void) 				{ return(_ip); }
 std::vector<int> 									&Config::getPortServer(void) 			{ return(_ports); }
 int 												&Config::getAmountPortServer(void) 		{ return(_amount_ports); }

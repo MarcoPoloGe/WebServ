@@ -20,8 +20,13 @@ int	main(int ac, char **av)
 	}
 	std::cout <<G<< "🌸 Main_parsing clear" <<RE<< std::endl;
 
-	LAN	all_servers(all_config);
-	all_servers.runAll();
+	try {
+		LAN	all_servers(all_config);
+		all_servers.runAll();
+	}
+	catch (std::invalid_argument &e) {
+		std::cout <<R<< "An error occured on webserv lauching :\n" << e.what() << "\n" <<RE;
+	}
 
 	return (0);
 }

@@ -29,6 +29,7 @@ public:
 	//Accessors
 
 	int		getSock(void);
+	int		getPort(void);  /////////todo
 	
 
 	//Public Functions
@@ -47,7 +48,8 @@ public:
 	int			Redirection				(int connection, std::string redirect_URL);
 	int			delete_file				(Request request, Response response, int connection);
 	int			upload_file				(Request request, Response response, int connection);
-
+	void		addName					(Config config); ///todo
+														//do getPort();
 private:
 	//Nope nope nope
 
@@ -61,12 +63,14 @@ private:
 
 	//Variables
 	
-	int					_max_body_size;
-	int					_sock;
-	Config				_config;
-	int					_port;
-	struct sockaddr_in	_server_address;
-	int					_reuse_addr;
+	int											_max_body_size;
+	int											_sock;
+	Config										_config;
+	Config										_default_conf;
+	int											_port;
+	struct sockaddr_in							_server_address;
+	int											_reuse_addr;
+	std::map<std::string, Config>				_names;
 };
 
 #endif

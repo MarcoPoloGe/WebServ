@@ -2,7 +2,7 @@
 
 
 
-Network::Network(Config config, int portNo): _config(config)
+Network::Network(Config config, int portNo): _config(config), _default_conf(config)
 {
 	//std::cout << "Parametric constructor called\n";
 
@@ -21,6 +21,9 @@ Network::Network(Config config, int portNo): _config(config)
 	_server_address.sin_addr.s_addr = htonl(INADDR_ANY);
 	_server_address.sin_port = htons(_port);
 
+	_names.insert( std::pair<std::string, Config>(config.getNameServer(), config) );
+//	std::cout <<R<< "NAME ADDED > " << config.getNameServer() << "\n" <<RE; //DEBUG 
+
 	if (bind(_sock, (struct sockaddr *) &_server_address, sizeof(_server_address)) < 0 )
 	{
 		close(_sock);
@@ -31,6 +34,15 @@ Network::Network(Config config, int portNo): _config(config)
  	std::cout << "Server ready to listen on port [" << _port << "]\n";
 
 	return ;
+}
+
+void	Network::addName(Config config)
+{
+//	std::cout <<R<< "NAME ADDED > " << config.getNameServer() << "\n" <<RE; //DEBUG 
+	if ( _names.count( config.getNameServer() ) == 0 )
+		_names.insert( std::pair<std::string, Config>(config.getNameServer(), config) );
+	else
+		throw std::invalid_argument("Multiples serv on one port with same name");
 }
 
 Network::Network(Network const &src)
@@ -50,6 +62,7 @@ Network	&Network::operator=(Network const &rhs)
 	this->_server_address = rhs._server_address;
 	this->_reuse_addr = rhs._reuse_addr;
 	this->_max_body_size = rhs._max_body_size;
+	this->_names = rhs._names;
 	
 
 	//std::cout << "Copy assignment operator called\n";
@@ -65,6 +78,11 @@ Network::~Network(void)
 int	Network::getSock(void)
 {
 	return (_sock);
+}
+
+int	Network::getPort(void)
+{
+	return (_port);
 }
 
 void Network::setnonblocking(int sock)
@@ -232,7 +250,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	//Catch Request, send Response error(404, _config) if Wrong HTTP Request
 	this->CatchRequest(request, connection, socks);
 
-	std::cout << R << request << std::endl; //DEBUG
+	std::cout << R << request.get_raw_string() << std::endl; //DEBUG
 
 	std::string	URIraw = request.get_URI();
 	std::string PathToFile;
@@ -315,8 +333,10 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				std::cout <<B<< "MY REFERER IS ["
 					<< request.get_header("Referer") << "]\n" << RE; //DEBUG
 
-				if ( request.get_header("Referer").find(URIraw) != std::string::npos
+				// Even if autoindex is false, we need in this case to answer just the dir//
+				if ( (request.get_header("Referer").find(URIraw) != std::string::npos
 						&& URIraw != "/")
+						|| request.get_header("User-Agent").find("curl") != std::string::npos)
 				{
 					if ( no_final_slash(URIraw) )
 					return ( add_slash(URIraw, connection, _port) );
@@ -324,7 +344,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 
 					return (0);
 				}
-				else
+				else // autoindex = false : we add the default path to URI //
 				{
 					PathToFile = PathToFile
 						+ _config.getDefault(*singleLocationContent);	
@@ -357,6 +377,8 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	}
 	else if(request.get_type() == "DELETE")
 	{
+		if (!_config.IsMethodAllowed(request.get_type(), *(singleLocationContent)))
+			return (SendResponse(405, response, connection));
 		return ( delete_file(request, response, connection) );
 	}
 

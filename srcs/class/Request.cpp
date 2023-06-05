@@ -17,6 +17,8 @@ void Request::fill(std::string request)
 	std::string temp;
 	std::string first;
 	std::string second;
+
+	_raw_string = request;
 	
 	if(std::getline(file >> std::ws, temp, ' '))
 	{
@@ -116,6 +118,7 @@ Request &Request::operator=(Request const &rhs)
 	this->content_list = rhs.content_list;
 	this->_upload_file = rhs._upload_file;
 	this->_filename = rhs._filename;
+	this->_raw_string = rhs._raw_string;
 	return (*this);
 }
 
@@ -143,6 +146,11 @@ std::string Request::get_file_post(void) const
 std::string Request::get_filename_post(void) const
 {
 	return (_filename);
+}
+
+std::string Request::get_raw_string(void) const
+{
+	return (_raw_string);
 }
 
 void Request::upload_file(std::string full_request)

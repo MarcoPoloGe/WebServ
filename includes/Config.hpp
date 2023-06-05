@@ -79,7 +79,7 @@ public:
 /***************************                       Getters	            		               ************************/
 /**********************************************************************************************************************/
 
-//	std::string 												&getNameServer();
+	std::string 												&getNameServer();
 	std::string 												&getIpServer();
 	std::vector<int> 											&getPortServer();
 	int			 												&getAmountPortServer();

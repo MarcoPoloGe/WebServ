@@ -44,7 +44,20 @@ LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
 				_vec_network.push_back(newNetwork);
 				_net_amount++;
 			}
-		}
+			else					/////////CHECK/////////
+			{
+				if ( (*it).getNameServer() != "")
+				{
+					std::vector<Network>::iterator toAdd = _vec_network.begin();
+					for (; toAdd != _vec_network.end(); toAdd++)
+					{
+						if ( (*toAdd).getPort() == (*it).getPortServer()[i])
+							break ;
+					}
+					(*toAdd).addName( (*it) );
+				}
+			}
+		} 			//////////CHECK/////////
 	}
 	for (i = 0; i < MAX_CLIENTS; i++)
 		_connectlist[i].co = 0;

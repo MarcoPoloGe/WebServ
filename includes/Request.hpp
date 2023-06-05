@@ -34,6 +34,7 @@ public:
 	//getter form test Reno
 		std::string get_file_post(void) const;
 		std::string get_filename_post(void) const;
+		std::string	get_raw_string(void) const;
 
 	std::vector<RequestContent> get_content_list() const;
 
@@ -49,7 +50,7 @@ public:
 
 	void setBody(const std::string &body);
 
-	void	upload_file(std::string full_request);
+	void upload_file(std::string full_request);
 
 private:
 	std::string type;
@@ -62,7 +63,7 @@ private:
 	
 	std::string _upload_file;
 	std::string _filename;
-//	std::string _content_type;
+	std::string _raw_string;
 
 };
 
