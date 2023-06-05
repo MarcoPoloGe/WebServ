@@ -31,7 +31,8 @@ Network::Network(Config config, int portNo): _config(config), _default_conf(conf
 	}
 	listen(_sock, BACKLOG);
 
- 	std::cout << "Server ready to listen on port [" << _port << "]\n";
+ 	std::cout <<W<< "Server <" << config.getNameServer() << "> ready to listen on port ["
+		<< _port << "]\n\n" <<RE;
 
 	return ;
 }
@@ -58,6 +59,7 @@ Network	&Network::operator=(Network const &rhs)
 	//copy here the eventual values like :
 	this->_sock = rhs._sock;
 	this->_config = rhs._config;
+	this->_default_conf = rhs._default_conf;
 	this->_port = rhs._port;
 	this->_server_address = rhs._server_address;
 	this->_reuse_addr = rhs._reuse_addr;
@@ -146,7 +148,8 @@ Request Network::receive_request(int connection, fd_set &socks)
 		request_string += std::string(buffer, bytes_read);
 	}
 
-	//DEBUG////////////////
+	
+	//DEBUG//////////////// >>>>>> To set plsu bas >>>>>>>>>>
 	
 	if ( request_string.substr(0, 6).find("POST") != std::string::npos)
 	{
@@ -178,18 +181,32 @@ Request Network::receive_request(int connection, fd_set &socks)
 
 bool Network::CatchRequest(Request &request, int connection, fd_set socks)
 {
+	_config = _default_conf;	//default config is always reset on config in 
+								//case we had to change it for a special request
 	try
 	{
 		request = this->receive_request(connection, socks);
 	}
-	catch(...)
+	catch(...) //TO CHANGE !!! (05.06.23)
 	{
 		std::cout << R << "Wrong HTTP REQUEST\n" << RE;
 		Response error(404, _config);
 		error.send(connection, socks);
 		return (false);
 	}
+	check_host(request);
 	return (true);
+}
+
+void	Network::check_host(Request request)
+{
+	std::string hostname = request.get_header("Host");
+	std::size_t pos = hostname.rfind(":");
+	hostname.erase(pos);
+
+	if ( _names.find(hostname) != _names.end() )
+		_config = _names.find(hostname)->second;
+//	std::cout <<Y<< "THE NAME IS {" << _config.getNameServer() << "}\n" <<RE; //DEBUG
 }
 
 int Network::SendResponse(int errorCode, Response &response, int connection)
@@ -330,13 +347,13 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				std::map<std::string, std::string> *rootmap
 					=_config.getSingleMapLocation("/");
 
-				std::cout <<B<< "MY REFERER IS ["
-					<< request.get_header("Referer") << "]\n" << RE; //DEBUG
+//				std::cout <<B<< "MY REFERER IS ["
+//					<< request.get_header("Referer") << "]\n" << RE; //DEBUG
 
 				// Even if autoindex is false, we need in this case to answer just the dir//
 				if ( (request.get_header("Referer").find(URIraw) != std::string::npos
 						&& URIraw != "/")
-						|| request.get_header("User-Agent").find("curl") != std::string::npos)
+						&& request.get_header("User-Agent").find("curl") == std::string::npos)
 				{
 					if ( no_final_slash(URIraw) )
 					return ( add_slash(URIraw, connection, _port) );
@@ -348,10 +365,19 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				{
 					PathToFile = PathToFile
 						+ _config.getDefault(*singleLocationContent);	
+
+					if (request.get_header("User-Agent").find("curl") != std::string::npos
+							|| request.get_header("User-Agent").find("telnet")
+							!= std::string::npos )
+					{
+						response.set_path(PathToFile);
+						response.send(connection);
+						return (1);
+					}
 					PathToFile = PathToFile.substr( _config.getRoot(*rootmap).size() - 1 );
 					
-					std::cout <<R<< "MY PATH TO FILE = " << PathToFile << "\n" RE;//DEBUG
-
+				//	std::cout <<R<< "MY PATH TO FILE = " << PathToFile << "\n" RE;//DEBUG
+					
 					return (go_default(PathToFile, connection, _port));
 				}
 			}

@@ -18,7 +18,7 @@ int	main(int ac, char **av)
 		std::cerr << "Error: " << e.what() << std::endl;
 		exit (1);
 	}
-	std::cout <<G<< "🌸 Main_parsing clear" <<RE<< std::endl;
+	std::cout <<G<< "🌸 Main_parsing clear" <<RE<< std::endl << std::endl;
 
 	try {
 		LAN	all_servers(all_config);

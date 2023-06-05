@@ -55,6 +55,8 @@ LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
 							break ;
 					}
 					(*toAdd).addName( (*it) );
+					std::cout <<W<< "server_name <" << (*it).getNameServer()
+						<< "> added on port [" << (*it).getPortServer()[i] << "]\n\n" <<RE;
 				}
 			}
 		} 			//////////CHECK/////////
@@ -172,7 +174,10 @@ void	LAN::handle_new_connection(void)
 	if (connection != -1)
 	{
 		std::cout << "@fn LAN::handle_new_connection(void)\nNo more room left for the client\n";
-		send(connection,"@fn LAN::handle_new_connection(void)\nSorry, this server is too busy. Try again later!\r\n",50, 0);
+		int ret;
+		ret = send(connection,"@fn LAN::handle_new_connection(void)\nSorry, this server is too busy. Try again later!\r\n",50, 0);
+		if ( ret < 0)
+			std::cerr << "Message not send to socket\n";
 		close(connection);
 	}
 }

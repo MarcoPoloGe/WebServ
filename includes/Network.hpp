@@ -59,6 +59,7 @@ private:
 	//Private Functions
 	
 	void	setnonblocking(int sock);
+	void	check_host(Request request);
 	
 
 	//Variables

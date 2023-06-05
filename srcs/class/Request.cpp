@@ -11,14 +11,13 @@ Request::Request(std::string request)
 
 void Request::fill(std::string request)
 {
+	_raw_string = request;
 	request.erase(std::remove(request.begin(), request.end(), 6), request.end());
 	request.erase(std::remove(request.begin(), request.end(), '\r'), request.end());
 	std::istringstream file(request);
 	std::string temp;
 	std::string first;
 	std::string second;
-
-	_raw_string = request;
 	
 	if(std::getline(file >> std::ws, temp, ' '))
 	{
