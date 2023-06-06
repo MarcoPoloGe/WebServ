@@ -45,7 +45,6 @@ std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, C
 {
 	std::map<std::string, std::string> envmap;
 	std::string binpath = conf.getBinCgi();
-//	std::string binpath = conf.getBinCgi();
 
 	std::string URI = request.get_URI();
 

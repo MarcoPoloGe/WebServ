@@ -218,10 +218,14 @@ setUpServer(
 	std::vector<std::string> 				loc;
 	std::string								path;
 
+	bool isLoc = 0;
+	bool isPort = 0;
+
 	while (first_bracket != last_bracket)
 	{
 		if (((*first_bracket).find("location"))!= std::string::npos)
 		{
+			isLoc = 1;
 			first_bracket = grabLocation(first_bracket, last_bracket, s);
 			if(((*first_bracket).find("}"))!= std::string::npos)
 				first_bracket++;
@@ -238,14 +242,21 @@ setUpServer(
 		if (((*first_bracket).find("upload_folder="))!= std::string::npos)
 			s.setUploadFolder(AfterEqual(*first_bracket));
 
-		if (((*first_bracket).find("port="))!= std::string::npos){
-
+		if (((*first_bracket).find("port="))!= std::string::npos)
+		{
+			isPort = 1;
 			std::string raw_ports = AfterEqual(*first_bracket);
 			s.setPortServer(*first_bracket);
 		}
 		in.push_back(*first_bracket);
 		first_bracket++;
 	}
+	if (isPort == 0 || isLoc == 0)
+		throw std::invalid_argument("@fn setUpServer(\n"
+									"\t\tstd::vector<std::string>::iterator \tfirst_bracket,\n"
+									"\t\tstd::vector<std::string>::iterator \tlast_bracket,\n"
+									"\t\tConfig &s) \n"
+									"Missing a port or a location in a server from config file");
 	return(s);
 }
 
@@ -257,8 +268,7 @@ setUpServer(
 // Insert in a map, an input with "=" as delimiter. ex: key= "location" | value="\methods"
 void
 insertMap_split_by_Delimiter(
-		std::map<std::string,
-		std::string> &map,
+		std::map<std::string, std::string> &map,
 		const std::string& input,
 		const std::string& delimiter)
 {
@@ -286,6 +296,9 @@ grabLocation (
 	std::vector<std::string>::iterator 	first_bracket;
 	std::map<std::string, std::string> loc_config;
 
+	bool isRoot = 0;
+	bool isReturn = 0;
+
 	//Stock "location=(...) in a vector"
 	if ((*it).find("location") != std::string::npos)
 		insertMap_split_by_Delimiter(loc_config, *it, "=");
@@ -297,10 +310,22 @@ grabLocation (
 			it++;
 			while (!(((*it).find("}")) != std::string::npos))
 			{
+				if ((*it).find("root=") != std::string::npos)
+					isRoot = 1;
+				if ((*it).find("return=") != std::string::npos)
+					isReturn = 1;
 				insertMap_split_by_Delimiter(loc_config, *it, "=");
 				it++;
 			}
 			s.getAllLocations().push_back(loc_config);
+			if (isRoot == 0 && isReturn == 0)
+			{
+				throw std::invalid_argument("@fn grabLocation (\n"
+											"\t\tstd::vector<std::string>::iterator \tit,\n"
+											"\t\tstd::vector<std::string>::iterator \tlast_bracket,\n"
+											"\t\tConfig &s)\n"
+											"Missing root variable in location or return variable for redirection");
+			}
 			return (it);
 		}
 		it++;
