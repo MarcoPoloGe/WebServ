@@ -14,9 +14,6 @@ Network	LAN::getServer(int servNo)
 void	sigpipekiller(int signal)
 {
 	(void)signal;
-	std::cout <<R<< "###############################\n"<<RE;
-	std::cout <<R<< "### SIGPIPE SIGNAL SEND !!! ###\n"<<RE;
-	std::cout <<R<< "###############################\n"<<RE;
 }
 
 LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
@@ -44,7 +41,7 @@ LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
 				_vec_network.push_back(newNetwork);
 				_net_amount++;
 			}
-			else					/////////CHECK/////////
+			else
 			{
 				if ( (*it).getNameServer() != "")
 				{
@@ -59,7 +56,7 @@ LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
 						<< "> added on port [" << (*it).getPortServer()[i] << "]\n\n" <<RE;
 				}
 			}
-		} 			//////////CHECK/////////
+		}
 	}
 	for (i = 0; i < MAX_CLIENTS; i++)
 		_connectlist[i].co = 0;
@@ -163,7 +160,7 @@ void	LAN::handle_new_connection(void)
 	{
 		if (_connectlist[listnum].co == 0)
 		{
-			std::cout << "@fn LAN::handle_new_connection(void)\nConnection detected from " << inet_ntoa(client_address.sin_addr)
+			std::cout << "\nConnection detected from " << inet_ntoa(client_address.sin_addr)
 				<< ":" << ntohs(client_address.sin_port)
 				<< " [Slot no " << listnum << "]\n";
 			_connectlist[listnum].co = connection;
@@ -173,11 +170,11 @@ void	LAN::handle_new_connection(void)
 	}
 	if (connection != -1)
 	{
-		std::cout << "@fn LAN::handle_new_connection(void)\nNo more room left for the client\n";
+		std::cout << "\nNo more room left for the client\n";
 		int ret;
-		ret = send(connection,"@fn LAN::handle_new_connection(void)\nSorry, this server is too busy. Try again later!\r\n",50, 0);
+		ret = send(connection,"\nSorry, this server is too busy. Try again later!\r\n",51, 0);
 		if ( ret < 0)
-			std::cerr << "Message not send to socket\n";
+			std::cerr <<R<< "Message not send to socket\n";
 		close(connection);
 	}
 }
@@ -186,8 +183,8 @@ void	LAN::deal_with_data(int listnum)
 {
 	if (!(*_connectlist[listnum].net).RequestToResponse(_connectlist[listnum].co, _read_socks))
 	{
-		std::cout << "@fn LAN::deal_with_data(int listnum)\nConnection lost with FD = " << _connectlist[listnum].co
-				<< " & Slot = " << listnum << std::endl;
+		//std::cout << "@fn LAN::deal_with_data(int listnum)\nConnection lost with FD = " << _connectlist[listnum].co
+		//		<< " & Slot = " << listnum << std::endl;
 	}
 	close(_connectlist[listnum].co);
 	_connectlist[listnum].co = 0;

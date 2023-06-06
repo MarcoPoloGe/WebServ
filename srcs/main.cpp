@@ -28,5 +28,6 @@ int	main(int ac, char **av)
 		std::cout <<R<< "An error occured on webserv lauching :\n" << e.what() << "\n" <<RE;
 	}
 
+	std::exit(0);
 	return (0);
 }

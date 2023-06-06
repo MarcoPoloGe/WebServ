@@ -12,15 +12,14 @@ std::string ft_read_file(std::string file_name)
 	html_file.open(file_name.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 	if(html_file.is_open())
 	{
-		std::cout <<W<< "@fn ft_read_file(std::string file_name)\n"<<G<<"☑️ OK  : " << file_name << "\n" <<RE;
+//		std::cout <<W<< "@fn ft_read_file(std::string file_name)\n"<<G<<"☑️ OK  : " << file_name << "\n" <<RE;
 	} else
 	{
-		std::cout <<W<< "@fn ft_read_file(std::string file_name)\n"<<G<<"🔘️ ERROR  : " << file_name << "\n" <<RE;
+//		std::cout <<W<< "@fn ft_read_file(std::string file_name)\n"<<G<<"🔘️ ERROR  : " << file_name << "\n" <<RE;
 	}
 	while (std::getline(html_file, line))
 		content += line + '\n';
-	std::cout <<B<< "The file " << file_name << " was about " << content.size()
-		<< " bytes long\n" <<RE;
+
 	return (content);
 }
 
@@ -38,8 +37,6 @@ std::string	ft_get_extension(std::string str)
 
 	if (last_point == std::string::npos)
 	{
-//		std::cout <<W<< "@fn ft_get_extension(std::string str)\n"
-//		<<B<< "No particular extension in string [" << str << "]\n" <<RE; //DEBUG
 		return ("");
 	}
 	else
@@ -124,8 +121,8 @@ std::string ft_generate_html_dir(std::string dir_path, int final_slash)
 
 		if (final_slash)
 		{
-        	html << "\t\t\t<td><a href=\"" << /*dir_path + "/" + */entry->d_name
-				<< "\">" << /*dir_path + "/" + */entry->d_name << "</a></td>\n";
+        	html << "\t\t\t<td><a href=\"" << entry->d_name
+				<< "\">" << entry->d_name << "</a></td>\n";
 		}
 		else
 		{
@@ -153,7 +150,7 @@ std::string ft_what_location(std::string URI)
 	std::size_t	sec_slash = URI.find("/", first_slash + 1);
 
 	if (sec_slash == std::string::npos) //only one slash
-		return ( URI ); //a tester
+		return ( URI );
 	return ( URI.substr( first_slash,  sec_slash) );
 }
 
@@ -300,7 +297,6 @@ std::string	ft_generate_success_upload(Request request)
 	std::ostringstream	html;
 	std::string			referer = request.get_header("Referer");
 
-	//std::string			filename = request.get_URI();
 	std::string			filename = request.get_content_header(0, "Content-Disposition-filename");
 	std::size_t			last_slash = filename.rfind("/");
 

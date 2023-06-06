@@ -51,11 +51,10 @@ void Response::set_path(std::string path)
 {
 	if(path.empty())
 		throw std::invalid_argument("@fn void Response::set_path(std::string path)\npath is empty");
+
+	// If the page has no pre-made html set in config file, we generate it with with cpp script //
 	if (path.find("@//GENERATE:") != std::string::npos)
 	{
-//		std::cout << R<< "GENERATE : " << path << " into : "
-//			<< std::atoi( path.substr(12, 3).c_str() ) << "\n"<<RE;			//DEBUG
-		
 		int	error_code = std::atoi( path.substr(12, 3).c_str() );
 		set_content_body(ft_generate_error_html(error_code, _config));
 		set_content_extension("html");
@@ -135,8 +134,6 @@ std::string Response::send(int client_socket)
 	message << std::endl;
 	message << get_content_body();
 
-	std::cout <<G<< message.str().substr(0, 500) << "\n"<<RE;
-
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.
 	return (message.str());
@@ -167,8 +164,6 @@ std::string Response::send(int client_socket, fd_set socks)
 		std::cout <<R<< "##### CONNECTION NOT IN SET !!! #####\n"<<RE;
 		return ("");
 	}
-
-	std::cout <<G<< message.str().substr(0, 500) << "\n"<<RE;
 	
 	::send(client_socket, message.str().c_str(), message.str().length(),0);
 	//returns the message for debug purposes.

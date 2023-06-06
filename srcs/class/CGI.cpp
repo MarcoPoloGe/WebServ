@@ -127,10 +127,6 @@ std::string CGI::execute(Request &request, Config &conf, int port, const std::st
 		URIPathClean = p.substr(0, pos);
 	std::string rawcontent = CGIstore(URIPathClean);
 
-	/* print */
-//	std::cout <<R<< "path to CGI file: "<<URIPathClean <<RE << std::endl;
-//	std::cout <<R<< "binCGI: " << binCGI <<RE << std::endl;
-
 	std::vector<char *> path;
 	path.push_back(const_cast<char *>(binCGI.c_str()));
 	path.push_back(const_cast<char *>(URIPathClean.c_str()));
@@ -187,6 +183,5 @@ std::string CGI::execute(Request &request, Config &conf, int port, const std::st
 		while (ret == sizeof(buffer));
 			close(p_out[0]);
 	}
-	std::cout <<Y<< result <<RE<< std::endl;
 	return (result);
 }

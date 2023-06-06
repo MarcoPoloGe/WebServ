@@ -6,8 +6,7 @@ Network::Network(Config config, int portNo): _config(config), _default_conf(conf
 {
 	//std::cout << "Parametric constructor called\n";
 
-	_max_body_size = _config.getBodyLength();//TO DO IN CONFIG
-	//_max_body_size = 4096;
+	_max_body_size = _config.getBodyLength();
 	_port = _config.getPortServer()[portNo];
 	_reuse_addr = 1;
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -22,7 +21,6 @@ Network::Network(Config config, int portNo): _config(config), _default_conf(conf
 	_server_address.sin_port = htons(_port);
 
 	_names.insert( std::pair<std::string, Config>(config.getNameServer(), config) );
-//	std::cout <<R<< "NAME ADDED > " << config.getNameServer() << "\n" <<RE; //DEBUG 
 
 	if (bind(_sock, (struct sockaddr *) &_server_address, sizeof(_server_address)) < 0 )
 	{
@@ -39,7 +37,6 @@ Network::Network(Config config, int portNo): _config(config), _default_conf(conf
 
 void	Network::addName(Config config)
 {
-//	std::cout <<R<< "NAME ADDED > " << config.getNameServer() << "\n" <<RE; //DEBUG 
 	if ( _names.count( config.getNameServer() ) == 0 )
 		_names.insert( std::pair<std::string, Config>(config.getNameServer(), config) );
 	else
@@ -57,13 +54,13 @@ Network::Network(Network const &src)
 Network	&Network::operator=(Network const &rhs)
 {
 	//copy here the eventual values like :
+	this->_max_body_size = rhs._max_body_size;
 	this->_sock = rhs._sock;
 	this->_config = rhs._config;
 	this->_default_conf = rhs._default_conf;
 	this->_port = rhs._port;
 	this->_server_address = rhs._server_address;
 	this->_reuse_addr = rhs._reuse_addr;
-	this->_max_body_size = rhs._max_body_size;
 	this->_names = rhs._names;
 	
 
@@ -110,7 +107,7 @@ int	add_slash(std::string URI, int connection, int port)
         "\r\n";
 
 	send(connection, response.c_str(), response.length(), 0);
-	return (0);
+	return (1);
 }
 
 int	go_default(std::string URI, int connection, int port)
@@ -122,7 +119,7 @@ int	go_default(std::string URI, int connection, int port)
         "\r\n";
 
 	send(connection, response.c_str(), response.length(), 0);
-	return (0);
+	return (1);
 }
 
 Request Network::receive_request(int connection, fd_set &socks)
@@ -147,30 +144,15 @@ Request Network::receive_request(int connection, fd_set &socks)
 		total_bytes += bytes_read;
 		request_string += std::string(buffer, bytes_read);
 	}
+	if (total_bytes > _max_body_size)
+		std::cout <<R<< "MAX BODY SIZE OF REQUEST EXCEEDED : THIS INCIDENT WILL BE REPORTED\n" <<
+			"(just kidding, this is a local webserver but it has to be said)\n" <<RE;
 
 	
-	//DEBUG//////////////// >>>>>> To set plsu bas >>>>>>>>>>
-	
+	//////////////// >>>>>> To set plsu bas >>>>>>>>>>
 	if ( request_string.substr(0, 6).find("POST") != std::string::npos)
-	{
-		std::cout <<Y<< "ITS POST AND I READ [" << total_bytes << "] bytes\n"<< RE;
-		int j = -1;
-		while (request_string.c_str()[++j] != '\0')
-		{
-			if (request_string.c_str()[j] == 6)
-			{
-				std::cout << R << "ATTENTION YA ACK >< \n" << RE;
-				break;
-			}
-		}
-		std::cout<<G<<"### REQUEST = ###\n"<<RE<<request_string/*.substr(0, 3000).c_str()*/
-			<<G<< "\n\n### END OF REQUEST ####\n" <<RE;
-
-		std::cout << "size of request_string = [" << request_string.length() << "]\n";
-
-		request.upload_file(request_string); //TEST////////////////
-	}
-	//DEBUG/////////////////
+		request.upload_file(request_string);
+	/////////////////
 
 	delete[] buffer;
 	if (request_string.empty())
@@ -206,14 +188,13 @@ void	Network::check_host(Request request)
 
 	if ( _names.find(hostname) != _names.end() )
 		_config = _names.find(hostname)->second;
-//	std::cout <<Y<< "THE NAME IS {" << _config.getNameServer() << "}\n" <<RE; //DEBUG
 }
 
 int Network::SendResponse(int errorCode, Response &response, int connection)
 {
 	response.set_error_code(errorCode);
 	response.send(connection);
-	return (0);
+	return (1);
 }
 
 int Network::SendResponseDefault(int errorCode, Response &response, int connection, std::string path, std::string URIraw)
@@ -227,7 +208,7 @@ int Network::SendResponseDefault(int errorCode, Response &response, int connecti
 
 	response.set_manual_content( ft_generate_html_dir(path, final_slash) );
 	response.send(connection);
-	return (0);
+	return (1);
 }
 
 int Network::SendCGIResponse(int errorCode, Response &response, Request &request, int connection, const std::string& path)
@@ -239,7 +220,7 @@ int Network::SendCGIResponse(int errorCode, Response &response, Request &request
 	response.set_manual_content_type("text/html");
 	response.set_manual_content(cgi.execute(request, _config, _port, path));
 	response.send(connection);
-	return (0);
+	return (1);
 }
 
 int Network::Redirection(int connection, std::string redirect_URL)
@@ -253,21 +234,19 @@ int Network::Redirection(int connection, std::string redirect_URL)
         "\r\n";
 
 	send(connection, response.c_str(), response.length(), 0);
-	return (0);
+	return (1);
 }
 
 int	Network::RequestToResponse(int connection, fd_set socks)
 {
-	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
+//	std::cout << "⬇️ ⬇️ ⬇️ \n"<< std::endl;//DEBUG
 
 	Request 			request;
 	Response			response(_config);
 	CGI 				cgi;
 
-	//Catch Request, send Response error(404, _config) if Wrong HTTP Request
+	//Catch Request, send Response error(404, _config) if Wrong HTTP Request // << FAUX
 	this->CatchRequest(request, connection, socks);
-
-	std::cout << R << request.get_raw_string() << std::endl; //DEBUG
 
 	std::string	URIraw = request.get_URI();
 	std::string PathToFile;
@@ -275,6 +254,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	if (URIraw.find("//") != std::string::npos)
 		return(SendResponse(404, response, connection));
 	std::string Folder = _config.getFolderLocationFromURI(URIraw);
+	
 	// test if Folder is in locations ; return *getSingleMapLocation
 	std::map<std::string, std::string> *singleLocationContent;
 	if ((singleLocationContent = _config.getSingleMapLocation(Folder)) == nullptr){
@@ -304,16 +284,17 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 			}
 		}
 
-
-		// test if the file exist in location ; return path to the file or path to the folder in location
+		// test if the file exist in location
+		// return path to the file or path to the folder in location
 		PathToFile = _config.isPathToFile(PathToFile);
 		if (PathToFile.empty())
-			return (SendResponse(404, response, connection)); // file doesn't exist in folder from locations
+			return (SendResponse(404, response, connection)); // file doesn't exist in folder
+															  // from locations
 
 		if ( ft_get_extension(PathToFile) == "")
 		{
-			// ET SI ON A UN FICHIER QUI EXISTE MAIS EST SANS EXTENSION ?? //
-		//	std::cout <<R<< "MY PATH TO FILE = " << PathToFile << "\n" RE;
+			// If teh ressource requested is actually a file but with no extension //
+			// so it could be taken as a folder //
 
 			bool doss;
 			DIR	*dir = opendir( PathToFile.c_str() );
@@ -326,10 +307,10 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				response.set_manual_content_type("application/octet-stream");
 				response.set_manual_content( ft_read_file(PathToFile) );
 				response.send(connection);
-				return (0);
+				return (1);
 			}
 
-			//////////////////////////////////////// C FAIT /////////////////////
+			// Here is the handle of autoindex //
 
 			std::string autoindexValue = _config.getAutoindex(*singleLocationContent);
 			std::string location = _config.getLocation(*singleLocationContent);
@@ -347,9 +328,6 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				std::map<std::string, std::string> *rootmap
 					=_config.getSingleMapLocation("/");
 
-//				std::cout <<B<< "MY REFERER IS ["
-//					<< request.get_header("Referer") << "]\n" << RE; //DEBUG
-
 				// Even if autoindex is false, we need in this case to answer just the dir//
 				if ( (request.get_header("Referer").find(URIraw) != std::string::npos
 						&& URIraw != "/")
@@ -358,8 +336,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 					if ( no_final_slash(URIraw) )
 					return ( add_slash(URIraw, connection, _port) );
 					SendResponseDefault(200, response, connection, PathToFile, URIraw);
-
-					return (0);
+					return (1);
 				}
 				else // autoindex = false : we add the default path to URI //
 				{
@@ -375,19 +352,17 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 						return (1);
 					}
 					PathToFile = PathToFile.substr( _config.getRoot(*rootmap).size() - 1 );
-					
-				//	std::cout <<R<< "MY PATH TO FILE = " << PathToFile << "\n" RE;//DEBUG
-					
 					return (go_default(PathToFile, connection, _port));
 				}
 			}
 		}
-
 		response.set_path(PathToFile);
 		response.send(connection, socks);
 	}
 	else if(request.get_type() == "POST")
 	{
+		// Mon trick qui est dans  receive request devrait etre ici //
+		
 		if(request.get_header("Content-Type") == "multipart/form-data")
 		{
 			if(request.get_content_header("Content-Disposition-name") == "file")
@@ -397,6 +372,8 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		}
 		else
 		{
+			// Handle d'un POST "classique" ici // 
+
 			std::cout << R << "POST request not implemented" << std::endl;
 			response.set_path("./website/index.html");
 		}
@@ -412,7 +389,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	if (!_config.IsMethodAllowed(request.get_type(), *(singleLocationContent)))
 		return (SendResponse(405, response, connection));
 
-	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
+//	std::cout << "⬆️ ⬆️ ⬆️\n"<< std::endl;//DEBUG
 	return (0);
 }
 
@@ -428,11 +405,10 @@ int	Network::delete_file(Request request, Response response, int connection)
 
 	if ( file_delete )
 	{
-//		std::cout <<R<< "DELETE ISOK\n"<<RE; //DEBUG
 		response.set_manual_content_type("text/html");
 		response.set_manual_content( ft_generate_success_delete(request) );
 		response.send(connection);
-		return (0);
+		return (1);
 	}
 	else
 		return (SendResponse(500, response, connection));
@@ -443,20 +419,15 @@ int	Network::upload_file(Request request, Response response, int connection)
 {
 	std::string	file_path;
 	file_path = _config.getUploadFolder();
-	//file_path += request.get_content_header("Content-Disposition-filename");
 	file_path += request.get_filename_post();
 
 	// Create and open a text file
-//	std::cout <<R<< "filepath usi " << file_path << "\n"<<RE;
 	std::ofstream file(file_path);
 	if (!file)
 		return (SendResponse(500, response, connection));
 
 	// Write to the file
-	//file << request.get_content_body();
 	file << request.get_file_post();
-
-//	std::cout <<G<< "file = :\n" << request.get_content_body().substr(0, 400) << "\n" <<RE;//DEBUG
 
 	// Close the file
 	file.close();
@@ -464,5 +435,5 @@ int	Network::upload_file(Request request, Response response, int connection)
 	response.set_manual_content_type("text/html");
 	response.set_manual_content( ft_generate_success_upload(request) );
 	response.send(connection);
-	return (0);
+	return (1);
 }
