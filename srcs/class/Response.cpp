@@ -133,7 +133,9 @@ std::string Response::send(int client_socket)
 	message << std::endl;
 	message << get_content_body();
 
-	::send(client_socket, message.str().c_str(), message.str().length(),0);
+	ssize_t ret = ::send(client_socket, message.str().c_str(), message.str().length(),0);
+	if (ret < 0)
+		std::cerr <<R<< "Message not sent\n"<<RE;
 	//returns the message for debug purposes.
 	return (message.str());
 }
@@ -163,8 +165,10 @@ std::string Response::send(int client_socket, fd_set socks)
 		std::cout <<R<< "##### CONNECTION NOT IN SET !!! #####\n"<<RE;
 		return ("");
 	}
-	
-	::send(client_socket, message.str().c_str(), message.str().length(),0);
+
+	ssize_t ret = ::send(client_socket, message.str().c_str(), message.str().length(),0);
+	if (ret < 0)
+		std::cerr <<R<< "Message not sent\n"<<RE;
 	//returns the message for debug purposes.
 	return (message.str());
 }

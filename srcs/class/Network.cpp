@@ -118,7 +118,9 @@ int	go_default(std::string URI, int connection, int port)
         "Location: " + URL + "\r\n"
         "\r\n";
 
-	send(connection, response.c_str(), response.length(), 0);
+	int ret = send(connection, response.c_str(), response.length(), 0);
+	if ( ret < 0)
+		std::cerr <<R<< "Message not send to socket\n";
 	return (1);
 }
 
@@ -233,7 +235,9 @@ int Network::Redirection(int connection, std::string redirect_URL)
         "Location: " + URL + "\r\n"
         "\r\n";
 
-	send(connection, response.c_str(), response.length(), 0);
+	ssize_t ret = send(connection, response.c_str(), response.length(), 0);
+	if ( ret < 0)
+		std::cerr <<R<< "Message not send to socket\n";
 	return (1);
 }
 
