@@ -57,7 +57,6 @@ void Response::set_path(std::string path)
 	{
 		int	error_code = std::atoi( path.substr(12, 3).c_str() );
 		set_content_body(ft_generate_error_html(error_code, _config));
-		set_content_extension("html");
 		return ;
 	}
 

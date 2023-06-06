@@ -272,7 +272,7 @@ Config::getErrorPages(int error_pages) {
 	}
 	else
 	{
-		std::cerr << R << "@fn Config::getErrorPages(int error_pages)\nError: getErrorPages: " << error_pages << " not found." << RE << std::endl;
+//		std::cerr << R << "@fn Config::getErrorPages(int error_pages)\nError: getErrorPages: " << error_pages << " not found." << RE << std::endl;
 		return (std::string());
 	}
 }

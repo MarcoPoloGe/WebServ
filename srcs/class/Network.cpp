@@ -169,11 +169,12 @@ bool Network::CatchRequest(Request &request, int connection, fd_set socks)
 	{
 		request = this->receive_request(connection, socks);
 	}
-	catch(...) //TO CHANGE !!! (05.06.23)
+	catch(std::invalid_argument &e)
 	{
-		std::cout << R << "Wrong HTTP REQUEST\n" << RE;
-		Response error(404, _config);
-		error.send(connection, socks);
+		std::string err_string = e.what();
+		int code = std::atoi( err_string.substr(1, 3).c_str() );
+		Response response(_config);
+		SendResponse(code, response, connection);
 		return (false);
 	}
 	check_host(request);
@@ -244,8 +245,9 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	Response			response(_config);
 	CGI 				cgi;
 
-	//Catch Request, send Response error(404, _config) if Wrong HTTP Request // << FAUX
-	this->CatchRequest(request, connection, socks);
+	//Catch Request, send Response error(404, _config) if Wrong HTTP Request //
+	if ( this->CatchRequest(request, connection, socks) == false)
+		return (1);
 
 	std::string	URIraw = request.get_URI();
 	std::string PathToFile;

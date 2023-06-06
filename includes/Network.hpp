@@ -9,7 +9,7 @@
 #include "Webserv_Includes.hpp"
 
 #ifndef MAX_CLIENTS
-#define MAX_CLIENTS 5
+# define MAX_CLIENTS 50
 #endif
 
 class Network
@@ -29,7 +29,7 @@ public:
 	//Accessors
 
 	int		getSock(void);
-	int		getPort(void);  /////////todo
+	int		getPort(void);
 	
 
 	//Public Functions
@@ -48,8 +48,8 @@ public:
 	int			Redirection				(int connection, std::string redirect_URL);
 	int			delete_file				(Request request, Response response, int connection);
 	int			upload_file				(Request request, Response response, int connection);
-	void		addName					(Config config); ///todo
-														//do getPort();
+	void		addName					(Config config);
+
 private:
 	//Nope nope nope
 

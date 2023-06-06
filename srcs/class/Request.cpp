@@ -25,7 +25,7 @@ void Request::fill(std::string request)
 		if(!temp.empty() && (temp == "GET" || temp == "POST" || temp == "DELETE"))
 			type = temp;
 		else
-			throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request type : " + temp);
+			throw std::invalid_argument("[501] Invalid HTTP request type : " + temp);
 	}
 	if(std::getline(file >> std::ws, temp, ' '))
 	{
@@ -33,7 +33,7 @@ void Request::fill(std::string request)
 		if(!temp.empty())
 			URI = temp;
 		else
-			throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request URI");
+			throw std::invalid_argument("Invalid HTTP request URI");
 	}
 	if(std::getline(file >> std::ws, temp))
 	{
@@ -41,7 +41,7 @@ void Request::fill(std::string request)
 		if(!temp.empty() && temp == HTTP_VERSION)
 			HTTP_version = temp;
 		else
-			throw std::invalid_argument("@fn Request::fill(std::string request)\nInvalid HTTP request HTTP version : " + temp);
+			throw std::invalid_argument("[505] Invalid HTTP request HTTP version : " + temp);
 	}
 	this->headers_map = process_headers(file);
 	this->content_list = process_contents(file, this->headers_map);
@@ -163,21 +163,15 @@ void Request::upload_file(std::string full_request)
 
 	boundary = full_request.substr(bound_begin + 9, bound_end - bound_begin - 9);
 
-//	std::cout <<R<< "&&&&&BOUNDAAAAARY = [" << boundary << "]\n" <<RE;
-
 	int start_file = full_request.find( "\r\n\r\n", full_request.find("--"+boundary) );
 	int end_file = full_request.find("--"+boundary+"--");
 
 	file_content = full_request.substr(start_file + 4, end_file - (start_file + 4) - 1);
 
-	//std::cout <<R<< "FIIIIIIIIIIILE is {\n" << file_content << "\n}\n"<<RE;
-
 	int filename_begin = full_request.find("filename=\"", full_request.find("--"+boundary) );
 	int	filename_end = full_request.find("\"\r\n", filename_begin);
 
 	filename = full_request.substr(filename_begin + 10, filename_end - filename_begin - 10);
-
-	//std::cout <<R<< "FIIIILENAAAAME is {\n" << filename << "\n}\n"<<RE;
 
 	_upload_file = file_content;
 	_filename = filename;
