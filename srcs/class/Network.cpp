@@ -214,7 +214,6 @@ int Network::SendResponseDefault(int errorCode, Response &response, int connecti
 int Network::SendCGIResponse(int errorCode, Response &response, Request &request, int connection, const std::string& path)
 {
 	CGI cgi;
-	std::cout <<G<< "CGI Goooooooo" <<RE<< std::endl;
 	response.set_error_code(errorCode);
 
 	response.set_manual_content_type("text/html");
