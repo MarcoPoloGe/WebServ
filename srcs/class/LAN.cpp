@@ -171,8 +171,7 @@ void	LAN::handle_new_connection(void)
 	if (connection != -1)
 	{
 		std::cout << "\nNo more room left for the client\n";
-		int ret;
-		ret = send(connection,"\nSorry, this server is too busy. Try again later!\r\n",51, 0);
+		ssize_t ret = send(connection,"\nSorry, this server is too busy. Try again later!\r\n",51, 0);
 		if ( ret < 0)
 			std::cerr <<R<< "Message not send to socket\n";
 		close(connection);
