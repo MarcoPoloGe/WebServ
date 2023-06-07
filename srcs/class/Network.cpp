@@ -97,7 +97,7 @@ bool no_final_slash(std::string URI)
 		return (true);
 	return (false);
 }
-
+/*
 int	add_slash(std::string URI, int connection, int port)
 {
 	std::string	URL = "http://localhost:" + std::to_string(port) + URI + "/";
@@ -113,6 +113,32 @@ int	add_slash(std::string URI, int connection, int port)
 int	go_default(std::string URI, int connection, int port)
 {
 	std::string	URL = "http://localhost:" + std::to_string(port) + URI;
+   	std::string response =
+		"HTTP/1.1 302 Found\r\n"
+        "Location: " + URL + "\r\n"
+        "\r\n";
+
+	int ret = send(connection, response.c_str(), response.length(), 0);
+	if ( ret < 0)
+		std::cerr <<R<< "Message not send to socket\n";
+	return (1);
+}*/
+
+int	add_slash(std::string URI, int connection, Request request)
+{
+	std::string	URL = "http://" + request.get_header("Host") + URI + "/";
+   	std::string response =
+		"HTTP/1.1 302 Found\r\n"
+        "Location: " + URL + "\r\n"
+        "\r\n";
+
+	send(connection, response.c_str(), response.length(), 0);
+	return (1);
+}
+
+int	go_default(std::string URI, int connection, Request request)
+{
+	std::string	URL = "http://" + request.get_header("Host") + URI;
    	std::string response =
 		"HTTP/1.1 302 Found\r\n"
         "Location: " + URL + "\r\n"
@@ -332,7 +358,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 			if (autoindexValue == "true")
 			{
 				if ( no_final_slash(URIraw) )
-					return ( add_slash(URIraw, connection, _port) );
+					return ( add_slash(URIraw, connection, request) );
 				SendResponseDefault(200, response, connection, PathToFile, URIraw);
 
 				return (0);
@@ -348,7 +374,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 					&& request.get_header("User-Agent").find("curl") == std::string::npos)
 				{
 					if ( no_final_slash(URIraw) )
-					return ( add_slash(URIraw, connection, _port) );
+					return ( add_slash(URIraw, connection, request) );
 					SendResponseDefault(200, response, connection, PathToFile, URIraw);
 					return (1);
 				}
@@ -365,7 +391,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 						return (1);
 					}
 					PathToFile = PathToFile.substr( _config.getRoot(*rootmap).size() - 1 );
-					return (go_default(PathToFile, connection, _port));
+					return (go_default(PathToFile, connection, request));
 				}
 			}
 		}
