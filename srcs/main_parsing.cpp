@@ -206,7 +206,11 @@ void checkErrorParsingServer(Config &s)
 	if (s.getPortServer().empty())
 		throw std::invalid_argument("@fn bool checkErrorParsingServer(Config &s)\n"
 									"Port empty ");
-
+	if(s.getHost() == "127.0.0.1" || s.getHost() == "0.0.0.0" || s.getHost() == "localhost")
+		;
+	else
+		throw std::invalid_argument("@fn bool checkErrorParsingServer(Config &s)\n"
+									"Host not valid ");
 }
 
 bool isValidIpAddress(const std::string &ip)
@@ -254,6 +258,8 @@ setUpServer(
 		}
 		if (((*first_bracket).find("name="))!= std::string::npos)
 			s.setNameServer(AfterEqual(*first_bracket));
+		if (((*first_bracket).find("host="))!= std::string::npos)
+			s.setHost(AfterEqual(*first_bracket));
 		if (((*first_bracket).find("cgibin="))!= std::string::npos)
 			s.setBinCgi(AfterEqual(*first_bracket));
 		if (((*first_bracket).find("client_max_body_size="))!= std::string::npos)

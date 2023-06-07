@@ -54,6 +54,8 @@ public:
 	setErrorPagesMap(std::map<int,std::string>							error_pages);
 	void
 	setErrorNamesMap(std::map<int,std::string>							error_names);
+	void
+	setHost(const std::string &											host);
 
 /* weirdo setters */
 	void
@@ -80,6 +82,8 @@ public:
 	std::string													getErrorPages(int error_pages);
 	std::string													getErrorNames(int error_names);
 	std::string													getDefaultErrorDescription(int error);
+	const std::string 											&getHost();
+
 
 	/* weirdo getters */
 	std::string
@@ -152,6 +156,7 @@ public:
 
 private:
 	std::string														_name;				// could be empty
+	std::string														_host;				// could be empty
 	std::string														_binCGI;			//
 	int																_bodylength;
 	std::string														_uploadfolder;

@@ -87,6 +87,7 @@ void Config::setMimeMap			(std::map<std::string,std::string> mime_type)			{ this
 void Config::setErrorPagesMap	(std::map<int, std::string> error_pages)				{ this->_error_pages = error_pages; }
 void Config::setErrorNamesMap	(std::map<int, std::string> error_names)				{ this->_error_names = error_names; }
 void Config::setBinCgi			(const std::string &binCgi) 							{ this->_binCGI = binCgi; }
+void Config::setHost			(const std::string &host) 								{ this->_host = host; }
 
 /* weirdo setters */
 
@@ -204,6 +205,7 @@ std::vector<int> 									&Config::getPortServer(void) 			{ return(_ports); }
 int 												&Config::getAmountPortServer(void) 		{ return(_amount_ports); }
 std::vector<std::map<std::string, std::string> > 	&Config::getAllLocations(void)			{ return (_locs); }
 const std::string 									&Config::getPath() const 				{ return (_path_to_file); }
+const std::string 									&Config::getHost()		 				{ return (_host); }
 
 
 /*weirdo getter*/
