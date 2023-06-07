@@ -9,7 +9,7 @@
 #include "Webserv_Includes.hpp"
 
 #ifndef MAX_CLIENTS
-# define MAX_CLIENTS 5
+# define MAX_CLIENTS 10
 #endif
 
 class Network

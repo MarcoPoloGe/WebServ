@@ -157,9 +157,9 @@ void	LAN::handle_new_connection(void)
 	{
 		if (_connectlist[listnum].co == 0)
 		{
-			std::cout << "\nConnection detected from " << inet_ntoa(client_address.sin_addr)
+			std::cout <<G<< "\nConnection detected from <" << inet_ntoa(client_address.sin_addr)
 				<< ":" << ntohs(client_address.sin_port)
-				<< " [Slot no " << listnum << "]\n";
+				<< "> on slot nº [" << listnum << "]\n" <<RE;
 			_connectlist[listnum].co = connection;
 			_connectlist[listnum].net = _current_net;
 			connection = -1;
