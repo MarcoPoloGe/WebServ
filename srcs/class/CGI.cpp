@@ -62,7 +62,7 @@ std::map<std::string, std::string> CGI::setUpEnvVariablesCGI(Request &request, C
 	envmap["PATH_TRANSLATED"] = binpath;
 	envmap["REQUEST_URI"] = binpath;
 
-	envmap["SERVER_NAME"] = conf.getIpServer();
+	envmap["SERVER_NAME"] = "127.0.0.1";
 	envmap["SERVER_PROTOCOL"] = request.get_HTTP_version();
 	envmap["SERVER_PORT"] = numberToString(port);
 

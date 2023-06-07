@@ -36,6 +36,7 @@
 #include "Network.hpp"
 #include "CGI.hpp"
 #include "LAN.hpp"
+#include "main_parsing.hpp"
 
 #define BACKLOG 2
 #define MAX_CLIENTS 10

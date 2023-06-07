@@ -200,12 +200,31 @@ serverConfig(
 /**********************************************************************************************************************/
 /***************************                  Set Up one Server config	      		           ************************/
 /**********************************************************************************************************************/
-//
-//bool checkErrorParsingServer(Config &s)
-//{
-//	s.getPortServer();
-//
-//}
+
+void checkErrorParsingServer(Config &s)
+{
+	if (s.getPortServer().empty())
+		throw std::invalid_argument("@fn bool checkErrorParsingServer(Config &s)\n"
+									"Port empty ");
+
+}
+
+bool isValidIpAddress(const std::string &ip)
+{
+	std::stringstream ss(ip);
+	std::string segment;
+	int i = 0;
+	int temp;
+
+	while(std::getline(ss, segment, '.')) {
+		i++;
+		std::stringstream segCheck(segment);
+		if (!(segCheck >> temp) || temp < 0 || temp > 255 || segCheck.peek() != EOF)
+			return false;
+	}
+
+	return (i == 4 && ss.eof());
+}
 
 // CQFD
 Config &
@@ -235,8 +254,6 @@ setUpServer(
 		}
 		if (((*first_bracket).find("name="))!= std::string::npos)
 			s.setNameServer(AfterEqual(*first_bracket));
-		if (((*first_bracket).find("ip="))!= std::string::npos)
-			s.setIpServer(AfterEqual(*first_bracket));
 		if (((*first_bracket).find("cgibin="))!= std::string::npos)
 			s.setBinCgi(AfterEqual(*first_bracket));
 		if (((*first_bracket).find("client_max_body_size="))!= std::string::npos)
@@ -259,6 +276,8 @@ setUpServer(
 									"\t\tstd::vector<std::string>::iterator \tlast_bracket,\n"
 									"\t\tConfig &s) \n"
 									"Missing a port or a location in a server from config file");
+
+	checkErrorParsingServer(s);
 	return(s);
 }
 
@@ -281,6 +300,15 @@ insertMap_split_by_Delimiter(
 		getOnlyChar(key);
 		std::string value = input.substr(pos + 1, input.length());
 		getOnlyChar(value);
+		if (value.empty())
+		{
+			throw std::invalid_argument("@fn void\n"
+										"insertMap_split_by_Delimiter(\n"
+										"\t\tstd::map<std::string, std::string> &map,\n"
+										"\t\tconst std::string& input,\n"
+										"\t\tconst std::string& delimiter)\n"
+										"Empty value in location");
+		}
 		map.insert(std::pair<std::string, std::string>(key, value));
 	}
 	else
@@ -314,7 +342,7 @@ grabLocation (
 			{
 				if ((*it).find("root=") != std::string::npos)
 				{
-					if ((*it)[(*it).size()] == '/')
+					if ((*it).back() == '/')
 						isRoot = 1;
 				}
 				if ((*it).find("return=") != std::string::npos)
