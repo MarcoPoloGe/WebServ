@@ -12,7 +12,6 @@
 
 Config::Config()
 {
-	/*std::cout <<W<< "++config" <<RE<< std::endl;*/
 	_DefaultErrorMap.insert( std::make_pair(400, "Bad Request") );
 	_DefaultErrorMap.insert( std::make_pair(401,"Unauthorized") );
     _DefaultErrorMap.insert( std::make_pair(402,"Payment Required") );
@@ -77,18 +76,13 @@ Config::Config()
     _DefaultErrorMap.insert( std::make_pair(527,"Railgun Error") );
 }
 
-Config::~Config() 	{ /*std::cout <<W<< "--config" <<RE<< std::endl;*/ }
+Config::~Config() 	{ }
 
 /**********************************************************************************************************************/
 /***************************                       Setters	            		               ************************/
 /**********************************************************************************************************************/
 
 void Config::setNameServer		(std::string name) 										{ this->_name = name; }
-
-//void Config::setServerConfig	(std::vector<std::string> config)						{ this->_serverconfig = config; }
-//void Config::setAllLocation		(std::vector<std::map<std::string, std::string> > locs)	{ this->_locs = locs; }
-void Config::setKeyTemp			(std::string key_temp) 									{ this->_key_temp = key_temp; }
-void Config::setValueTemp		(std::string value_temp) 								{ this->_value_temp = value_temp; }
 void Config::setMimeMap			(std::map<std::string,std::string> mime_type)			{ this->_mime_types = mime_type; }
 void Config::setErrorPagesMap	(std::map<int, std::string> error_pages)				{ this->_error_pages = error_pages; }
 void Config::setErrorNamesMap	(std::map<int, std::string> error_names)				{ this->_error_names = error_names; }
@@ -96,11 +90,7 @@ void Config::setBinCgi			(const std::string &binCgi) 							{ this->_binCGI = bi
 
 /* weirdo setters */
 
-void
-Config::setIpServer		(std::string ip)
-{
-	this->_ip = ip;
-}
+
 void
 Config::setRawfile	(
 		std::vector<std::string>::iterator first_bracket,
@@ -193,24 +183,6 @@ std::string Config::getUploadFolder() const
 	return (_uploadfolder);
 }
 
-//std::string Config::getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent)
-//{
-//	if ( ft_get_extension(URIraw) == "" )
-//	{
-//
-//		return (this->getRoot(singleLocationContent));
-//	}
-//	else
-//		return (this->getRoot(singleLocationContent) + this->getFileFromURI(URIraw));
-//}
-
-//bool
-//Config::checkAutoIndex(std::map<std::string, std::string> *singleLocationContent)
-//{
-//	if(this->getAutoindex(*singleLocationContent) == "true")
-//		return (true);
-//	return false;
-//}
 
 
 void
@@ -218,13 +190,6 @@ Config::setPathToFile (std::string &URIraw, std::map<std::string, std::string> *
 {
 
 	std::string minusfolder = this->eraseFolderLocationAndSlashFromURI(URIraw, *singleLocationContent);
-	// erase from URI :
-	// "/" return ""
-	// "/img" return ""
-	// "/img/" return ""
-	// "/index.html return "index.html"
-	// "uploads/uploaded_files/downloaded.txt" return "uploaded_files/downloaded.txt"
-//	_path_to_file = this->getRoot(*singleLocationContent) + this->getDefault(*singleLocationContent);
 	_path_to_file = this->getRoot(*singleLocationContent) + minusfolder;
 
 }
@@ -235,19 +200,23 @@ Config::setPathToFile (std::string &URIraw, std::map<std::string, std::string> *
 /**********************************************************************************************************************/
 
 std::string 										&Config::getNameServer(void) 			{ return(this->_name); }
-std::string 										&Config::getIpServer(void) 				{ return(_ip); }
 std::vector<int> 									&Config::getPortServer(void) 			{ return(_ports); }
 int 												&Config::getAmountPortServer(void) 		{ return(_amount_ports); }
-//std::vector<std::string> 							&Config::getAllServerConfig (void)		{ return (_serverconfig); }
 std::vector<std::map<std::string, std::string> > 	&Config::getAllLocations(void)			{ return (_locs); }
-//std::map<std::string,std::string>					&Config::getMimeMap(void)				{ return(_mime_types); }
-//std::map<int, std::string>							&Config::getErrorPagesMap(void)			{ return(_error_pages); }
-//std::map<int, std::string>							&Config::getErrorNamesMap(void)			{ return(_error_names); }
-const std::string 									&Config::getBinCgi() const 				{ return (_binCGI); }
 const std::string 									&Config::getPath() const 				{ return (_path_to_file); }
 
-//std::string 										&Config::getKeyTemp(void) 				{ return (_key_temp); }
-//std::string 										&Config::getValueTemp(void)				{ return (_value_temp); }
+
+/*weirdo getter*/
+
+const std::string&
+Config::getBinCgi() const
+{
+	if (_binCGI.empty())
+		throw std::invalid_argument("@fn const std::string&\n"
+									"Config::getBinCgi() const \n"
+									"binCGI empty\n");
+	return (_binCGI);
+}
 
 std::string
 Config::getType(const std::string& format) {
@@ -263,23 +232,6 @@ Config::getType(const std::string& format) {
 	}
 }
 
-
-//std::string
-//Config::getContentType(const std::string& format) {
-//	std::map<std::string, std::string>::iterator itm ;
-//
-//	itm = _mime_types.find(format);
-//	if (itm != _mime_types.end()){
-//		return (itm->first);
-//	}
-//	else
-//	{
-//		std::cerr<<R<< "@fn Config::getContentType(const std::string& format)\nError: getType: "<< format << " not found." <<RE<< std::endl;
-//		return (std::string());
-//	}
-//}
-
-
 std::string
 Config::getErrorPages(int error_pages) {
 	std::map<int, std::string>::iterator itm;
@@ -289,7 +241,7 @@ Config::getErrorPages(int error_pages) {
 	}
 	else
 	{
-//		std::cerr << R << "@fn Config::getErrorPages(int error_pages)\nError: getErrorPages: " << error_pages << " not found." << RE << std::endl;
+		std::cerr << R << "@fn Config::getErrorPages(int error_pages)\nError: getErrorPages: " << error_pages << " not found." << RE << std::endl;
 		return (std::string());
 	}
 }
@@ -371,7 +323,6 @@ std::string Config::isPathToFile(const std::string &PathToFile)
 {
 	std::ifstream to_open(PathToFile.c_str(), std::ios::in);
 	if ( !to_open.is_open() ){
-//		throw std::invalid_argument ("@fn Config::isPathToFile(std::string URIraw, std::map<std::string, std::string> *singleLocationContent)\nNo file found in location with URI");
 		return ("");
 	}
 	else {
@@ -379,34 +330,9 @@ std::string Config::isPathToFile(const std::string &PathToFile)
 		return (PathToFile);
 	}
 }
-//
-//std::string Config::getFileInFolderFromURI(std::string URIraw, std::string Folder)
-//{
-//	unsigned long pos;
-//	if (URIraw == Folder)
-//		return("");
-//	if ((pos = URIraw.find(Folder)) != std::string::npos)
-//	{
-//		std::cout << pos + Folder.size() << std::endl;
-//		return (URIraw.substr( pos + Folder.size()));
-//	}
-//	return ("");
-//}
-//
-//std::string Config::getFileFromURI(std::string URIraw)
-//{
-//	unsigned long pos;
-//
-//	if ((pos = URIraw.rfind('/')) != std::string::npos)
-//	{
-//		return (URIraw.substr( pos, URIraw.size()));
-//	}
-//	return ("");
-//}
 
 std::string Config::getFolderLocationFromURI(std::string URIraw)
 {
-
 	// /img || /img/kpoj || /img/   ||   /img  || /index.html
 	if (URIraw == "/")
 		return (URIraw);
@@ -443,90 +369,6 @@ std::string Config::eraseFolderLocationAndSlashFromURI(std::string URIraw, std::
 	throw std::invalid_argument("Config::eraseFolderLocationAndSlashFromURI(std::string URIraw, std::map<std::string,"
 								" std::string> &singleMapLocation): Something went wrong with the path");
 }
-
-//Response
-//Config::IsLocation(const std::string& URIraw,
-//				   const std::string &Method
-//				   )
-//{
-//	// URIraw = "/"
-//	// URI = "index.html"
-//	// URI = "./website/index.html"
-//	// folder = ""
-//
-//	std::vector<std::map<std::string, std::string> >::iterator i;
-//	std::map<std::string, std::string>::iterator im;
-//	std::string folder;
-//	Response ret((*this));
-//
-//	unsigned long pos;
-//	std::string URI = URIraw.substr(1, URIraw.size());
-//	std::string path;
-//
-//	if ((pos = URI.find('/')) != std::string::npos || URI.empty()) //
-//	{
-//		folder = "/" + URI.substr(0, pos); // img/
-//		for (i = _locs.begin(); i != _locs.end(); i++)
-//		{
-//			if (((im = (*i).find("location")) != (*i).end()) && (im->second == folder))
-//			{
-//				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos))
-//				{
-//					if (im->second.find(Method) != std::string::npos)
-//					{
-//						URI.erase(0, folder.size());
-//						path = getPath_of_URI(URI, i, im);
-//						if (path.empty())
-//						{
-//							ret.set_error_code(404); // file doesn't exist in folder from locations
-//							return (ret);
-//						}
-//					}
-//					else
-//					{
-//						ret.set_error_code(405);
-//						return (ret); // Method not allowed
-//					}
-//				}
-//				break;
-//			}
-//		}
-//		if (i == _locs.end()) {
-//			ret.set_error_code(404);
-//			return (ret);// no folder location for ./website/folder/ in config
-//		}
-//	}
-//	else
-//	{
-//		for (i = _locs.begin(); i != _locs.end(); i++)
-//		{
-//			if (((im = (*i).find("location")) != (*i).end()) && (im->second == "/"))
-//			{
-//				if (((im = (*i).find("method")) != (*i).end()) && (im->second.find(Method) != std::string::npos))
-//				{
-//					if (im->second.find(Method) != std::string::npos)
-//					{
-////						URI.erase(0, 1);
-//						path = getPath_of_URI(URIraw, i, im); //  URIraw = "/index.html"
-//						if (path.empty())
-//						{
-//							ret.set_error_code(404); // file doesn't exist in folder from locations
-//							return (ret);
-//						}
-//					}
-//					else
-//					{
-//						ret.set_error_code(405);
-//						return (ret); // Method not allowed
-//					}
-//				}
-//				break;
-//			}
-//		}
-//	}
-//	ret.set_path(path);
-//	return (ret);
-//}
 
 std::string
 Config::getPath_of_URI(const std::string& URIraw,
@@ -566,108 +408,3 @@ std::string	Config::getDefaultErrorDescription(int error)
 		return ("");
 	return ((*it).second);
 }
-
-
-// In a specific location, search for a key and if found, set key_temp and value_temp to corresponding variables
-// ex: s0->getInLocationValue("/methods", "root");
-//bool
-//Config::getInLocationValue(std::string PathLocation, std::string key)
-//{
-//	std::vector<std::map<std::string, std::string> >::iterator itv;
-//	std::map<std::string, std::string>::iterator itm;
-//
-//	setKeyTemp("");
-//	setValueTemp("");
-//
-//	for (itv = _locs.begin(); itv != _locs.end(); itv++)
-//	{
-//		itm = (*itv).find("location");
-//		if (itm != (*itv).end())
-//		{
-//			if (itm->second == PathLocation)
-//			{
-//				itm = (*itv).find(key);
-//				if (itm != (*itv).end()) {
-//					setKeyTemp(itm->first);
-//					setValueTemp(itm->second);
-//				}
-//			}
-//		}
-//		else {
-//			std::cerr << W << "@fn Config::getInLocationValue(std::string PathLocation, std::string key)" <<RE<< std::endl;
-//			std::cerr << R << "Location path: '" << RE << Y << PathLocation << RE << R << "' not found" << std::endl;
-//			return (false);
-//		}
-//	}
-//	return(true);
-//}
-//
-//std::map<std::string, std::string> *Config::getLocationFolderContent(const std::string &folder){
-//	std::vector<std::map<std::string, std::string> >::iterator itv;
-//	std::map<std::string, std::string>::iterator itm;
-//
-//	for (itv = _locs.begin(); itv != _locs.end(); itv++)
-//	{
-//		if ((itm = (*itv).find("location")) != (*itv).end())
-//			if (itm->second == folder)
-//				return (&(*itv));
-//	}
-//	return (nullptr);
-//}
-//
-//
-//
-//
-//// Print all content of a location | ex: s0->printAllLocation();;
-//void
-//Config::printAllLocation()
-//{
-//	std::vector<std::map<std::string, std::string> >::iterator itv;
-//	std::map<std::string, std::string>::iterator itm;
-//
-//	for (itv = _locs.begin(); itv != _locs.end(); itv++)
-//	{
-//		for (itm = (*itv).begin(); itm != (*itv).end(); itm++)
-//			std::cout <<G<< itm->first << " | "<<RE<<Y<< itm->second <<RE<<  std::endl;
-//	}
-//}
-//// Print all content of a location | ex: s0->printAllContentsLocation("/methods");
-//bool
-//Config::printAllContentsLocation(std::string pathLocation) {
-//
-//	std::cout <<W<< "@fn Config::printAllContentsLocation(std::string pathLocation)"<<RE<< std::endl;
-//	std::vector<std::map<std::string, std::string> >::iterator itv;
-//	std::map<std::string, std::string>::iterator itm;
-//
-//	for (itv = _locs.begin(); itv != _locs.end(); itv++) {
-//
-//		itm = (*itv).find("location");
-//		if (itm != (*itv).end()) {
-//			if (itm->second == pathLocation) {
-//
-//				std::cout << G << \
-//				"Location path: '" <<RE<<Y<< pathLocation <<RE<<G<< "' found" \
-//				<<RE<< std::endl;
-//
-//				std::cout << G << \
-//				"Location Key: '" << itm->first <<RE<<Y<< "' \t | Value: '" << itm->second \
-//				<<RE<< std::endl;
-//
-//				std::cout << G << \
-//				"Content Location '" \
-//				<<RE<< std::endl;
-//
-//				for (itm = (*itv).begin(); itm != (*itv).end(); itm++) {
-//					std::cout << \
-//                    "Key : '" << itm->first <<RE<<Y<< "' \t | " \
-//                    "Value: '" << itm->second << "'" <<RE<< std::endl;
-//				}
-//			}
-//		}
-//		else {
-//			std::cerr <<R<< "Location path: '" <<RE<<Y<< pathLocation <<RE<<R<< "' not found" << std::endl;
-//			return (false);
-//		}
-//	}
-//	return(true);
-//}

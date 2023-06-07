@@ -34,7 +34,6 @@ public:
 	Config();
 	~Config();
 
-
 /**********************************************************************************************************************/
 /***************************                       Setters	            		               ************************/
 /**********************************************************************************************************************/
@@ -49,14 +48,6 @@ public:
 	setBodyLength(std::string											bodylength);
 	void
 	setUploadFolder(std::string											input);
-//	void
-//	setServerConfig(std::vector<std::string> 							config);
-//	void
-//	setAllLocation(std::vector<std::map<std::string, std::string> > 	locs);
-	void
-	setKeyTemp(std::string 												key_temp);
-	void
-	setValueTemp(std::string 											value_temp);
 	void
 	setMimeMap(std::map<std::string,std::string>						mime_type);
 	void
@@ -64,15 +55,15 @@ public:
 	void
 	setErrorNamesMap(std::map<int,std::string>							error_names);
 
-
-
-
 /* weirdo setters */
 	void
 	setRawfile(std::vector<std::string>::iterator first_bracket, std::vector<std::string>::iterator last_bracket);
 
 	void
 	setPathToFile (std::string &URIraw, std::map<std::string, std::string> *singleLocationContent);
+
+	void
+	setBinCgi(const std::string &binCgi);
 
 
 /**********************************************************************************************************************/
@@ -83,45 +74,18 @@ public:
 	std::string 												&getIpServer();
 	std::vector<int> 											&getPortServer();
 	int			 												&getAmountPortServer();
-//	std::vector<std::string> 									&getAllServerConfig ();
 	std::vector<std::map<std::string, std::string> >			&getAllLocations();
-//	std::map<std::string,std::string>							&getMimeMap();
-//	std::map<int,std::string>									&getErrorPagesMap();
-//	std::map<int,std::string>									&getErrorNamesMap();
-
 	const std::string 											&getPath() const;
-
-//	std::string 												&getKeyTemp();
-//	std::string 												&getValueTemp();
-
-
 	std::string													getType(const std::string& format);
-//	std::string 												getContentType(const std::string& format);
 	std::string													getErrorPages(int error_pages);
 	std::string													getErrorNames(int error_names);
-
-
-
-
-//	Response 													IsLocation(const std::string& URIraw, const std::string &Method);
-
 	std::string													getDefaultErrorDescription(int error);
 
 	/* weirdo getters */
-
-//	s0->getInLocationValue("/methods", "root");
-//	bool
-//	getInLocationValue(std::string key, std::string LocationPath);
-//
-//	std::map<std::string, std::string> *
-//	getLocationFolderContent(const std::string &folder);
-
-
 	std::string
 	getPath_of_URI(const std::string& URIraw,
 				   std::vector<std::map<std::string, std::string> >::iterator &i,
 				   std::map<std::string, std::string>::iterator &im);
-
 
 	std::string
 	getRoot(std::map<std::string,
@@ -158,16 +122,19 @@ public:
 				   std::string> &singleMapLocation,
 				   const std::string& var );
 
-//	std::string
-//	getFileFromURI(std::string URIraw);
+	int
+	getBodyLength() const;
 
-//	std::string
-//	getPathToFile(std::string URIraw, std::map<std::string, std::string> singleLocationContent);
-//
-//	std::string
-//	getFileInFolderFromURI(std::string URIraw, std::string Folder);
+	std::string
+	getUploadFolder() const;
+
+	const std::string &
+	getBinCgi() const;
 
 
+/**********************************************************************************************************************/
+/***************************                       Utils Vars		                           ************************/
+/**********************************************************************************************************************/
 
 	std::string
 	isPathToFile(const std::string &PathToFile);
@@ -175,30 +142,19 @@ public:
 	bool
 	IsMethodAllowed(std::string Method, std::map<std::string, std::string> &singleMapLocation);
 
-//	bool
-//	isOnlyFolder(const std::string &folder, const std::string &URIraw);
+	std::string
+	eraseFolderLocationAndSlashFromURI(std::string URIraw, std::map<std::string, std::string> &singleMapLocation);
+
 
 /**********************************************************************************************************************/
 /***************************                       Private Vars		                           ************************/
 /**********************************************************************************************************************/
 
 private:
-	std::string														_name;
-	std::string														_ip;
-	std::string														_binCGI;
+	std::string														_name;				// could be empty
+	std::string														_binCGI;			//
 	int																_bodylength;
 	std::string														_uploadfolder;
-public:
-	
-	void setBinCgi(const std::string &binCgi);
-
-	const std::string &getBinCgi() const;
-	
-
-	int getBodyLength() const;
-	std::string getUploadFolder() const;
-
-private:
 	std::vector<int>												_ports; 			// protected in @fn Config::setPortServer
 	int																_amount_ports;		//
 	std::vector<std::string> 										_serverconfig;		//
@@ -207,124 +163,10 @@ private:
 	std::map<std::string, std::string>								_mime_types;		// protected in @fn save_mime_type
  	std::map<int, std::string>										_error_pages;		// not protected for incorrect input
 	std::map<int, std::string>										_error_names;
-
 	std::string 													_path_to_file;		//protected
-
 	std::string														_root;				//protected with no '/' at the end and empty
-
-	std::string														_key_temp;
-	std::string														_value_temp;
-
-
 	std::map<int, std::string>										_DefaultErrorMap;
 
-/**********************************************************************************************************************/
-/***************************                       Utils		            		           ************************/
-/**********************************************************************************************************************/
-
-public:
-//	s0->printAllContentsLocation("/methods");
-//	bool
-//	printAllContentsLocation(std::string pathLocation);
-
-//	s0->printAllLocation();
-//	void
-//	printAllLocation();
-
-//	bool
-//	checkAutoIndex(std::map<std::string, std::string> *singleLocationContent);
-
-	std::string
-	eraseFolderLocationAndSlashFromURI(std::string URIraw, std::map<std::string, std::string> &singleMapLocation);
-
-
-
 };
-
-/*↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
-/***************************                       main_parsing.cpp fn	    		           ************************/
-/**********************************************************************************************************************/
-
-void
-main_parsing(char **av, std::vector<Config> &all_config);
-
-void
-main_parsing(std::string fileName, std::vector<Config> &all_config);
-
-
-/**********************************************************************************************************************/
-/***************************            Server Config: parsing all config file          	   ************************/
-/**********************************************************************************************************************/
-
-bool
-serverConfig(
-		std::vector<std::string> &stock,
-		std::vector<std::string>::iterator it,
-		std::vector<Config> &all_config);
-
-
-/**********************************************************************************************************************/
-/***************************                  Set Up one Server config	      		           ************************/
-/**********************************************************************************************************************/
-
-Config &
-setUpServer(
-		std::vector<std::string>::iterator 	first_bracket,
-		std::vector<std::string>::iterator 	last_bracket,
-		Config &s);
-
-
-/**********************************************************************************************************************/
-/***************************                   Get infos from one location {}     	           ************************/
-/**********************************************************************************************************************/
-
-void
-insertMap_split_by_Delimiter(
-		std::map<std::string,
-				std::string> &map,
-		const std::string& input,
-		const std::string& delimiter);
-
-std::vector<std::string>::iterator
-grabLocation (
-		std::vector<std::string>::iterator 	it,
-		std::vector<std::string>::iterator 	last_bracket,
-		Config &s);
-
-
-/**********************************************************************************************************************/
-/***************************                       main_parsing.cpp Utils		               ************************/
-/**********************************************************************************************************************/
-
-std::string
-AfterEqual (std::string &input);
-
-//void
-//printVector(std::vector<std::string> &x );
-
-void
-getOnlyChar(std::string &s);
-
-void
-insert_mime_type(
-		std::string input, std::map<std::string, std::string> &mime_types);
-
-std::map<std::string, std::string>
-save_mime_type(
-		std::vector<std::string>::iterator 	first_bracket,
-		std::vector<std::string>::iterator 	last_bracket);
-
-
-//void
-//insert_error(
-//		std::string input,
-//		std::map<std::string, std::string> &error);
-
-//void
-//save_error(
-//		std::vector<std::string>::iterator 	first_bracket,
-//		std::vector<std::string>::iterator 	last_bracket,
-//		std::map<std::string, std::string> &error);
-
 
 #endif //CONFIG_PARSER_PARSER_HPP
