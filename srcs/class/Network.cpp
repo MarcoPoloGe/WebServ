@@ -405,17 +405,10 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 		if(request.get_header("Content-Type") == "multipart/form-data")
 		{
 			if(request.get_content_header("Content-Disposition-name") == "file")
-			{
 				return (upload_file(request, response, connection));
-			}
 		}
 		else
-		{
-			// Handle d'un POST "classique" ici // 
-
-			std::cout << R << "POST request not implemented" << std::endl;
-			response.set_path("./website/index.html");
-		}
+			SendResponse(422,response,connection);
 	}
 	else if(request.get_type() == "DELETE")
 	{
