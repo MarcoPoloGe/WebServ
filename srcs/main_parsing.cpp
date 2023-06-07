@@ -82,7 +82,6 @@ insert_error(
 		input.erase(0, pos + 1);
 		value = input;
 		getOnlyChar(value);
-//		std::cout <<G<< "error->key = " << key << " | value = " << value <<RE<< std::endl;
 		error.insert(std::pair<int, std::string>(key, value));
 	}
 	else {
@@ -104,7 +103,6 @@ save_error(
 			insert_error(*first_bracket, error);
 		first_bracket++;
 	}
-//	std::cout <<G<< "error_* successfully saved " <<RE<< std::endl;
 }
 
 // In .conf vector, take first - server '{' - and launch parsing until the next corresponding '}'
@@ -199,11 +197,15 @@ serverConfig(
 }
 
 
-
-
 /**********************************************************************************************************************/
 /***************************                  Set Up one Server config	      		           ************************/
 /**********************************************************************************************************************/
+//
+//bool checkErrorParsingServer(Config &s)
+//{
+//	s.getPortServer();
+//
+//}
 
 // CQFD
 Config &
@@ -311,7 +313,10 @@ grabLocation (
 			while (!(((*it).find("}")) != std::string::npos))
 			{
 				if ((*it).find("root=") != std::string::npos)
-					isRoot = 1;
+				{
+					if ((*it)[(*it).size()] == '/')
+						isRoot = 1;
+				}
 				if ((*it).find("return=") != std::string::npos)
 					isReturn = 1;
 				insertMap_split_by_Delimiter(loc_config, *it, "=");
@@ -324,7 +329,7 @@ grabLocation (
 											"\t\tstd::vector<std::string>::iterator \tit,\n"
 											"\t\tstd::vector<std::string>::iterator \tlast_bracket,\n"
 											"\t\tConfig &s)\n"
-											"Missing root variable in location or return variable for redirection");
+											"Error for root or return variable in a location");
 			}
 			return (it);
 		}
