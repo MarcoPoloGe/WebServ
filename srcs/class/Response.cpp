@@ -126,7 +126,7 @@ std::string Response::send(int client_socket)
 	message << HTTP_VERSION << " "
 	<< this->get_error_code() << " "
 	<< ft_error_name(this->get_error_code()) << std::endl;
-	if(_error_code != 200)
+	if(_error_code < 200 || 299 < _error_code)
 		set_path(ft_error_page(this->_error_code));
 	message << "Content-Length:" << get_content_body().length() << std::endl;
 	message << "Content-Type:" << get_content_type() << std::endl;
@@ -138,6 +138,11 @@ std::string Response::send(int client_socket)
 		std::cerr <<R<< "Message not sent\n"<<RE;
 	//returns the message for debug purposes.
 	return (message.str());
+}
+
+void	Response::set_manual_code(int code)
+{
+	_error_code = code;
 }
 
 std::string Response::send(int client_socket, fd_set socks)
@@ -153,7 +158,7 @@ std::string Response::send(int client_socket, fd_set socks)
 	message << HTTP_VERSION << " "
 	<< this->get_error_code() << " "
 	<< ft_error_name(this->get_error_code()) << std::endl;
-	if(_error_code != 200)
+	if(_error_code < 200 || 299 < _error_code)
 		set_path(ft_error_page(this->_error_code));
 	message << "Content-Length:" << get_content_body().length() << std::endl;
 	message << "Content-Type:" << get_content_type() << std::endl;

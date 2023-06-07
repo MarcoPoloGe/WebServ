@@ -438,6 +438,7 @@ int	Network::upload_file(Request request, Response response, int connection)
 	// Close the file
 	file.close();
 
+	response.set_manual_code(201);
 	response.set_manual_content_type("text/html");
 	response.set_manual_content( ft_generate_success_upload(request) );
 	response.send(connection);

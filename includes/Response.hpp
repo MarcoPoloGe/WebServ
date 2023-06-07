@@ -24,12 +24,12 @@ public:
 	void set_path(std::string path);
 	void set_error_code(int error_code);
 	void set_content_body(std::string body);
-	void set_content_extension(std::string extension); // setter content-type from extension ex : html > text/html txt > text/plain
+	void set_content_extension(std::string extension); // setter content-type from extension
+													   // ex : html > text/html txt > text/plain
 
-	////TRICK TEST////
 	void	set_manual_content_type(std::string content_type);
 	void	set_manual_content(std::string content);
-	////TRICK TEST/////
+	void	set_manual_code(int code);
 
 	std::string send(int client_socket);
 	std::string send(int client_socket, fd_set socks);
