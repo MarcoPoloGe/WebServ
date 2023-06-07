@@ -84,7 +84,7 @@ Config::~Config() 	{ /*std::cout <<W<< "--config" <<RE<< std::endl;*/ }
 /**********************************************************************************************************************/
 
 void Config::setNameServer		(std::string name) 										{ this->_name = name; }
-void Config::setIpServer		(std::string ip)				 						{ this->_ip = ip; }
+
 //void Config::setServerConfig	(std::vector<std::string> config)						{ this->_serverconfig = config; }
 //void Config::setAllLocation		(std::vector<std::map<std::string, std::string> > locs)	{ this->_locs = locs; }
 void Config::setKeyTemp			(std::string key_temp) 									{ this->_key_temp = key_temp; }
@@ -95,6 +95,12 @@ void Config::setErrorNamesMap	(std::map<int, std::string> error_names)				{ this
 void Config::setBinCgi			(const std::string &binCgi) 							{ this->_binCGI = binCgi; }
 
 /* weirdo setters */
+
+void
+Config::setIpServer		(std::string ip)
+{
+	this->_ip = ip;
+}
 void
 Config::setRawfile	(
 		std::vector<std::string>::iterator first_bracket,
@@ -157,7 +163,18 @@ Config::setPortServer(
 void
 Config::setBodyLength(std::string input)
 {
-	_bodylength = std::atoi(input.c_str());
+	getOnlyChar(input);
+	if (is_number(input)) {
+		_bodylength = std::atoi(input.c_str());
+	}
+	else
+		throw std::invalid_argument("@fn void\n"
+									"Config::setBodyLength(std::string input)\n"
+									"Not only number in client_max_body_size variable in Server");
+	if (input.empty())
+		throw std::invalid_argument("@fn void\n"
+									"Config::setBodyLength(std::string input)\n"
+									"No client_max_body_size variable in Server");
 }
 
 int Config::getBodyLength() const
