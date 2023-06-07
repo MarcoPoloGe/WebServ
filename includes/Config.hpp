@@ -199,18 +199,18 @@ public:
 	std::string getUploadFolder() const;
 
 private:
-	std::vector<int>												_ports;
-	int																_amount_ports;
-	std::vector<std::string> 										_serverconfig;
-	std::vector<std::string> 										_rawfile;
-	std::vector<std::map<std::string, std::string> > 				_locs;
-	std::map<std::string, std::string>								_mime_types;
-	std::map<int, std::string>										_error_pages;
+	std::vector<int>												_ports; 			// protected in @fn Config::setPortServer
+	int																_amount_ports;		//
+	std::vector<std::string> 										_serverconfig;		//
+	std::vector<std::string> 										_rawfile;			//
+	std::vector<std::map<std::string, std::string> > 				_locs;				// protected in @fn grabLocation
+	std::map<std::string, std::string>								_mime_types;		// protected in @fn save_mime_type
+ 	std::map<int, std::string>										_error_pages;		// not protected for incorrect input
 	std::map<int, std::string>										_error_names;
 
-	std::string 													_path_to_file;
+	std::string 													_path_to_file;		//protected
 
-	std::string														_root;
+	std::string														_root;				//protected with no '/' at the end and empty
 
 	std::string														_key_temp;
 	std::string														_value_temp;
