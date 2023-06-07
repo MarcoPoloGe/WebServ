@@ -43,18 +43,15 @@ LAN::LAN(std::vector<Config> all_config): _vec_config(all_config)
 			}
 			else
 			{
-				if ( (*it).getNameServer() != "")
+				std::vector<Network>::iterator toAdd = _vec_network.begin();
+				for (; toAdd != _vec_network.end(); toAdd++)
 				{
-					std::vector<Network>::iterator toAdd = _vec_network.begin();
-					for (; toAdd != _vec_network.end(); toAdd++)
-					{
-						if ( (*toAdd).getPort() == (*it).getPortServer()[i])
-							break ;
-					}
-					(*toAdd).addName( (*it) );
-					std::cout <<W<< "server_name <" << (*it).getNameServer()
-						<< "> added on port [" << (*it).getPortServer()[i] << "]\n\n" <<RE;
+					if ( (*toAdd).getPort() == (*it).getPortServer()[i])
+						break ;
 				}
+				(*toAdd).addName( (*it) );
+				std::cout <<W<< "server_name < " << (*it).getNameServer()
+					<< " > added on port [" << (*it).getPortServer()[i] << "]\n\n" <<RE;
 			}
 		}
 	}

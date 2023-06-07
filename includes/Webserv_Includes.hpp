@@ -38,7 +38,7 @@
 #include "LAN.hpp"
 
 #define BACKLOG 2
-#define MAX_CLIENTS 50
+#define MAX_CLIENTS 5
 #define HTTP_VERSION "HTTP/1.1"
 
 //COLOR OUTPUT//

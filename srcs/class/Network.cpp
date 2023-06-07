@@ -143,6 +143,8 @@ Request Network::receive_request(int connection, fd_set &socks)
 			throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrecv connection error");
 			delete[] buffer;
 		}
+		else if (bytes_read == 0)
+			break ; 
 		total_bytes += bytes_read;
 		request_string += std::string(buffer, bytes_read);
 	}
@@ -179,6 +181,10 @@ bool Network::CatchRequest(Request &request, int connection, fd_set socks)
 		SendResponse(code, response, connection);
 		return (false);
 	}
+	catch ( std::runtime_error &e)
+	{
+		return (false);
+	}
 	check_host(request);
 	return (true);
 }
@@ -187,6 +193,9 @@ void	Network::check_host(Request request)
 {
 	std::string hostname = request.get_header("Host");
 	std::size_t pos = hostname.rfind(":");
+
+	if (pos == std::string::npos)
+		return ;
 	hostname.erase(pos);
 
 	if ( _names.find(hostname) != _names.end() )
@@ -315,8 +324,8 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				return (1);
 			}
 
-			// Here is the handle of autoindex //
 
+			// Here is the handle of autoindex //
 			std::string autoindexValue = _config.getAutoindex(*singleLocationContent);
 			std::string location = _config.getLocation(*singleLocationContent);
 
@@ -335,8 +344,8 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 
 				// Even if autoindex is false, we need in this case to answer just the dir//
 				if ( (request.get_header("Referer").find(URIraw) != std::string::npos
-						&& URIraw != "/")
-						&& request.get_header("User-Agent").find("curl") == std::string::npos)
+					&& URIraw != "/")
+					&& request.get_header("User-Agent").find("curl") == std::string::npos)
 				{
 					if ( no_final_slash(URIraw) )
 					return ( add_slash(URIraw, connection, _port) );
@@ -346,11 +355,10 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				else // autoindex = false : we add the default path to URI //
 				{
 					PathToFile = PathToFile
-						+ _config.getDefault(*singleLocationContent);	
+						+ _config.getDefault(*singleLocationContent);
 
 					if (request.get_header("User-Agent").find("curl") != std::string::npos
-							|| request.get_header("User-Agent").find("telnet")
-							!= std::string::npos )
+							|| request.get_header("User-Agent") == "")
 					{
 						response.set_path(PathToFile);
 						response.send(connection);
