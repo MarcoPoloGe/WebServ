@@ -408,6 +408,7 @@ int	Network::delete_file(Request request, Response response, int connection)
 
 	if ( file_delete )
 	{
+		response.set_manual_code(204);					//J'ai mal a mon ptit coeur
 		response.set_manual_content_type("text/html");
 		response.set_manual_content( ft_generate_success_delete(request) );
 		response.send(connection);
