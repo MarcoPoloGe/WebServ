@@ -105,7 +105,9 @@ std::string Response::ft_error_page(int error_code)
 	page_name = _config.getErrorPages(error_code);
 	if(page_name.empty())
 	{
-		return ("@//GENERATE:"+std::to_string(error_code) );
+		std::stringstream temp;
+		temp << error_code;
+		return ("@//GENERATE:" + temp.str() );
 		/*std::stringstream message;
 		message << "@fn std::string Response::ft_error_page(int error_code)\nerror_page cannot be found :" << error_code << " please add it in config file." <<std::endl;
 		throw std::invalid_argument(message.str());*/

@@ -271,7 +271,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	
 	// test if Folder is in locations ; return *getSingleMapLocation
 	std::map<std::string, std::string> *singleLocationContent;
-	if ((singleLocationContent = _config.getSingleMapLocation(Folder)) == nullptr){
+	if ((singleLocationContent = _config.getSingleMapLocation(Folder)) == 0 ){
 		return (SendResponse(404, response, connection));
 	}
 
@@ -428,7 +428,7 @@ int	Network::upload_file(Request request, Response response, int connection)
 	file_path += request.get_filename_post();
 
 	// Create and open a text file
-	std::ofstream file(file_path);
+	std::ofstream file(file_path.c_str());
 	if (!file)
 		return (SendResponse(500, response, connection));
 

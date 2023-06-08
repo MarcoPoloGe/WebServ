@@ -71,9 +71,11 @@ std::string ft_remove_ack(std::string str)
 std::string ft_generate_html_dir(std::string dir_path, int final_slash)
 {
 	unsigned long	pos;
+
     while ((pos = dir_path.find("//")) != std::string::npos)
-        dir_path.erase(pos, 1);
-	
+	{
+		dir_path.erase(pos, 1);
+	}
 	std::string directory = dir_path;
 	dir_path.erase(dir_path.begin(), dir_path.begin() + 10); //veux int taille prepath
 

@@ -136,7 +136,7 @@ std::string CGI::execute(Request &request, Config &conf, int port, const std::st
 	if (!envmap["QUERY_STRING"].empty()) {
 		path.push_back(const_cast<char *>(envmap["QUERY_STRING"].c_str()));
 	}
-	path.push_back(nullptr);
+	path.push_back(0);
 
 	pid_t pid = fork();
 

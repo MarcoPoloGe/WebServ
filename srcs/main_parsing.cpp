@@ -348,7 +348,7 @@ grabLocation (
 			{
 				if ((*it).find("root=") != std::string::npos)
 				{
-					if ((*it).back() == '/')
+					if ((*it).at((*it).size() - 1) == '/')
 						isRoot = 1;
 				}
 				if ((*it).find("return=") != std::string::npos)
