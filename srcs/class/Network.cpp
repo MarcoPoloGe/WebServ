@@ -140,8 +140,8 @@ Request Network::receive_request(int connection, fd_set &socks)
 		{
 			if (FD_ISSET(connection, &socks))
 				break ;
-			throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrecv connection error");
 			delete[] buffer;
+			throw std::runtime_error("@fn Network::receive_request(int connection, fd_set &socks)\nrecv connection error");
 		}
 		else if (bytes_read == 0)
 			break ; 
@@ -152,11 +152,8 @@ Request Network::receive_request(int connection, fd_set &socks)
 		std::cout <<R<< "MAX BODY SIZE OF REQUEST EXCEEDED : THIS INCIDENT WILL BE REPORTED\n" <<
 			"(just kidding, this is a local webserver but it has to be said)\n" <<RE;
 
-	
-	//////////////// >>>>>> To set plsu bas >>>>>>>>>>
-	if ( request_string.substr(0, 6).find("POST") != std::string::npos)
+	if ( request_string.substr(0, 6).find("POST /") != std::string::npos)
 		request.upload_file(request_string);
-	/////////////////
 
 	delete[] buffer;
 	if (request_string.empty())
@@ -375,7 +372,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	else if(request.get_type() == "POST")
 	{
 		// Mon trick qui est dans  receive request devrait etre ici //
-		
+
 		if(request.get_header("Content-Type") == "multipart/form-data")
 		{
 			if(request.get_content_header("Content-Disposition-name") == "file")
