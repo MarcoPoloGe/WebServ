@@ -17,7 +17,7 @@ RM			= rm -f
 
 NAME		= webserv
 
-FLAGS		= -Wall -Wextra -Werror -std=c++98 -pedantic# -fsanitize=address -g3
+FLAGS		= -Wall -Wextra -Werror -std=c++98 -pedantic -fsanitize=address -g3
 
 CC			= g++
 

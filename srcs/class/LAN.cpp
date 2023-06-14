@@ -75,7 +75,7 @@ void	LAN::runAll(void)
 	while (true)
 	{
 		/*static int leak = 0;
-		if (leak > 10)
+		if (leak > 20)
 			return ;*/
 
 		build_select_list();

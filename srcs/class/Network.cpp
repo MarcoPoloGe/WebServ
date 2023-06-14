@@ -159,8 +159,8 @@ Request Network::receive_request(int connection, fd_set &socks)
 				  << RE;
 	}
 
-	//if ( request_string.substr(0, 6).find("POST /") != std::string::npos)
-	//	request.upload_file(request_string);
+	if ( request_string.substr(0, 6).find("POST /") != std::string::npos)
+		request.upload_file(request_string);
 
 	delete[] buffer;
 	if (request_string.empty())
@@ -327,6 +327,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				doss = false;
 			else
 				doss = true;
+			closedir(dir);
 			if (isFile(PathToFile) && doss == false)
 			{
 				response.set_manual_content_type("application/octet-stream");
@@ -334,7 +335,6 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 				response.send(connection);
 				return (1);
 			}
-
 
 			// Here is the handle of autoindex //
 			std::string autoindexValue = _config.getAutoindex(*singleLocationContent);
