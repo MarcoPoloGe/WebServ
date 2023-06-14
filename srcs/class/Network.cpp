@@ -1,4 +1,5 @@
 #include "../../includes/Webserv_Includes.hpp"
+#include <stdio.h>
 
 
 
@@ -31,7 +32,6 @@ Network::Network(Config config, int portNo): _config(config), _default_conf(conf
 
  	std::cout <<W<< "Server <" << config.getNameServer() << "> ready to listen on port ["
 		<< _port << "]\n\n" <<RE;
-
 	return ;
 }
 
@@ -127,6 +127,7 @@ int	go_default(std::string URI, int connection, Request request)
 Request Network::receive_request(int connection, fd_set &socks)
 {
 	char 				*buffer = new char[sizeof(char) *_max_body_size + 1];
+	//printf("\n\n%p\n\n", (void*)buffer);
 	int					bytes_read = 1;
 	long int			total_bytes = 0;
 	std::string 		request_string;
@@ -148,12 +149,18 @@ Request Network::receive_request(int connection, fd_set &socks)
 		total_bytes += bytes_read;
 		request_string += std::string(buffer, bytes_read);
 	}
-	if (total_bytes > _max_body_size)
-		std::cout <<R<< "MAX BODY SIZE OF REQUEST EXCEEDED : THIS INCIDENT WILL BE REPORTED\n" <<
-			"(just kidding, this is a local webserver but it has to be said)\n" <<RE;
+	if (total_bytes > _max_body_size){
+		delete[] buffer;
+		throw std::length_error("Max body size exceeded");
+		std::cout << R
+				  << "MAX BODY SIZE OF REQUEST EXCEEDED : THIS INCIDENT WILL BE REPORTED\n"
+				  <<
+				  "(just kidding, this is a local webserver but it has to be said)\n"
+				  << RE;
+	}
 
-	if ( request_string.substr(0, 6).find("POST /") != std::string::npos)
-		request.upload_file(request_string);
+	//if ( request_string.substr(0, 6).find("POST /") != std::string::npos)
+	//	request.upload_file(request_string);
 
 	delete[] buffer;
 	if (request_string.empty())
@@ -180,6 +187,12 @@ bool Network::CatchRequest(Request &request, int connection, fd_set socks)
 	}
 	catch ( std::runtime_error &e)
 	{
+		return (false);
+	}
+	catch ( std::length_error &e)
+	{
+		Response response(_config);
+		SendResponse(413, response, connection);
 		return (false);
 	}
 	check_host(request);
@@ -259,6 +272,7 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	if ( this->CatchRequest(request, connection, socks) == false)
 		return (1);
 
+	//std::cout << R << request;
 	std::string	URIraw = request.get_URI();
 	std::string PathToFile;
 
@@ -372,8 +386,12 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 	else if(request.get_type() == "POST")
 	{
 		// Mon trick qui est dans  receive request devrait etre ici //
+		if (!_config.IsMethodAllowed(request.get_type(), *(singleLocationContent))) {
+			std::cout << "my loc is : " << _config.getLocation(*singleLocationContent) << std::endl;
+			return (SendResponse(405, response, connection));
+		}
 
-		if(request.get_header("Content-Type") == "multipart/form-data")
+	if(request.get_header("Content-Type") == "multipart/form-data")
 		{
 			if(request.get_content_header("Content-Disposition-name") == "file")
 				return (upload_file(request, response, connection));
@@ -387,7 +405,6 @@ int	Network::RequestToResponse(int connection, fd_set socks)
 			return (SendResponse(405, response, connection));
 		return ( delete_file(request, response, connection) );
 	}
-
 	// test if Method is allowed in Location ; return bool
 	if (!_config.IsMethodAllowed(request.get_type(), *(singleLocationContent)))
 		return (SendResponse(405, response, connection));

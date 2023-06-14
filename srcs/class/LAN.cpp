@@ -74,6 +74,10 @@ void	LAN::runAll(void)
 
 	while (true)
 	{
+		/*static int leak = 0;
+		if (leak > 10)
+			return ;*/
+
 		build_select_list();
 		ready_socks = select(_highsock + 1, &_read_socks, &_wr_socks, &_err_socks, &_timeout);
 		if (ready_socks < 0)
@@ -84,8 +88,10 @@ void	LAN::runAll(void)
 			if (n == 12)
 				n = 0;
 		}
-		else
+		else {
 			read_sockets();
+		//	leak++;
+		}
 	}
 }
 

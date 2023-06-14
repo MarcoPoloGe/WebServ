@@ -20,6 +20,7 @@ std::string ft_read_file(std::string file_name)
 	while (std::getline(html_file, line))
 		content += line + '\n';
 
+	html_file.close();
 	return (content);
 }
 
